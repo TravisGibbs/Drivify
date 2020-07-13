@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/profileAction"
+        android:icon="@drawable/head_icon"
+        android:title="Profile"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/generateAction"
+        android:icon="@drawable/music_icon"
+        android:title="Generate"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/playlistAction"
+        android:icon="@drawable/list_icon"
+        android:title="Playlist"
+        app:showAsAction="always" />
+</menu>

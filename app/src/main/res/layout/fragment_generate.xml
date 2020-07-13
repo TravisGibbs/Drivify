@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/generateFragmentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/distanceButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/makePlaylistButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/colorAccent"
+        android:padding="10dp"
+        android:text="@string/find_distance" />
+
+    <EditText
+        android:id="@+id/destinationTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/originText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="50dp"
+        android:text="@string/find_a_destination"
+        android:textAlignment="center"
+        android:inputType="none"
+        android:focusable="false"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/originText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="50dp"
+        android:focusable="false"
+        android:inputType="none"
+        android:text="@string/find_a_origin"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/makePlaylistButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/goToButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/colorAccent"
+        android:padding="10dp"
+        android:text="Generate a playlist" />
+
+    <Button
+        android:id="@+id/goToButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="-120dp"
+        android:background="@color/colorAccent"
+        android:padding="10dp"
+        android:text="@string/go_to_playlist" />
+
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/destinationTest"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/destinationTest"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="visible"
+        tools:visibility="visible">
+
+        <RadioButton
+            android:id="@+id/radioByArtist"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Select an Artist"
+            android:textSize="24sp" />
+
+        <RadioButton
+            android:id="@+id/radioByGenre"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Select a genre"
+            android:textSize="24sp" />
+
+        <RadioButton
+            android:id="@+id/radioUseLatest"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Use my latest songSimplifieds"
+            android:textSize="24sp"
+            android:visibility="visible"
+            tools:visibility="visible" />
+    </RadioGroup>
+
+
+</RelativeLayout>
