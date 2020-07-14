@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.R;
 import com.example.spotifytest.Services.PlaylistService;
 import com.example.spotifytest.Services.SongService;
+import com.example.spotifytest.SongsViewModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -62,6 +64,7 @@ public class GenerateFragment extends Fragment {
     private SongService songService;
     private PlaylistService playlistService;
     private ArrayList<SongFull> allTracks;
+    private SongsViewModel viewModel;
     public Place origin;
     public Place destination;
     public int time = 0;
@@ -83,6 +86,7 @@ public class GenerateFragment extends Fragment {
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("SPOTIFY", 0);
+        viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +165,7 @@ public class GenerateFragment extends Fragment {
     private void postPlaylist(){
         if(time > 0){
             allTracks = songService.getSongFulls();
+            viewModel.setSongList(allTracks);
             playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
         }

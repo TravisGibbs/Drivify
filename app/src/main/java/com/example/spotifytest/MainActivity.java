@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.example.spotifytest.Fragments.GenerateFragment;
 import com.example.spotifytest.Fragments.ProfileFragment;
+import com.example.spotifytest.Fragments.PlaylistFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,8 +35,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.generateAction:
                         fragment = new GenerateFragment();
                         break;
-                    //case R.id.playlistAction:
-                        //TODO build playlist view
+                    case R.id.playlistAction:
+                        fragment = new PlaylistFragment();
+                        break;
                     default: return true;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
