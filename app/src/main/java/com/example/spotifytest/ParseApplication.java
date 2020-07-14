@@ -36,6 +36,5 @@ public class ParseApplication extends Application {
                 .clientBuilder(builder)
                 .server("https://travis-spotify.herokuapp.com/parse").build());
         final String Tag = "userc";
-
     }
 }

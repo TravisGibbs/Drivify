@@ -36,20 +36,16 @@ public class PlaylistService {
     }
 
     public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds, int time) {
-
         JSONObject payload = preparePutPayloadPlaylistPost(playlistTitle);
         JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds, time);
         queue.add(jsonObjectRequest);
     }
-
-    //
 
     public void addSong(ArrayList<SongFull> songSimplifieds){
         JSONObject payload = preparePutPayloadSongPost(songSimplifieds);
         JsonObjectRequest jsonObjectRequest = SongPost(payload);
         queue.add(jsonObjectRequest);
     }
-
 
     private JSONObject preparePutPayloadPlaylistPost(String song){
         JSONObject playlist = new JSONObject();
@@ -63,18 +59,12 @@ public class PlaylistService {
         return playlist;
     }
 
-
     private JSONObject preparePutPayloadSongPost(ArrayList<SongFull> songSimplifieds) {
         JSONObject request = new JSONObject();
         JSONArray uri = new JSONArray();
         for(SongFull songSimplified : songSimplifieds){
             uri.put(songSimplified.getUri());
         }
-        /*try {
-            request.put("uri",uri);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
         try {
             request.put("uris",uri);
         } catch (JSONException e) {
@@ -93,7 +83,6 @@ public class PlaylistService {
             Snackbar.make(relativeLayout, "Playlist Post!", Snackbar.LENGTH_SHORT).show();
         }, error -> {
         }) {
-
             @Override
             public Map<String, String> getHeaders(){
                 Map<String, String> headers = new HashMap<>();
@@ -131,22 +120,22 @@ public class PlaylistService {
     }
 
     public void onSuccSong(JSONObject response) throws JSONException{
-        Log.i(Tag,"help");
+        Log.i(Tag,"song posted");
     }
 
     public void onSuccPlaylist(JSONObject response, ArrayList<SongFull> songSimplifieds, int time) throws JSONException {
-            playlistID = response.getString("id");
-            JSONObject external_urls = response.getJSONObject("external_urls");
-            playlistExternalLink = external_urls.getString("spotify");
-            ArrayList<SongFull> newSongFull = new ArrayList<>();
-            int i = 0;
-            int sum = 0;
-            while(sum<time){
-                newSongFull.add(songSimplifieds.get(i));
-                sum += songSimplifieds.get(i).getDuration_ms();
-                i++;
-            }
-            addSong(newSongFull);
+        playlistID = response.getString("id");
+        JSONObject external_urls = response.getJSONObject("external_urls");
+        playlistExternalLink = external_urls.getString("spotify");
+        ArrayList<SongFull> newSongFull = new ArrayList<>();
+        int i = 0;
+        int sum = 0;
+        while(sum<time){
+            newSongFull.add(songSimplifieds.get(i));
+            sum += songSimplifieds.get(i).getDuration_ms();
+            i++;
+        }
+        addSong(newSongFull);
     }
 
     public String PostPlaylistEnd() {
@@ -154,8 +143,4 @@ public class PlaylistService {
         Log.i(Tag,endpoint);
         return endpoint;
     }
-
-
-
-
 }

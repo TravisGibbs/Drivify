@@ -13,12 +13,9 @@ import com.example.spotifytest.R;
 
 public class ListFragment extends Fragment {
 
-
-
     public ListFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -121,7 +121,7 @@
             android:id="@+id/radioUseLatest"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Use my latest songSimplifieds"
+            android:text="Use my latest song"
             android:textSize="24sp"
             android:visibility="visible"
             tools:visibility="visible" />

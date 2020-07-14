@@ -11,24 +11,24 @@ public class _User extends ParseUser {
         super();
     }
 
+    private static final String KEY_IMAGE = "ProfileImage";
+    private static final String KEY_SPOTIFYID = "id";
 
-
-
-    public static final String KEY_IMAGE = "ProfileImage";
-    public static final String KEY_SPOTIFYID = "SpotifyID";
     public ParseFile getImage(){
         return(getParseFile(KEY_IMAGE));
     }
+
     public void setImage(ParseFile parseFile){
         put(KEY_IMAGE,parseFile);
     }
+
     public String getKeySpotifyid() {
         return getString(KEY_SPOTIFYID);
     }
+
     public void setKeySpotifyid(String keySpotifyid){
         put(KEY_SPOTIFYID, keySpotifyid);
     }
 
-
-
 }
+

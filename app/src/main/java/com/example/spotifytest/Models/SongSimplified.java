@@ -41,9 +41,11 @@ public class SongSimplified {
     public void setDuration_ms(int duration_ms) {
         this.duration_ms = duration_ms;
     }
+
     public void setUri(String uri){
         this.uri = uri;
     }
+
     public String getUri(){
         return uri;
     }
@@ -51,6 +53,7 @@ public class SongSimplified {
     public ArrayList<Artist> getArtists(){
         return artists;
     }
+
     public void setArtists(ArrayList<Artist> artists){
         this.artists = artists;
     }

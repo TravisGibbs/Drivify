@@ -1,6 +1,5 @@
 package com.example.spotifytest.Services;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -62,7 +61,6 @@ public class SongService {
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
-
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -94,7 +92,6 @@ public class SongService {
                             JSONObject object = jsonArray.getJSONObject(n);
                             SongFull songFull = gson.fromJson(object.toString(), SongFull.class);
                             songFulls.add(songFull);
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -102,7 +99,6 @@ public class SongService {
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
-
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -118,9 +114,6 @@ public class SongService {
         //return getTracks(songSimplifieds, callBack);
     }
 
-
-
-
     private String getURLforTracks(ArrayList<SongSimplified> songSimplifieds) {
         String url = "https://api.spotify.com/v1/tracks/?ids=";
         for(SongSimplified songSimplified: songSimplifieds) {
@@ -128,7 +121,7 @@ public class SongService {
             url += ",";
         }
         url += songSimplifieds.get(0).getId();
-        Log.i(Tag,url);
+        Log.i(Tag,"URL for get tracks: " + url);
         return url;
     }
 
@@ -141,7 +134,6 @@ public class SongService {
     private JsonObjectRequest prepareSongLibraryRequest(JSONObject payload) {
         return new JsonObjectRequest(Request.Method.PUT, "https://api.spotify.com/v1/me/tracks", payload, response -> {
         }, error -> {
-
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {

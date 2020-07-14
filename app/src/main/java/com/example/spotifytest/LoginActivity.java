@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.registerButton);
         linearLayout = findViewById(R.id.LiLayout);
         SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
-        String username = sharedPreferences.getString("user_name", "defauly");
+        final String username = sharedPreferences.getString("user_name", "defauly");
         userText.setText(username);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,12 +84,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToMainActivity(){
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
+        goToActivity(MainActivity.class);
     }
 
     private void goToRegister(){
-        Intent i = new Intent(this, RegisterActivity.class);
+        goToActivity(RegisterActivity.class);
+    }
+
+    private void goToActivity(Class newActivity){
+        Intent i = new Intent(this, newActivity);
         startActivity(i);
     }
 }

@@ -5,8 +5,9 @@ import android.content.SharedPreferences;
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.spotifytest.Models.SpotifyUser;
-import com.google.gson.Gson;
+import com.example.spotifytest.Models._User;
+
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,28 +15,32 @@ import java.util.Map;
 public class UserService {
 
     public interface VolleyCallBack {
-
         void onSuccess();
     }
 
     private static final String ENDPOINT = "https://api.spotify.com/v1/me";
     private SharedPreferences msharedPreferences;
     private RequestQueue mqueue;
-    private SpotifyUser spotifyUser;
+    private _User spotifyUser;
 
     public UserService(RequestQueue queue, SharedPreferences sharedPreferences) {
         mqueue = queue;
         msharedPreferences = sharedPreferences;
     }
 
-    public SpotifyUser getSpotifyUser() {
+    public _User getSpotifyUser() {
         return spotifyUser;
     }
 
     public void get(final VolleyCallBack callBack) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(ENDPOINT, null, response -> {
-            Gson gson = new Gson();
-            spotifyUser = gson.fromJson(response.toString(), SpotifyUser.class);
+            spotifyUser = new _User();
+            try {
+                spotifyUser.setUsername(response.getString("display_name"));
+                spotifyUser.setKeySpotifyid(response.getString("id"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             callBack.onSuccess();
         }, error -> get(() -> {
 
@@ -51,6 +56,5 @@ public class UserService {
         };
         mqueue.add(jsonObjectRequest);
     }
-
 
 }

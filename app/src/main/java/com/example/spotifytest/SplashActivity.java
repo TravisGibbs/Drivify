@@ -12,7 +12,7 @@ import android.widget.Button;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.example.spotifytest.Models.SpotifyUser;
+import com.example.spotifytest.Models._User;
 import com.example.spotifytest.Services.UserService;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -20,20 +20,14 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class SplashActivity extends AppCompatActivity {
 
-
-
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
     private RequestQueue queue;
-
-
     private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
     private static final String REDIRECT_URI = "https://developer.spotify.com/dashboard";
     private static final int REQUEST_CODE = 1337;
     private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-modify-public,playlist-modify-private";
-
     Button spotifyButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +35,6 @@ public class SplashActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_splash);
-
-
         msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(this);
         spotifyButton = findViewById(R.id.buttonSpotifyLogin);
@@ -64,10 +56,10 @@ public class SplashActivity extends AppCompatActivity {
     private void waitForUserInfo() {
         UserService userService = new UserService(queue, msharedPreferences);
         userService.get(() -> {
-            SpotifyUser spotifyUser = userService.getSpotifyUser();
+            _User spotifyUser = userService.getSpotifyUser();
             editor = getSharedPreferences("SPOTIFY", 0).edit();
-            editor.putString("userid", spotifyUser.id);
-            editor.putString("user_name", spotifyUser.display_name);
+            editor.putString("userid", spotifyUser.getKeySpotifyid());
+            editor.putString("user_name", spotifyUser.getUsername());
             Log.d("STARTING", "GOT USER INFORMATION");
             // We use commit instead of apply because we need the information stored immediately
             editor.commit();
@@ -114,4 +106,5 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
     }
+
 }

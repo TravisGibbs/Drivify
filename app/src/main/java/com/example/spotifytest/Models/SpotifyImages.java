@@ -2,6 +2,14 @@ package com.example.spotifytest.Models;
 
 public class SpotifyImages {
     String url;
+    int height;
+    int width;
+
+    public SpotifyImages(String url, int height, int width) {
+        this.url = url;
+        this.height = height;
+        this.width = width;
+    }
 
     public String getUrl() {
         return url;
@@ -27,12 +35,4 @@ public class SpotifyImages {
         this.width = width;
     }
 
-    int height;
-    int width;
-
-    public SpotifyImages(String url, int height, int width) {
-        this.url = url;
-        this.height = height;
-        this.width = width;
-    }
 }

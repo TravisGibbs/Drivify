@@ -5,8 +5,6 @@ import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -31,7 +29,6 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 import java.io.File;
-import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -44,8 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
     public static final int  CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
     public String photoFileName = "photo.jpg";
     private File photoFile;
-    ProgressBar pb;
-    LinearLayout RegisterLayout;
+    ProgressBar progressBar;
+    LinearLayout linearLayout;
     public String userID;
 
     @Override
@@ -55,18 +52,16 @@ public class RegisterActivity extends AppCompatActivity {
         takePhoto = findViewById(R.id.cameraButtonRegister);
         imageTaken = findViewById(R.id.imageTakenRegister);
         registerButton = findViewById(R.id.registerButtonRegister);
-        RegisterLayout = findViewById(R.id.RegisterLayout);
+        linearLayout = findViewById(R.id.RegisterLayout);
         userText = findViewById(R.id.usernameText);
         passTextEdit = findViewById(R.id.passwordText);
         imageTaken.setVisibility(View.GONE);
-        pb = (ProgressBar) findViewById(R.id.pbLoadingRegister);
-        pb.setVisibility(ProgressBar.GONE);
+        progressBar = (ProgressBar) findViewById(R.id.pbLoadingRegister);
+        progressBar.setVisibility(ProgressBar.GONE);
         SharedPreferences sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         String username = sharedPreferences.getString("user_name", "defauly");
         userID = sharedPreferences.getString("userid", "1");
         userText.setText(username);
-
-
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,16 +73,15 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pb.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 registerUser(username,passTextEdit.getText().toString());
             }
         });
-
-
     }
 
     private void registerUser(String userName, String passText){
         Log.i(Tag,"registering user: "+userName);
+
         _User user = new _User();
         user.setUsername(userName);
         user.setPassword(passText);
@@ -109,8 +103,8 @@ public class RegisterActivity extends AppCompatActivity {
                     // Hooray! Let them use the app now.
                 } else {
                     Log.e(Tag,"user register failed",e);
-                    pb.setVisibility(View.GONE);
-                    Snackbar.make(RegisterLayout, "Registration failed", Snackbar.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    Snackbar.make(linearLayout, "Registration failed", Snackbar.LENGTH_SHORT).show();
                     // Sign up didn't succeed. Look at the ParseException
                     // to figure out what went wrong
                 }
@@ -175,8 +169,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
     }
+
     private void goToMainActivity(){
-        pb.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
@@ -189,9 +184,10 @@ public class RegisterActivity extends AppCompatActivity {
                     goToMainActivity();
                 } else {
                     Log.e(Tag,"user login failed",e);
-                    Snackbar.make(RegisterLayout, "login failed", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(linearLayout, "login failed", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
+
     }
 }

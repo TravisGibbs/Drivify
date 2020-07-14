@@ -48,23 +48,18 @@ import okhttp3.Headers;
 public class GenerateFragment extends Fragment {
 
     private static final int RESULT_OK = -1;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int RESULT_CANCELED = 0;
-    private TextView userView;
     private TextView timeView;
-    private Button likeSongs;
-    private Button findSongs;
-    public boolean origin = true;
+    public boolean clickFromOriginText = true;
     private EditText destText;
     private EditText originText;
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
-    private Button findDistance;
-    private SongSimplified songSimplified;
+    private Button findDistanceButton;
     private RelativeLayout relativeLayout;
-    public int i;
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
-    public Place Start;
-    public Place End;
+    public Place start;
+    public Place end;
     public int time = 0;
 
 
@@ -83,27 +78,18 @@ public class GenerateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Places.initialize(getContext(), apiKey);
-        // Create a new PlacesClient instance
-        PlacesClient placesClient = Places.createClient(getContext());
-        i =0;
+        Places.initialize(view.getContext(), apiKey);
+        PlacesClient placesClient = Places.createClient(view.getContext());
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
-        playlistService = new PlaylistService(getContext(), relativeLayout);
+        playlistService = new PlaylistService(view.getContext(), relativeLayout);
         songService = new SongService(getContext(), relativeLayout);
         destText = view.findViewById(R.id.destinationTest);
         originText = view.findViewById(R.id.originText);
-        findDistance = view.findViewById(R.id.distanceButton);
+        findDistanceButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
-        //songView = view.findViewById(R.id.songText);
-        //likeSongs = view.findViewById(R.id.likeSong);
-        //findSongs = view.findViewById(R.id.findSong);
-        //likeSongs.setVisibility(View.GONE);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("SPOTIFY", 0);
-        Log.i(Tag, sharedPreferences.getString("user_name", "defauly"));
-
-        //getTracks(20);
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,11 +108,11 @@ public class GenerateFragment extends Fragment {
         destText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                origin = false;
+                clickFromOriginText = false;
                 List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
                 // Start the autocomplete intent.
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                        .build(getContext());
+                        .build(view.getContext());
                 startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
@@ -134,20 +120,19 @@ public class GenerateFragment extends Fragment {
         originText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                origin = true;
+                clickFromOriginText = true;
                 List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-                // Start the autocomplete intent.
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                         .build(getContext());
                 startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
 
-        findDistance.setOnClickListener(new View.OnClickListener() {
+        findDistanceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Start!=null && End!=null) {
-                    getDistance(Start, End);
+                if(start !=null && end !=null) {
+                    getDistance(start, end);
                 }
                 else{
                     Snackbar.make(relativeLayout, "Select a route!", Snackbar.LENGTH_SHORT).show();
@@ -167,17 +152,8 @@ public class GenerateFragment extends Fragment {
         songService.getRecentlyPlayedTracks(() -> {
             allTracks = songService.getSongFulls();
             Log.i(Tag, String.valueOf(allTracks.size()));
-        },amount);
+        }, amount);
         return allTracks;
-    }
-    private void updateSong() {
-        if (allTracks.size() > i) {
-            //songView.setText(recentlyPlayedTracks.get(i).getName());
-            songSimplified = allTracks.get(i);
-            likeSongs.setVisibility(View.VISIBLE);
-            Snackbar.make(relativeLayout, "SongSimplified Grabbed!", Snackbar.LENGTH_SHORT).show();
-            i++;
-        }
     }
 
     private void goToPlaylist(){
@@ -189,47 +165,34 @@ public class GenerateFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void addSong(){
-        songService.addSongToLibrary(allTracks.get(i-1));
-
-    }
-
     private void postPlaylist(){
         if(time > 0){
             allTracks = songService.getSongFulls();
-            playlistService.addPlaylist(Start.getName() + " to " + End.getName(), allTracks, time);
-            ObjectAnimator animation = ObjectAnimator.ofFloat(goToPlaylistButton, "translationY", -360f);
-            ObjectAnimator animation2 = ObjectAnimator.ofFloat(makePlaylistButton, "translationX",1800f);
-            animation.setDuration(2000);
-            animation2.setDuration(1500);
-            animation2.start();
-            animation.start();
+            playlistService.addPlaylist(start.getName() + " to " + end.getName(), allTracks, time);
+            startButtonSwap(goToPlaylistButton, makePlaylistButton);
         }
         else{
             Snackbar.make(relativeLayout, "Please choose a route!", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        //recentlyPlayedTracks = selectSongs(recentlyPlayedTracks);
         Log.i(Tag, String.valueOf(allTracks.size()));
         for (SongSimplified songSimplified : allTracks) {
             System.out.println(songSimplified.getName());
         }
-
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(Tag, "Place: " + place.getName() + ", " + place.getId());
-                if (origin){
-                    Start = place;
+                if (clickFromOriginText){
+                    start = place;
                     originText.setText(place.getName());
-                }
-                else {
-                    End = place;
+                } else {
+                    end = place;
                     destText.setText(place.getName());
                 }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
@@ -240,17 +203,17 @@ public class GenerateFragment extends Fragment {
             }
             return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void getDistance(Place a, Place b){
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:" + a.getId() + "&destinations=place_id:"+ b.getId() +"&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
-
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
+                + a.getId() + "&destinations=place_id:"
+                + b.getId() +"&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.d(Tag, "succ");
+                Log.d(Tag, "Time between places found.");
                 JSONObject jsonObject = json.jsonObject;
                 try {
                     JSONObject help = (JSONObject) jsonObject.getJSONArray("rows").get(0);
@@ -271,7 +234,6 @@ public class GenerateFragment extends Fragment {
                             }
                         }
                     }
-
                     if(temp.contains("m")){
                         for (int i = 1; i < temp.length(); i++) {
                             if(temp.charAt(i)==' '){
@@ -281,23 +243,20 @@ public class GenerateFragment extends Fragment {
                     }
                     Log.i(Tag, "total minutes " + minutes);
                     time = minutes*60000;
+
                     Log.i(Tag, "totak ms " + String.valueOf(time));
                     int amountOfSongs = time/120000;
+
                     amountOfSongs = amountOfSongs +5;
                     if(amountOfSongs>50){
                         Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
                         amountOfSongs =50;
                     }
+
                     allTracks = getTracks(amountOfSongs);
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(makePlaylistButton, "translationY", -200f);
-                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(findDistance, "translationX",1800f);
-                    animation.setDuration(2000);
-                    animation2.setDuration(1500);
-                    animation2.start();
-                    animation.start();
+                    startButtonSwap(makePlaylistButton, findDistanceButton);
+
                     timeView.setText(temp);
-
-
                     Log.i(Tag, "amount of songs " + String.valueOf(amountOfSongs));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -307,55 +266,17 @@ public class GenerateFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.d(Tag, "fail");
-
             }
         });
-
     }
 
-    public ArrayList<SongSimplified> selectSongs(ArrayList<SongSimplified> songSimplifieds){
-        int n = songSimplifieds.size();
-        int k = time;
-        int prevDif = 0;
-        int currDif = 0;
-        int i = 0;
-        int j = 0;
-        int curSum = 0;
-        int[] result = new int[]{-1, -1, k};
-        int[] resultTemp = result;
-        while(i<=j && j<n){
-            curSum += songSimplifieds.get(j).getDuration_ms();
-            prevDif = currDif;
-            currDif = k - Math.abs(curSum);
-
-            if(currDif <= 0){
-                if(Math.abs(currDif) < Math.abs(prevDif)){
-                    resultTemp[0] = i;
-                    resultTemp[1] = j;
-                    resultTemp[2] = currDif;
-                }
-                else{
-                    resultTemp[0] = i;
-                    resultTemp[1] = j-1;
-                    resultTemp[2] = prevDif;
-                }
-                curSum = curSum - songSimplifieds.get(i).getDuration_ms() + songSimplifieds.get(j).getDuration_ms();
-                i += 1;
-            }
-            else{
-                resultTemp[0] = i;
-                resultTemp[1] = j;
-                resultTemp[2] = currDif;
-                j+=1;
-            }
-            if(Math.abs(resultTemp[2]) < Math.abs(result[2])) {
-                result = resultTemp;
-            }
-        }
-
-        ArrayList<SongSimplified> pickedTracks = (ArrayList<SongSimplified>) songSimplifieds.subList(result[0],result[1]);
-
-
-        return pickedTracks;
+    public void startButtonSwap(Button goUpButton, Button goRightButton){
+        ObjectAnimator animationButtonUp = ObjectAnimator.ofFloat(goUpButton, "translationY", -200f);
+        ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(goRightButton, "translationX",1800f);
+        animationButtonUp.setDuration(2000);
+        animationButtonRight.setDuration(1500);
+        animationButtonRight.start();
+        animationButtonUp.start();
     }
+
 }
