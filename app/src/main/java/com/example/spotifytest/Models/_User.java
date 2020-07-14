@@ -12,7 +12,7 @@ public class _User extends ParseUser {
     }
 
     private static final String KEY_IMAGE = "ProfileImage";
-    private static final String KEY_SPOTIFYID = "id";
+    private static final String KEY_SPOTIFYID = "spotifyId";
 
     public ParseFile getImage(){
         return(getParseFile(KEY_IMAGE));

@@ -50,29 +50,22 @@ public class GenerateFragment extends Fragment {
     private static final int RESULT_OK = -1;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int RESULT_CANCELED = 0;
+    private static final String apiKey = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
+    private static final String Tag = "generateFrag";
     private TextView timeView;
-    public boolean clickFromOriginText = true;
     private EditText destText;
     private EditText originText;
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
     private Button findDistanceButton;
     private RelativeLayout relativeLayout;
-    public Place start;
-    public Place end;
-    public int time = 0;
-
-
-    String Tag = "generateFrag";
-    String apiKey = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
-
     private SongService songService;
     private PlaylistService playlistService;
     private ArrayList<SongFull> allTracks;
-
-    public GenerateFragment() {
-        // Required empty public constructor
-    }
+    public Place origin;
+    public Place destination;
+    public int time = 0;
+    public boolean clickFromOriginText = true;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -131,8 +124,8 @@ public class GenerateFragment extends Fragment {
         findDistanceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(start !=null && end !=null) {
-                    getDistance(start, end);
+                if(origin !=null && destination !=null) {
+                    getDistance(origin, destination);
                 }
                 else{
                     Snackbar.make(relativeLayout, "Select a route!", Snackbar.LENGTH_SHORT).show();
@@ -168,7 +161,7 @@ public class GenerateFragment extends Fragment {
     private void postPlaylist(){
         if(time > 0){
             allTracks = songService.getSongFulls();
-            playlistService.addPlaylist(start.getName() + " to " + end.getName(), allTracks, time);
+            playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
         }
         else{
@@ -189,10 +182,10 @@ public class GenerateFragment extends Fragment {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(Tag, "Place: " + place.getName() + ", " + place.getId());
                 if (clickFromOriginText){
-                    start = place;
+                    origin = place;
                     originText.setText(place.getName());
                 } else {
-                    end = place;
+                    destination = place;
                     destText.setText(place.getName());
                 }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {

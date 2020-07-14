@@ -20,14 +20,16 @@
 
     <ImageView
         android:id="@+id/profileView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="25dp"
         android:layout_marginTop="25dp"
         android:background="@drawable/background"
-        tools:src="@tools:sample/avatars" />
+        android:visibility="visible"
+        tools:src="@tools:sample/avatars"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/usernameProfView"
@@ -35,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="25dp"
         android:layout_toEndOf="@+id/profileView"
@@ -50,9 +52,10 @@
         android:layout_below="@+id/usernameProfView"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="25dp"
         android:layout_toEndOf="@+id/profileView"
         android:lineSpacingExtra="24sp"
+        android:text="Number of drives:"
         tools:text="Number of drives:" />
 </RelativeLayout>
