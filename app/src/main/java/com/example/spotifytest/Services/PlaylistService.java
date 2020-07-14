@@ -103,7 +103,6 @@ public class PlaylistService {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Snackbar.make(relativeLayout, "songsAdded", Snackbar.LENGTH_SHORT).show();
         }, error -> {
             Log.i(Tag,"help");
         }) {

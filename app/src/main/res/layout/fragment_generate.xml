@@ -106,24 +106,24 @@
         tools:visibility="visible">
 
         <RadioButton
-            android:id="@+id/radioByArtist"
+            android:id="@+id/radioIncrease"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Select an Artist"
+            android:text="Hype me up!"
             android:textSize="24sp" />
 
         <RadioButton
-            android:id="@+id/radioByGenre"
+            android:id="@+id/radioDecrease"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Select a genre"
+            android:text="Calm me down."
             android:textSize="24sp" />
 
         <RadioButton
-            android:id="@+id/radioUseLatest"
+            android:id="@+id/radioDance"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Use my latest song"
+            android:text="Make me dance!"
             android:textSize="24sp"
             android:visibility="visible"
             tools:visibility="visible" />

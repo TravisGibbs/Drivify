@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class SongService {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
                             SongFull songFull = gson.fromJson(object.toString(), SongFull.class);
-                            songFulls.add(songFull);
+                            songFulls.add(getTrackDetails(songFull, n, callBack));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -111,8 +112,40 @@ public class SongService {
         };
         queue.add(jsonObjectRequest);
         return songFulls;
-        //return getTracks(songSimplifieds, callBack);
     }
+
+    public SongFull getTrackDetails(SongFull songFull,int position, UserService.VolleyCallBack callBack){
+        Log.i(Tag, "here");
+        String url = getURLforTrackDetails(songFull);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, response -> {
+                    try {
+                        songFull.setEnergy(BigDecimal.valueOf(response.getDouble("energy")).floatValue());
+                        songFull.setDance(BigDecimal.valueOf(response.getDouble("danceability")).floatValue());
+                        songFull.setLoudness(BigDecimal.valueOf(response.getDouble("loudness")).floatValue());
+                        songFull.setTempo(BigDecimal.valueOf(response.getDouble("tempo")).floatValue());
+                        songFulls.set(position, songFull);
+                        callBack.onSuccess();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }, error -> {
+                    // TODO: Handle error
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        queue.add(jsonObjectRequest);
+        return songFull;
+    }
+
+
 
     private String getURLforTracks(ArrayList<SongSimplified> songSimplifieds) {
         String url = "https://api.spotify.com/v1/tracks/?ids=";
@@ -123,6 +156,10 @@ public class SongService {
         url += songSimplifieds.get(0).getId();
         Log.i(Tag,"URL for get tracks: " + url);
         return url;
+    }
+
+    private String getURLforTrackDetails(SongFull songFull) {
+        return("https://api.spotify.com/v1/audio-features/" +songFull.getId());
     }
 
     public void addSongToLibrary(SongSimplified songSimplified) {
