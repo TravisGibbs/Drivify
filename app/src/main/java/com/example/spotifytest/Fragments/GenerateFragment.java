@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,7 +43,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.Headers;
 
@@ -54,12 +59,16 @@ public class GenerateFragment extends Fragment {
     private static final int RESULT_CANCELED = 0;
     private static final String apiKey = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
     private static final String Tag = "generateFrag";
+    private String radioButtonSelected = "";
     private TextView timeView;
     private EditText destText;
     private EditText originText;
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
     private Button findDistanceButton;
+    private RadioButton radioIncrease;
+    private RadioButton radioDecrease;
+    private RadioButton radioDance;
     private RelativeLayout relativeLayout;
     private SongService songService;
     private PlaylistService playlistService;
@@ -85,6 +94,9 @@ public class GenerateFragment extends Fragment {
         timeView = view.findViewById(R.id.timeText);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
+        radioIncrease = view.findViewById(R.id.radioIncrease);
+        radioDecrease = view.findViewById(R.id.radioDecrease);
+        radioDance = view.findViewById(R.id.radioDance);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
 
@@ -137,6 +149,26 @@ public class GenerateFragment extends Fragment {
             }
         });
 
+        radioIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRadioButtonClicked(view);
+            }
+        });
+
+        radioDance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRadioButtonClicked(view);
+            }
+        });
+
+        radioDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRadioButtonClicked(view);
+            }
+        });
     }
 
     @Override
@@ -148,7 +180,6 @@ public class GenerateFragment extends Fragment {
     private ArrayList<SongFull> getTracks(int amount) {
         songService.getRecentlyPlayedTracks(() -> {
             allTracks = songService.getSongFulls();
-            Log.i(Tag, String.valueOf(allTracks.size()));
         }, amount);
         return allTracks;
     }
@@ -165,7 +196,7 @@ public class GenerateFragment extends Fragment {
     private void postPlaylist(){
         if(time > 0){
             allTracks = songService.getSongFulls();
-
+            allTracks = chooseSongs(allTracks);
             viewModel.setSongList(allTracks);
             playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
@@ -174,14 +205,48 @@ public class GenerateFragment extends Fragment {
             Snackbar.make(relativeLayout, "Please choose a route!", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        Log.i(Tag, String.valueOf(allTracks.size()));
         for (SongSimplified songSimplified : allTracks) {
             System.out.println(songSimplified.getName());
         }
     }
 
-    public void chooseSongs(ArrayList<SongFull> songList){
-
+    public ArrayList<SongFull> chooseSongs(ArrayList<SongFull> songList){
+        Set<SongFull> set = new HashSet<>(songList);
+        songList.clear();
+        songList.addAll(set);
+        ArrayList<SongFull> newSongList = new ArrayList<>();
+        int amountOfSongs = time / 100000;
+        amountOfSongs = amountOfSongs + 2;
+        if(amountOfSongs > 50){
+            Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
+            amountOfSongs = 50;
+        }
+        if(radioButtonSelected.equals("Dance")){
+            Collections.sort(songList, SongFull.SongDanceComparator);
+            for(int i = 0; i<amountOfSongs;i++){
+                newSongList.add(songList.get(i));
+            }
+            return(newSongList);
+        }
+        if(radioButtonSelected.equals("Increase")){
+            Collections.sort(songList, SongFull.SongEnergyComparator);
+            for(int i = 0; i<amountOfSongs;i++){
+                newSongList.add(songList.get(i));
+            }
+            return(newSongList);
+        }
+        if(radioButtonSelected.equals("Increase")){
+            Collections.sort(songList, SongFull.SongEnergyComparator);
+            Collections.reverse(songList);
+            for(int i = 0; i<amountOfSongs;i++){
+                newSongList.add(songList.get(i));
+            }
+            return(newSongList);
+        }
+        for(int i = 0; i<amountOfSongs;i++) {
+            newSongList.add(songList.get(i));
+        }
+        return(newSongList);
     }
 
     @Override
@@ -246,21 +311,9 @@ public class GenerateFragment extends Fragment {
                     }
                     Log.i(Tag, "total minutes " + minutes);
                     time = minutes*60000;
-
-                    Log.i(Tag, "totak ms " + String.valueOf(time));
-                    int amountOfSongs = time / 100000;
-
-                    amountOfSongs = amountOfSongs + 5;
-                    if(amountOfSongs > 50){
-                        Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-                        amountOfSongs = 50;
-                    }
-
-                    allTracks = getTracks(amountOfSongs);
+                    allTracks = getTracks(30);
                     startButtonSwap(makePlaylistButton, findDistanceButton);
-
                     timeView.setText(temp);
-                    Log.i(Tag, "amount of songs " + String.valueOf(amountOfSongs));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -280,5 +333,25 @@ public class GenerateFragment extends Fragment {
         animationButtonRight.setDuration(1500);
         animationButtonRight.start();
         animationButtonUp.start();
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radioDance:
+                if(checked)
+                    radioButtonSelected = "Dance";
+                break;
+            case R.id.radioIncrease:
+                if(checked)
+                    radioButtonSelected = "Increase";
+                break;
+            case R.id.radioDecrease:
+                if(checked)
+                    radioButtonSelected = "Decrease";
+                break;
+        }
+        Log.i(Tag, "Radio button selected: " + radioButtonSelected);
     }
 }

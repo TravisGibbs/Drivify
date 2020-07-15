@@ -124,7 +124,7 @@
             android:text="Make me dance!"
             android:textSize="24sp"
             android:visibility="visible"
-            tools:visibility="visible" />
+            tools:visibility="visible"/>
     </RadioGroup>
 
 </RelativeLayout>

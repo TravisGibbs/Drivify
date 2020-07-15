@@ -116,7 +116,6 @@ public class SongService {
     }
 
     public SongFull getTrackDetails(SongFull songFull,int position, UserService.VolleyCallBack callBack){
-        Log.i(Tag, "here");
         String url = getURLforTrackDetails(songFull);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, response -> {
@@ -177,7 +176,6 @@ public class SongService {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 String token = sharedPreferences.getString("token", "");
-                Log.i(Tag, token);
                 String auth = "Bearer " + token;
                 headers.put("Authorization", auth);
                 headers.put("Content-Type", "application/json");

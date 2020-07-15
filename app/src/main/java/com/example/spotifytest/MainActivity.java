@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.spotifytest.Fragments.GenerateFragment;
 import com.example.spotifytest.Fragments.ProfileFragment;
@@ -46,5 +47,4 @@ public class MainActivity extends AppCompatActivity {
         });
         bottomNavigationView.setSelectedItemId(R.id.generateAction);
     }
-
 }

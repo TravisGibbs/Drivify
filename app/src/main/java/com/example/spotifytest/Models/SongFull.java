@@ -1,6 +1,7 @@
 package com.example.spotifytest.Models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class SongFull extends SongSimplified {
 
@@ -54,5 +55,39 @@ public class SongFull extends SongSimplified {
     public void setTempo(float tempo) {
         this.tempo = tempo;
     }
+
+    public static Comparator<SongFull> SongDanceComparator = new Comparator<SongFull>() {
+
+        @Override
+        public int compare(SongFull songFull, SongFull t1) {
+            float temp = songFull.getDance() - t1.getDance();
+            if (temp < 0) {
+                return (-1);
+            }
+            if (temp > 0) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        };
+
+    public static Comparator<SongFull> SongEnergyComparator = new Comparator<SongFull>() {
+
+    @Override
+    public int compare(SongFull songFull, SongFull t1) {
+        float temp = t1.getEnergy() - songFull.getEnergy();
+        if (temp < 0) {
+            return (-1);
+        }
+        if (temp > 0) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+        }
+    };
 
 }
