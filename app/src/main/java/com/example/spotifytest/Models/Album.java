@@ -17,4 +17,5 @@ public class Album {
     public Album(ArrayList<SpotifyImages> images){
         this.images = images;
     }
+
 }

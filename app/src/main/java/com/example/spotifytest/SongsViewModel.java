@@ -21,5 +21,4 @@ public class SongsViewModel extends ViewModel {
   public void setSongList(ArrayList<SongFull> songList) {
     this.songList = songList;
   }
-
 }

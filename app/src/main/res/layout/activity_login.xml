@@ -13,7 +13,6 @@
     android:paddingBottom="10dp"
     tools:context=".LoginActivity">
 
-
     <TextView
         android:id="@+id/usernameText"
         android:layout_width="match_parent"

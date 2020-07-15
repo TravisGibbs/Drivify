@@ -22,7 +22,7 @@ import com.parse.ParseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final String Tag = "main";
+    private static final String Tag = "LoginActivity";
     private TextView userText;
     private EditText passTextEdit;
     private Button loginButton;

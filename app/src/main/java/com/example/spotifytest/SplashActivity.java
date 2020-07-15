@@ -20,14 +20,14 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private SharedPreferences.Editor editor;
-    private SharedPreferences msharedPreferences;
-    private RequestQueue queue;
     private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
     private static final String REDIRECT_URI = "https://developer.spotify.com/dashboard";
     private static final int REQUEST_CODE = 1337;
     private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-modify-public,playlist-modify-private";
-    Button spotifyButton;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences msharedPreferences;
+    private RequestQueue queue;
+    private Button spotifyButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

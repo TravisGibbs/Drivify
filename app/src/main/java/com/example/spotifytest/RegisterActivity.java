@@ -32,18 +32,18 @@ import java.io.File;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    public static final String Tag = "registerAct";
-    Button takePhoto;
-    Button registerButton;
-    ImageView imageTaken;
-    TextView userText;
-    EditText passTextEdit;
-    public static final int  CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
-    public String photoFileName = "photo.jpg";
+    public static final String Tag = "RegisterActivity";
+    private String photoFileName = "photo.jpg";
+    private static final int  CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
+    private Button takePhoto;
+    private Button registerButton;
+    private ImageView imageTaken;
+    private TextView userText;
+    private EditText passTextEdit;
     private File photoFile;
-    ProgressBar progressBar;
-    LinearLayout linearLayout;
-    public String userID;
+    private ProgressBar progressBar;
+    private LinearLayout linearLayout;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser(String userName, String passText){
-        Log.i(Tag,"registering user: "+userName);
+        Log.i(Tag,"registering user: " + userName);
 
         _User user = new _User();
         user.setUsername(userName);

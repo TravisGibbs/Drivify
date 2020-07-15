@@ -22,12 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlaylistService {
-    private final RelativeLayout relativeLayout;
+
+    private final static String Tag = "PlaylistService";
+    private RelativeLayout relativeLayout;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
-    public final static String Tag = "PlaylistService";
-    public String playlistID;
-    public String playlistExternalLink;
+    private String playlistID;
+    private String playlistExternalLink;
 
     public PlaylistService(Context context, RelativeLayout relativeLayout) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -142,4 +143,9 @@ public class PlaylistService {
         Log.i(Tag,endpoint);
         return endpoint;
     }
+
+    public String getPlaylistExternalLink() {
+        return playlistExternalLink;
+    }
+
 }

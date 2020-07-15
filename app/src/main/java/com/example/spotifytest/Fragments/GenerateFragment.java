@@ -65,10 +65,10 @@ public class GenerateFragment extends Fragment {
     private PlaylistService playlistService;
     private ArrayList<SongFull> allTracks;
     private SongsViewModel viewModel;
-    public Place origin;
-    public Place destination;
-    public int time = 0;
-    public boolean clickFromOriginText = true;
+    private Place origin;
+    private Place destination;
+    private int time = 0;
+    private boolean clickFromOriginText = true;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -154,7 +154,7 @@ public class GenerateFragment extends Fragment {
     }
 
     private void goToPlaylist(){
-        String URL = playlistService.playlistExternalLink;
+        String URL = playlistService.getPlaylistExternalLink();
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -165,6 +165,7 @@ public class GenerateFragment extends Fragment {
     private void postPlaylist(){
         if(time > 0){
             allTracks = songService.getSongFulls();
+
             viewModel.setSongList(allTracks);
             playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
@@ -177,6 +178,10 @@ public class GenerateFragment extends Fragment {
         for (SongSimplified songSimplified : allTracks) {
             System.out.println(songSimplified.getName());
         }
+    }
+
+    public void chooseSongs(ArrayList<SongFull> songList){
+
     }
 
     @Override
@@ -206,7 +211,7 @@ public class GenerateFragment extends Fragment {
     public void getDistance(Place a, Place b){
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
-                + b.getId() +"&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
+                + b.getId() + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
             @Override
@@ -222,7 +227,7 @@ public class GenerateFragment extends Fragment {
                     if(temp.contains("h")){
                         for(int i=0; i<temp.length();i++){
                             if(temp.charAt(i) == ' '){
-                                minutes = Integer.parseInt(temp.substring(0, i))*60;
+                                minutes = Integer.parseInt(temp.substring(0, i)) * 60;
                             }
                             if(temp.charAt(i) == 's'){
                                 if(temp.contains("m")){
@@ -243,12 +248,12 @@ public class GenerateFragment extends Fragment {
                     time = minutes*60000;
 
                     Log.i(Tag, "totak ms " + String.valueOf(time));
-                    int amountOfSongs = time/120000;
+                    int amountOfSongs = time / 100000;
 
-                    amountOfSongs = amountOfSongs +5;
-                    if(amountOfSongs>50){
+                    amountOfSongs = amountOfSongs + 5;
+                    if(amountOfSongs > 50){
                         Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-                        amountOfSongs =50;
+                        amountOfSongs = 50;
                     }
 
                     allTracks = getTracks(amountOfSongs);
@@ -276,5 +281,4 @@ public class GenerateFragment extends Fragment {
         animationButtonRight.start();
         animationButtonUp.start();
     }
-
 }

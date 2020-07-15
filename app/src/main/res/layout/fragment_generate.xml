@@ -60,7 +60,6 @@
         android:id="@+id/makePlaylistButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
@@ -74,7 +73,6 @@
         android:id="@+id/goToButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
@@ -128,6 +126,5 @@
             android:visibility="visible"
             tools:visibility="visible" />
     </RadioGroup>
-
 
 </RelativeLayout>

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class PlaylistFragment extends Fragment {
 
-  private static final String Tag = "listFragment";
+  private static final String Tag = "PlaylistFragment";
   private ArrayList<SongFull> allSongs = new ArrayList<>();
   private SongsViewModel viewModel;
   private RecyclerView rvPlaylist;
@@ -43,9 +43,9 @@ public class PlaylistFragment extends Fragment {
     errorText = view.findViewById(R.id.errorText);
     SongsViewModel viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     allSongs = viewModel.getSongList();
-    if(allSongs.size()>0) {
+    if(allSongs.size() > 0) {
       errorText.setVisibility(View.GONE);
-      linearLayoutManager = new LinearLayoutManager(getContext());
+      linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
       rvPlaylist.setAdapter(playlistAdapter);
       rvPlaylist.setLayoutManager(linearLayoutManager);
@@ -61,7 +61,6 @@ public class PlaylistFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
     return inflater.inflate(R.layout.fragment_list, container, false);
   }
 

@@ -24,11 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SongService {
+
+    private static final String Tag = "SongService";
     private ArrayList<SongFull> songFulls = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
-    public static final String Tag = "SongService";
-    public RelativeLayout relativeLayout;
+    private RelativeLayout relativeLayout;
 
     public SongService(Context context, RelativeLayout relativeLayout) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -159,7 +160,7 @@ public class SongService {
     }
 
     private String getURLforTrackDetails(SongFull songFull) {
-        return("https://api.spotify.com/v1/audio-features/" +songFull.getId());
+        return("https://api.spotify.com/v1/audio-features/" + songFull.getId());
     }
 
     public void addSongToLibrary(SongSimplified songSimplified) {

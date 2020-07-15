@@ -67,7 +67,5 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         Glide.with(context).load(song.getAlbum().getImages().get(0).getUrl()).into(albumImage);
       }
     }
-
   }
-
 }
