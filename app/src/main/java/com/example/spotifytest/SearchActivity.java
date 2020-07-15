@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -57,7 +58,17 @@ public class SearchActivity extends AppCompatActivity {
     searchObjects = new ArrayList<>();
     rvSearch = findViewById(R.id.rvSearch);
     searchText = findViewById(R.id.searchBar);
-    searchAdapter = new SearchAdapter(searchObjects, this);
+    SearchAdapter.OnClickListener onClickListener = new SearchAdapter.OnClickListener() {
+      @Override
+      public void onItemClicked(int position, String id, Boolean isSong) {
+        Intent intent=new Intent();
+        intent.putExtra("id",id);
+        intent.putExtra("isSong", isSong);
+        setResult(2,intent);
+        finish();//finishing activity
+      }
+    };
+    searchAdapter = new SearchAdapter(searchObjects, this, onClickListener);
     linearLayoutManager = new LinearLayoutManager(this);
     rvSearch.setAdapter(searchAdapter);
     rvSearch.setLayoutManager(linearLayoutManager);
@@ -72,7 +83,7 @@ public class SearchActivity extends AppCompatActivity {
         getSearchObjects(new UserService.VolleyCallBack() {
           @Override
           public void onSuccess() {
-            Log.i(Tag,"succ");
+            Log.i(Tag, "Text searched");
           }
         },searchText.getText().toString());
       }
@@ -81,6 +92,7 @@ public class SearchActivity extends AppCompatActivity {
       public void afterTextChanged(Editable editable) {
       }
     });
+
   }
 
   public void getSearchObjects(final UserService.VolleyCallBack callBack, String q) {

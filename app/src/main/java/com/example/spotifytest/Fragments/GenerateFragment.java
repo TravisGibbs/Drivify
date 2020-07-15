@@ -283,7 +283,9 @@ public class GenerateFragment extends Fragment {
         }
         if(requestCode==2)
         {
-            Log.i(Tag, String.valueOf(resultCode));
+            String selectedId =data.getStringExtra("id");
+            Boolean isSong = data.getBooleanExtra("isSong", false);
+            Log.i(Tag,"search finished id: " + selectedId +  " isSong: " + isSong);
         }
     }
 
