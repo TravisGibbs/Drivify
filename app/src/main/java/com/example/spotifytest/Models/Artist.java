@@ -1,15 +1,19 @@
 package com.example.spotifytest.Models;
 
+import java.util.ArrayList;
+
 public class Artist {
 
     private String id;
     private String name;
     private String uri;
+    private ArrayList<SpotifyImages> images;
 
-    public Artist(String id, String name,  String uri){
+    public Artist(String id, String name,  String uri, ArrayList<SpotifyImages> images){
         this.id =id;
         this.name=name;
         this.uri =uri;
+        this.images = images;
     }
 
     public String getId() {
@@ -35,5 +39,14 @@ public class Artist {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+    public ArrayList<SpotifyImages> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<SpotifyImages> images) {
+        this.images = images;
+    }
+
 
 }

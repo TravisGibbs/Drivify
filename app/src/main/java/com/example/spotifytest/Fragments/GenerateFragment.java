@@ -26,6 +26,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.R;
+import com.example.spotifytest.SearchActivity;
 import com.example.spotifytest.Services.PlaylistService;
 import com.example.spotifytest.Services.SongService;
 import com.example.spotifytest.SongsViewModel;
@@ -66,6 +67,7 @@ public class GenerateFragment extends Fragment {
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
     private Button findDistanceButton;
+    private Button searchButton;
     private RadioButton radioIncrease;
     private RadioButton radioDecrease;
     private RadioButton radioDance;
@@ -87,17 +89,18 @@ public class GenerateFragment extends Fragment {
         PlacesClient placesClient = Places.createClient(view.getContext());
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
         playlistService = new PlaylistService(view.getContext(), relativeLayout);
-        songService = new SongService(getContext(), relativeLayout);
+        songService = new SongService(view.getContext(), relativeLayout);
         destText = view.findViewById(R.id.destinationTest);
         originText = view.findViewById(R.id.originText);
         findDistanceButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
+        searchButton = view.findViewById(R.id.searchButton);
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
         radioDance = view.findViewById(R.id.radioDance);
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("SPOTIFY", 0);
+        SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +135,7 @@ public class GenerateFragment extends Fragment {
                 clickFromOriginText = true;
                 List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                        .build(getContext());
+                        .build(view.getContext());
                 startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
@@ -146,6 +149,13 @@ public class GenerateFragment extends Fragment {
                 else{
                     Snackbar.make(relativeLayout, "Select a route!", Snackbar.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startSearchActivity();
             }
         });
 
@@ -271,6 +281,10 @@ public class GenerateFragment extends Fragment {
             }
             return;
         }
+        if(requestCode==2)
+        {
+            Log.i(Tag, String.valueOf(resultCode));
+        }
     }
 
     public void getDistance(Place a, Place b){
@@ -354,4 +368,10 @@ public class GenerateFragment extends Fragment {
         }
         Log.i(Tag, "Radio button selected: " + radioButtonSelected);
     }
+
+    public void startSearchActivity(){
+        Intent intent = new Intent(getContext(), SearchActivity.class);
+        startActivityForResult(intent, 2);
+    }
+
 }
