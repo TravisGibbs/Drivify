@@ -196,4 +196,70 @@ public class SongService {
         return ids;
     }
 
+    public ArrayList<SongFull> getSeedTracks(UserService.VolleyCallBack callBack, ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
+        String url = getURLforSeedTracks(customIdSongs, customIdArtists, amount);
+        ArrayList<SongSimplified> songSimplifieds = new ArrayList<>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, response -> {
+                    Gson gson = new Gson();
+                    JSONArray jsonArray = response.optJSONArray("tracks");
+                    for (int n = 0; n < jsonArray.length(); n++) {
+                        try {
+                            JSONObject object = jsonArray.getJSONObject(n);
+                            SongSimplified songSimplified = gson.fromJson(object.toString(), SongSimplified.class);
+                            songSimplifieds.add(songSimplified);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    songFulls =getTracks(songSimplifieds, callBack);
+                    callBack.onSuccess();
+                }, error -> {
+                    // TODO: Handle error
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        queue.add(jsonObjectRequest);
+        return songFulls;
+    }
+
+
+    private String getURLforSeedTracks(ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
+        String URL = String.format("https://api.spotify.com/v1/recommendations?limit=%s&",String.valueOf(amount));
+        if(!customIdArtists.isEmpty()){
+            URL += "seed_artists=";
+            for(int i = 0;i < customIdArtists.size(); i++){
+                if(i == 0){
+                    URL += customIdArtists.get(0);
+                }
+                else{
+                    URL += "," + customIdArtists.get(i);
+                }
+            }
+            if(!customIdSongs.isEmpty()){
+                URL += "&";
+            }
+        }
+        if(!customIdSongs.isEmpty()){
+            URL += "seed_tracks=";
+            for(int i = 0;i < customIdSongs.size(); i++){
+                if(i == 0){
+                    URL += customIdSongs.get(0);
+                }
+                else{
+                    URL += "," + customIdSongs.get(i);
+                }
+            }
+        }
+        Log.i(Tag,URL);
+        return URL;
+    }
 }

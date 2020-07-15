@@ -80,6 +80,8 @@ public class GenerateFragment extends Fragment {
     private Place destination;
     private int time = 0;
     private boolean clickFromOriginText = true;
+    private ArrayList<String> customIdSongs;
+    private ArrayList<String> customIdArtists;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -102,6 +104,8 @@ public class GenerateFragment extends Fragment {
         radioDance = view.findViewById(R.id.radioDance);
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
+        customIdArtists = new ArrayList<>();
+        customIdSongs = new ArrayList<>();
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,9 +192,15 @@ public class GenerateFragment extends Fragment {
     }
 
     private ArrayList<SongFull> getTracks(int amount) {
-        songService.getRecentlyPlayedTracks(() -> {
-            allTracks = songService.getSongFulls();
-        }, amount);
+        if(customIdSongs.isEmpty() && customIdArtists.isEmpty()) {
+            songService.getRecentlyPlayedTracks(() -> {
+                allTracks = songService.getSongFulls();
+            }, amount);
+        } else {
+            songService.getSeedTracks(() -> {
+                allTracks = songService.getSongFulls();
+            }, customIdSongs,customIdArtists, amount);
+        }
         return allTracks;
     }
 
@@ -281,11 +291,28 @@ public class GenerateFragment extends Fragment {
             }
             return;
         }
-        if(requestCode==2)
+        if(requestCode == 2)
         {
-            String selectedId =data.getStringExtra("id");
-            Boolean isSong = data.getBooleanExtra("isSong", false);
-            Log.i(Tag,"search finished id: " + selectedId +  " isSong: " + isSong);
+            if((customIdArtists.size() + customIdSongs.size())>4) {
+                if(!customIdArtists.isEmpty()){
+                    customIdArtists.remove(0);
+                }
+                else{
+                    customIdSongs.remove(0);
+                }
+            }
+            if(data.getBooleanExtra("isSong", false)){
+                customIdSongs.add(data.getStringExtra("id"));
+            }
+            else{
+                customIdArtists.add(data.getStringExtra("id"));
+            }
+            for(int i = 0; i<customIdArtists.size();i++){
+                Log.i(Tag,customIdArtists.get(i) + " ");
+            }
+            for(int i = 0; i<customIdSongs.size();i++){
+                Log.i(Tag,customIdSongs.get(i) + " ");
+            }
         }
     }
 

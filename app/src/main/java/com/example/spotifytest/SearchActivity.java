@@ -104,18 +104,18 @@ public class SearchActivity extends AppCompatActivity {
               JSONArray artists = new JSONArray();
               JSONArray songs = new JSONArray();
               try {
-                songs = response.getJSONObject("tracks").getJSONArray("items");
-                for(int i = 0; i < songs.length();i++){
-                  JSONObject jsonObject = (JSONObject) songs.get(i);
-                  SongFull song = gson.fromJson(jsonObject.toString(), SongFull.class);
-                  SearchObject searchObject = new SearchObject(song, null);
-                  searchObjects.add(searchObject);
-                }
                 artists = response.getJSONObject("artists").getJSONArray("items");
                 for(int i = 0; i < artists.length();i++){
                   JSONObject jsonObject = (JSONObject) artists.get(i);
                   Artist artist = gson.fromJson(jsonObject.toString(), Artist.class);
                   SearchObject searchObject = new SearchObject(null, artist);
+                  searchObjects.add(searchObject);
+                }
+                songs = response.getJSONObject("tracks").getJSONArray("items");
+                for(int i = 0; i < songs.length();i++){
+                  JSONObject jsonObject = (JSONObject) songs.get(i);
+                  SongFull song = gson.fromJson(jsonObject.toString(), SongFull.class);
+                  SearchObject searchObject = new SearchObject(song, null);
                   searchObjects.add(searchObject);
                 }
               } catch (JSONException e) {
