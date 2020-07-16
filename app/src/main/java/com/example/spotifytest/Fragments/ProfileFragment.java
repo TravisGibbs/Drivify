@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.spotifytest.LoginActivity;
 import com.example.spotifytest.Models._User;
+import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.parse.ParseUser;
 
@@ -29,6 +33,7 @@ public class ProfileFragment extends Fragment {
     private TextView userView;
     private TextView drivesView;
     private ImageView profileImage;
+    private RelativeLayout relativeLayout;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class ProfileFragment extends Fragment {
         drivesView = view.findViewById(R.id.driveView);
         userView = view.findViewById(R.id.usernameProfView);
         profileImage = view.findViewById(R.id.profileView);
+        relativeLayout = view.findViewById(R.id.profileLayout);
 
         Glide.with(view.getContext()).load(user.getImage().getUrl()).into(profileImage);
         userView.setText(ParseUser.getCurrentUser().getUsername());
@@ -50,7 +56,18 @@ public class ProfileFragment extends Fragment {
                 goToLogin();
             }
         });
+
+        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeRight();
+                FragmentManager fragmentManager = getFragmentManager();
+                Fragment fragment = new GenerateFragment();
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+            }
+        });
     }
+
 
     public void goToLogin(){
         Intent intent = new Intent(getContext(), LoginActivity.class);

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,9 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.spotifytest.Adapters.PlaylistAdapter;
 import com.example.spotifytest.Models.SongFull;
+import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.SongsViewModel;
 
@@ -41,6 +44,7 @@ public class PlaylistFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     rvPlaylist = view.findViewById(R.id.rvSongs);
     errorText = view.findViewById(R.id.errorText);
+    relativeLayout = view.findViewById(R.id.playlistLayout);
     SongsViewModel viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     allSongs = viewModel.getSongList();
     if(allSongs.size() > 0) {
@@ -51,7 +55,18 @@ public class PlaylistFragment extends Fragment {
       rvPlaylist.setLayoutManager(linearLayoutManager);
       playlistAdapter.notifyDataSetChanged();
     }
+
+    relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
+      @Override
+      public void onSwipeRight() {
+        super.onSwipeRight();
+       FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = new GenerateFragment();
+        fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+      }
+    });
   }
+
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

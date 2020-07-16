@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -21,11 +22,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
+import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.SearchActivity;
 import com.example.spotifytest.Services.PlaylistService;
@@ -189,6 +192,24 @@ public class GenerateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 onRadioButtonClicked(view);
+            }
+        });
+
+        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                FragmentManager fragmentManager = getFragmentManager();
+                Fragment fragment = new PlaylistFragment();
+
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+            }
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                FragmentManager fragmentManager = getFragmentManager();
+                Fragment fragment = new ProfileFragment();
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
             }
         });
     }
