@@ -43,7 +43,7 @@ public class SongService {
 
     public ArrayList<SongFull> getRecentlyPlayedTracks(final UserService.VolleyCallBack callBack , int amount) {
         ArrayList<SongSimplified> songSimplifieds = new ArrayList<>();
-        String endpoint = String.format("https://api.spotify.com/v1/me/player/recently-played?limit=%s",amount );
+        String endpoint = String.format("https://api.spotify.com/v1/me/player/recently-played?limit=%s", amount);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, endpoint, null, response -> {
                     Gson gson = new Gson();
@@ -59,7 +59,7 @@ public class SongService {
                         }
                     }
 
-                    songFulls =getTracks(songSimplifieds, callBack);
+                    songFulls = getTracks(songSimplifieds, callBack);
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -213,7 +213,7 @@ public class SongService {
                         }
                     }
 
-                    songFulls =getTracks(songSimplifieds, callBack);
+                    songFulls = getTracks(songSimplifieds, callBack);
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -233,33 +233,32 @@ public class SongService {
 
 
     private String getURLforSeedTracks(ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
-        String URL = String.format("https://api.spotify.com/v1/recommendations?limit=%s&",String.valueOf(amount));
-        if(!customIdArtists.isEmpty()){
-            URL += "seed_artists=";
-            for(int i = 0;i < customIdArtists.size(); i++){
-                if(i == 0){
-                    URL += customIdArtists.get(0);
-                }
-                else{
-                    URL += "," + customIdArtists.get(i);
+        StringBuilder url = new StringBuilder();
+        url.append("https://api.spotify.com/v1/recommendations?limit=").append(amount).append("&");
+        if (!customIdArtists.isEmpty()) {
+            url.append("seed_artists=");
+            for (int i = 0;i < customIdArtists.size(); i++) {
+                if (i == 0) {
+                    url.append(customIdArtists.get(0));
+                } else {
+                    url.append(",").append(customIdArtists.get(i));
                 }
             }
-            if(!customIdSongs.isEmpty()){
-                URL += "&";
-            }
-        }
-        if(!customIdSongs.isEmpty()){
-            URL += "seed_tracks=";
-            for(int i = 0;i < customIdSongs.size(); i++){
-                if(i == 0){
-                    URL += customIdSongs.get(0);
-                }
-                else{
-                    URL += "," + customIdSongs.get(i);
-                }
+            if (!customIdSongs.isEmpty()) {
+                url.append("&");
             }
         }
-        Log.i(Tag,URL);
-        return URL;
+        if (!customIdSongs.isEmpty()) {
+            url.append("seed_tracks=");
+            for (int i = 0;i < customIdSongs.size(); i++) {
+                if (i == 0) {
+                    url.append(customIdSongs.get(0));
+                } else {
+                    url.append(",").append(customIdSongs.get(i));
+                }
+            }
+        }
+        Log.i(Tag, "seed tracks url: " + url);
+        return url.toString();
     }
 }

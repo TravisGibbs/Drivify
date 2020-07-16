@@ -42,13 +42,13 @@ public class PlaylistService {
         queue.add(jsonObjectRequest);
     }
 
-    public void addSong(ArrayList<SongFull> songSimplifieds){
+    public void addSong(ArrayList<SongFull> songSimplifieds) {
         JSONObject payload = preparePutPayloadSongPost(songSimplifieds);
         JsonObjectRequest jsonObjectRequest = SongPost(payload);
         queue.add(jsonObjectRequest);
     }
 
-    private JSONObject preparePutPayloadPlaylistPost(String song){
+    private JSONObject preparePutPayloadPlaylistPost(String song) {
         JSONObject playlist = new JSONObject();
         try {
             playlist.put("name", song);
@@ -85,7 +85,7 @@ public class PlaylistService {
         }, error -> {
         }) {
             @Override
-            public Map<String, String> getHeaders(){
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 String token = sharedPreferences.getString("token", "");
                 String auth = "Bearer " + token;
@@ -109,7 +109,7 @@ public class PlaylistService {
         }) {
 
             @Override
-            public Map<String, String> getHeaders(){
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 String token = sharedPreferences.getString("token", "");
                 String auth = "Bearer " + token;
@@ -119,7 +119,7 @@ public class PlaylistService {
         };
     }
 
-    public void onSuccSong(JSONObject response) throws JSONException{
+    public void onSuccSong(JSONObject response) throws JSONException {
         Log.i(Tag,"song posted");
     }
 
@@ -130,7 +130,7 @@ public class PlaylistService {
         ArrayList<SongFull> newSongFull = new ArrayList<>();
         int i = 0;
         int sum = 0;
-        while(sum<time){
+        while(sum < time && i < songSimplifieds.size()) {
             newSongFull.add(songSimplifieds.get(i));
             sum += songSimplifieds.get(i).getDuration_ms();
             i++;

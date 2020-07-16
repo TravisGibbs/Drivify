@@ -1,8 +1,6 @@
 package com.example.spotifytest.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,25 +13,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.spotifytest.Models.SearchObject;
 import com.example.spotifytest.R;
-import com.example.spotifytest.SearchActivity;
 
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
   public interface OnClickListener {
-    void onItemClicked(int position, String id, Boolean isSong);
+    void onItemClicked(int position, String id, String name, Boolean isSong);
   }
 
   private static final String Tag = "SearchAdapter";
   private List<SearchObject> searchObjectsList;
   private Context context;
-  private OnClickListener ClickListener;
+  private OnClickListener onClickListener;
 
-  public SearchAdapter(List<SearchObject> searchObjects, Context context, OnClickListener onClickListener){
+  public SearchAdapter(List<SearchObject> searchObjects, Context context, OnClickListener onClickListener) {
     this.searchObjectsList = searchObjects;
     this.context = context;
-    this.ClickListener = onClickListener;
+    this.onClickListener = onClickListener;
   }
 
   @NonNull
@@ -46,7 +43,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
   @Override
   public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
     SearchObject searchObject = searchObjectsList.get(position);
-    if(getItemCount() > 0) {
+    if (getItemCount() > 0) {
       holder.bind(searchObject);
     }
   }
@@ -69,31 +66,32 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
       albumImage = itemView.findViewById(R.id.albumArt);
     }
 
-    public void bind(SearchObject searchObject){
-      if (searchObject.getArtist() != null){
+    public void bind(SearchObject searchObject) {
+      if (searchObject.getArtist() != null) {
         topText.setText(searchObject.getArtist().getName());
         bottomText.setVisibility(View.GONE);
-        if(searchObject.getArtist().getImages().size() > 0) {
+        if (searchObject.getArtist().getImages().size() > 0) {
           Glide.with(context).load(searchObject.getArtist().getImages().get(0).getUrl()).into(albumImage);
         }
         itemView.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
-            ClickListener.onItemClicked(getAdapterPosition(), searchObject.getArtist().getId(), false);
+            onClickListener.onItemClicked(getAdapterPosition(), searchObject.getArtist().getId(),
+                    searchObject.getArtist().getName() , false);
           }
         });
       }
-      if (searchObject.getSong() != null){
+      if (searchObject.getSong() != null) {
         topText.setText(searchObject.getSong().getName());
         bottomText.setText(searchObject.getSong().getArtists().get(0).getName());
         bottomText.setVisibility(View.VISIBLE);
-        if(searchObject.getSong().getAlbum().getImages().size() > 0) {
+        if (searchObject.getSong().getAlbum().getImages().size() > 0) {
           Glide.with(context).load(searchObject.getSong().getAlbum().getImages().get(0).getUrl()).into(albumImage);
         }
         itemView.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
-            ClickListener.onItemClicked(getAdapterPosition(),searchObject.getSong().getArtists().get(0).getId(),true);
+            onClickListener.onItemClicked(getAdapterPosition(), searchObject.getSong().getId(), searchObject.getSong().getName() , true);
           }
         });
       }

@@ -5,21 +5,21 @@
     android:id="@+id/generateFragmentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/searchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/radioGroup"
+        android:layout_below="@+id/timeText"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="20dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="40dp"
         android:background="@color/colorAccent"
         android:padding="10dp"
         android:text="Search for a song or artist"
@@ -52,10 +52,11 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="50dp"
+        android:focusable="false"
+        android:inputType="none"
         android:text="@string/find_a_destination"
         android:textAlignment="center"
-        android:inputType="none"
-        android:focusable="false"
+        android:textColor="@color/places_ui_default_primary_dark"
         android:textSize="24sp" />
 
     <EditText
@@ -66,12 +67,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="50dp"
         android:focusable="false"
         android:inputType="none"
         android:text="@string/find_a_origin"
         android:textAlignment="center"
+        android:textColor="@color/places_ui_default_primary_dark"
         android:textSize="24sp" />
 
     <Button
@@ -106,18 +108,20 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/destinationTest"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:textColor="@color/places_ui_default_primary_dark"
+        android:visibility="gone" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/destinationTest"
+        android:layout_above="@+id/distanceButton"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:visibility="visible"
         tools:visibility="visible">
 
@@ -126,6 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Hype me up!"
+            android:textColor="@color/places_ui_default_primary_dark"
             android:textSize="24sp" />
 
         <RadioButton
@@ -133,6 +138,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Calm me down."
+            android:textColor="@color/places_ui_default_primary_dark"
             android:textSize="24sp" />
 
         <RadioButton
@@ -140,9 +146,24 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Make me dance!"
+            android:textColor="@color/places_ui_default_primary_dark"
             android:textSize="24sp"
             android:visibility="visible"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </RadioGroup>
+
+    <TextView
+        android:id="@+id/searchObjects"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/timeText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="20dp"
+        android:text="Searched Artists and Songs:"
+        android:textColor="@color/places_ui_default_primary_dark"
+        android:textSize="18sp" />
 
 </RelativeLayout>

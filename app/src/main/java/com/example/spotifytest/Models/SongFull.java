@@ -62,14 +62,12 @@ public class SongFull extends SongSimplified {
         public int compare(SongFull songFull, SongFull t1) {
             float temp = songFull.getDance() - t1.getDance();
             if (temp < 0) {
-                return (-1);
+                return -1;
             }
             if (temp > 0) {
                 return 1;
             }
-            else {
-                return 0;
-            }
+            return 0;
         }
         };
 
@@ -79,14 +77,12 @@ public class SongFull extends SongSimplified {
     public int compare(SongFull songFull, SongFull t1) {
         float temp = t1.getEnergy() - songFull.getEnergy();
         if (temp < 0) {
-            return (-1);
+            return -1;
         }
         if (temp > 0) {
             return 1;
         }
-        else {
-            return 0;
-        }
+        return 0;
         }
     };
 

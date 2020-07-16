@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -62,12 +63,14 @@ public class GenerateFragment extends Fragment {
     private static final String Tag = "generateFrag";
     private String radioButtonSelected = "";
     private TextView timeView;
+    private TextView searchResults;
     private EditText destText;
     private EditText originText;
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
     private Button findDistanceButton;
     private Button searchButton;
+    private RadioGroup radioGroup;
     private RadioButton radioIncrease;
     private RadioButton radioDecrease;
     private RadioButton radioDance;
@@ -82,6 +85,7 @@ public class GenerateFragment extends Fragment {
     private boolean clickFromOriginText = true;
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
+    private StringBuilder currentSearchedObjects;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -96,9 +100,11 @@ public class GenerateFragment extends Fragment {
         originText = view.findViewById(R.id.originText);
         findDistanceButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
+        searchResults = view.findViewById(R.id.searchObjects);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
         searchButton = view.findViewById(R.id.searchButton);
+        radioGroup = view.findViewById(R.id.radioGroup);
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
         radioDance = view.findViewById(R.id.radioDance);
@@ -106,6 +112,8 @@ public class GenerateFragment extends Fragment {
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
         customIdArtists = new ArrayList<>();
         customIdSongs = new ArrayList<>();
+        currentSearchedObjects = new StringBuilder();
+        currentSearchedObjects.append("Searched Artists and Songs:");
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,7 +200,7 @@ public class GenerateFragment extends Fragment {
     }
 
     private ArrayList<SongFull> getTracks(int amount) {
-        if(customIdSongs.isEmpty() && customIdArtists.isEmpty()) {
+        if (customIdSongs.isEmpty() && customIdArtists.isEmpty()) {
             songService.getRecentlyPlayedTracks(() -> {
                 allTracks = songService.getSongFulls();
             }, amount);
@@ -204,7 +212,7 @@ public class GenerateFragment extends Fragment {
         return allTracks;
     }
 
-    private void goToPlaylist(){
+    private void goToPlaylist() {
         String URL = playlistService.getPlaylistExternalLink();
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
@@ -213,8 +221,9 @@ public class GenerateFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void postPlaylist(){
+    private void postPlaylist() {
         if(time > 0){
+            radioGroup.setVisibility(View.GONE);
             allTracks = songService.getSongFulls();
             allTracks = chooseSongs(allTracks);
             viewModel.setSongList(allTracks);
@@ -224,9 +233,6 @@ public class GenerateFragment extends Fragment {
         else{
             Snackbar.make(relativeLayout, "Please choose a route!", Snackbar.LENGTH_SHORT).show();
             return;
-        }
-        for (SongSimplified songSimplified : allTracks) {
-            System.out.println(songSimplified.getName());
         }
     }
 
@@ -239,34 +245,22 @@ public class GenerateFragment extends Fragment {
         amountOfSongs = amountOfSongs + 2;
         if(amountOfSongs > 50){
             Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-            amountOfSongs = 50;
+            amountOfSongs = 30;
         }
-        if(radioButtonSelected.equals("Dance")){
+        if(radioButtonSelected.equals("Dance")) {
             Collections.sort(songList, SongFull.SongDanceComparator);
-            for(int i = 0; i<amountOfSongs;i++){
-                newSongList.add(songList.get(i));
-            }
-            return(newSongList);
+            return(addKSongsFromList(newSongList, songList, amountOfSongs));
         }
-        if(radioButtonSelected.equals("Increase")){
+        if(radioButtonSelected.equals("Increase")) {
             Collections.sort(songList, SongFull.SongEnergyComparator);
-            for(int i = 0; i<amountOfSongs;i++){
-                newSongList.add(songList.get(i));
-            }
-            return(newSongList);
+            return(addKSongsFromList(newSongList, songList, amountOfSongs));
         }
-        if(radioButtonSelected.equals("Increase")){
+        if(radioButtonSelected.equals("Increase")) {
             Collections.sort(songList, SongFull.SongEnergyComparator);
             Collections.reverse(songList);
-            for(int i = 0; i<amountOfSongs;i++){
-                newSongList.add(songList.get(i));
-            }
-            return(newSongList);
+            return(addKSongsFromList(newSongList, songList, amountOfSongs));
         }
-        for(int i = 0; i<amountOfSongs;i++) {
-            newSongList.add(songList.get(i));
-        }
-        return(newSongList);
+        return(addKSongsFromList(newSongList, songList, amountOfSongs));
     }
 
     @Override
@@ -291,32 +285,62 @@ public class GenerateFragment extends Fragment {
             }
             return;
         }
-        if(requestCode == 2)
-        {
-            if((customIdArtists.size() + customIdSongs.size())>4) {
-                if(!customIdArtists.isEmpty()){
+        if (requestCode == 2) {
+            if(resultCode == 0){
+                return;
+            }
+            setSearchResults(data);
+            if ((customIdArtists.size() + customIdSongs.size()) > 4) {
+                if (!customIdArtists.isEmpty()) {
                     customIdArtists.remove(0);
-                }
-                else{
+
+                } else {
                     customIdSongs.remove(0);
                 }
             }
-            if(data.getBooleanExtra("isSong", false)){
+            if (data.getBooleanExtra("isSong", false)) {
                 customIdSongs.add(data.getStringExtra("id"));
-            }
-            else{
+            } else {
                 customIdArtists.add(data.getStringExtra("id"));
             }
-            for(int i = 0; i<customIdArtists.size();i++){
+            for (int i = 0; i < customIdArtists.size();i++) {
                 Log.i(Tag,customIdArtists.get(i) + " ");
             }
-            for(int i = 0; i<customIdSongs.size();i++){
+            for (int i = 0; i < customIdSongs.size();i++) {
                 Log.i(Tag,customIdSongs.get(i) + " ");
             }
         }
     }
 
+    public ArrayList<SongFull> addKSongsFromList(ArrayList<SongFull> newSongList, ArrayList<SongFull> songList, int k){
+        for(int i = 0; i < (k - 1);i++){
+            newSongList.add(songList.get(i));
+        }
+        return(newSongList);
+    }
+
+    public void setSearchResults(Intent data) {
+        if ((customIdArtists.size() + customIdSongs.size()) > 4) {
+            int endOfLastObjectIndex = 0;
+            for (int i = 0; i < currentSearchedObjects.length(); i++) {
+                if (currentSearchedObjects.charAt(i) == ',') {
+                    endOfLastObjectIndex = i;
+                    break;
+                }
+            }
+            currentSearchedObjects.replace(28, endOfLastObjectIndex, data.getStringExtra("name") + " ");
+        } else {
+            if ((customIdArtists.size() + customIdSongs.size()) < 1) {
+                currentSearchedObjects.append(" ").append(data.getStringExtra("name")).append(" ");
+            } else {
+                currentSearchedObjects.append(", ").append(data.getStringExtra("name")).append(" ");
+            }
+        }
+        searchResults.setText(currentSearchedObjects.toString());
+    }
+
     public void getDistance(Place a, Place b){
+        moveButtonOffScreenRight(searchButton);
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
                 + b.getId() + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
@@ -333,8 +357,8 @@ public class GenerateFragment extends Fragment {
                     String temp = help2.getJSONObject("duration").getString("text");
                     Log.i(Tag,"time to destination " + temp);
                     if(temp.contains("h")){
-                        for(int i=0; i<temp.length();i++){
-                            if(temp.charAt(i) == ' '){
+                        for(int i=0; i<temp.length();i++) {
+                            if(temp.charAt(i) == ' ') {
                                 minutes = Integer.parseInt(temp.substring(0, i)) * 60;
                             }
                             if(temp.charAt(i) == 's'){
@@ -345,10 +369,14 @@ public class GenerateFragment extends Fragment {
                             }
                         }
                     }
-                    if(temp.contains("m")){
+                    if(temp.contains("m")) {
                         for (int i = 1; i < temp.length(); i++) {
-                            if(temp.charAt(i)==' '){
-                                minutes = minutes + Integer.parseInt(temp.substring(0,i));
+                            if(temp.charAt(i) == ' '){
+                                if(temp.charAt(0) == ' '){
+                                    minutes = minutes + Integer.parseInt(temp.substring(1,i));
+                                } else {
+                                    minutes = minutes + Integer.parseInt(temp.substring(0, i));
+                                }
                             }
                         }
                     }
@@ -356,7 +384,9 @@ public class GenerateFragment extends Fragment {
                     time = minutes*60000;
                     allTracks = getTracks(30);
                     startButtonSwap(makePlaylistButton, findDistanceButton);
-                    timeView.setText(temp);
+                    timeView.setText(help2.getJSONObject("duration").getString("text"));
+                    timeView.setVisibility(View.VISIBLE);
+                    searchResults.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -369,13 +399,17 @@ public class GenerateFragment extends Fragment {
         });
     }
 
-    public void startButtonSwap(Button goUpButton, Button goRightButton){
+    public void startButtonSwap(Button goUpButton, Button goRightButton) {
         ObjectAnimator animationButtonUp = ObjectAnimator.ofFloat(goUpButton, "translationY", -200f);
-        ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(goRightButton, "translationX",1800f);
         animationButtonUp.setDuration(2000);
+        moveButtonOffScreenRight(goRightButton);
+        animationButtonUp.start();
+    }
+
+    public void moveButtonOffScreenRight(Button button){
+        ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(button, "translationX",1800f);
         animationButtonRight.setDuration(1500);
         animationButtonRight.start();
-        animationButtonUp.start();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -383,22 +417,25 @@ public class GenerateFragment extends Fragment {
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.radioDance:
-                if(checked)
+                if(checked) {
                     radioButtonSelected = "Dance";
+                }
                 break;
             case R.id.radioIncrease:
-                if(checked)
+                if(checked) {
                     radioButtonSelected = "Increase";
+                }
                 break;
             case R.id.radioDecrease:
-                if(checked)
+                if(checked) {
                     radioButtonSelected = "Decrease";
+                }
                 break;
         }
         Log.i(Tag, "Radio button selected: " + radioButtonSelected);
     }
 
-    public void startSearchActivity(){
+    public void startSearchActivity() {
         Intent intent = new Intent(getContext(), SearchActivity.class);
         startActivityForResult(intent, 2);
     }

@@ -60,10 +60,11 @@ public class SearchActivity extends AppCompatActivity {
     searchText = findViewById(R.id.searchBar);
     SearchAdapter.OnClickListener onClickListener = new SearchAdapter.OnClickListener() {
       @Override
-      public void onItemClicked(int position, String id, Boolean isSong) {
-        Intent intent=new Intent();
-        intent.putExtra("id",id);
+      public void onItemClicked(int position, String id, String name, Boolean isSong) {
+        Intent intent = new Intent();
+        intent.putExtra("id", id);
         intent.putExtra("isSong", isSong);
+        intent.putExtra("name",name);
         setResult(2,intent);
         finish();//finishing activity
       }
@@ -85,7 +86,7 @@ public class SearchActivity extends AppCompatActivity {
           public void onSuccess() {
             Log.i(Tag, "Text searched");
           }
-        },searchText.getText().toString());
+        }, searchText.getText().toString());
       }
 
       @Override
@@ -93,6 +94,16 @@ public class SearchActivity extends AppCompatActivity {
       }
     });
 
+  }
+
+  @Override
+  public void onBackPressed() {
+    Intent intent = new Intent();
+    intent.putExtra("id", "");
+    intent.putExtra("isSong", false);
+    intent.putExtra("name", "");
+    setResult(0,intent);
+    finish();//finishing activity
   }
 
   public void getSearchObjects(final UserService.VolleyCallBack callBack, String q) {
@@ -105,14 +116,14 @@ public class SearchActivity extends AppCompatActivity {
               JSONArray songs = new JSONArray();
               try {
                 artists = response.getJSONObject("artists").getJSONArray("items");
-                for(int i = 0; i < artists.length();i++){
+                for (int i = 0; i < artists.length();i++) {
                   JSONObject jsonObject = (JSONObject) artists.get(i);
                   Artist artist = gson.fromJson(jsonObject.toString(), Artist.class);
                   SearchObject searchObject = new SearchObject(null, artist);
                   searchObjects.add(searchObject);
                 }
                 songs = response.getJSONObject("tracks").getJSONArray("items");
-                for(int i = 0; i < songs.length();i++){
+                for (int i = 0; i < songs.length();i++) {
                   JSONObject jsonObject = (JSONObject) songs.get(i);
                   SongFull song = gson.fromJson(jsonObject.toString(), SongFull.class);
                   SearchObject searchObject = new SearchObject(song, null);

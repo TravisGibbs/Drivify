@@ -47,6 +47,4 @@ public class Artist {
     public void setImages(ArrayList<SpotifyImages> images) {
         this.images = images;
     }
-
-
 }
