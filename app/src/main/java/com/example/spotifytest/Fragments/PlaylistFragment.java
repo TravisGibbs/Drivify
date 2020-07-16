@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,10 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.spotifytest.Adapters.PlaylistAdapter;
+import com.example.spotifytest.MainActivity;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.SongsViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -37,6 +40,7 @@ public class PlaylistFragment extends Fragment {
   private PlaylistAdapter playlistAdapter;
   private RelativeLayout relativeLayout;
   private LinearLayoutManager linearLayoutManager;
+  //private BottomNavigationView bottomNavigationView;
   private TextView errorText;
 
   @Override
@@ -45,6 +49,7 @@ public class PlaylistFragment extends Fragment {
     rvPlaylist = view.findViewById(R.id.rvSongs);
     errorText = view.findViewById(R.id.errorText);
     relativeLayout = view.findViewById(R.id.playlistLayout);
+    //bottomNavigationView = view.findViewById(R.id.bottomNavigation);
     SongsViewModel viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     allSongs = viewModel.getSongList();
     if(allSongs.size() > 0) {
@@ -60,9 +65,8 @@ public class PlaylistFragment extends Fragment {
       @Override
       public void onSwipeRight() {
         super.onSwipeRight();
-       FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = new GenerateFragment();
-        fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+        MainActivity main = (MainActivity) getActivity();
+        main.bottomNavigationView.setSelectedItemId(R.id.generateAction);
       }
     });
   }

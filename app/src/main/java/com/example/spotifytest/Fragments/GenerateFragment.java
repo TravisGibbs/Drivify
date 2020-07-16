@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.example.spotifytest.MainActivity;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.OnSwipeTouchListener;
@@ -41,6 +43,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
@@ -77,6 +80,7 @@ public class GenerateFragment extends Fragment {
     private RadioButton radioIncrease;
     private RadioButton radioDecrease;
     private RadioButton radioDance;
+    private BottomNavigationView bottomNavigationView;
     private RelativeLayout relativeLayout;
     private SongService songService;
     private PlaylistService playlistService;
@@ -111,6 +115,7 @@ public class GenerateFragment extends Fragment {
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
         radioDance = view.findViewById(R.id.radioDance);
+        bottomNavigationView = view.findViewById(R.id.bottomNavigation);
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
         customIdArtists = new ArrayList<>();
@@ -199,17 +204,14 @@ public class GenerateFragment extends Fragment {
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
-                FragmentManager fragmentManager = getFragmentManager();
-                Fragment fragment = new PlaylistFragment();
-
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                MainActivity main = (MainActivity) getActivity();
+                main.bottomNavigationView.setSelectedItemId(R.id.playlistAction);
             }
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
-                FragmentManager fragmentManager = getFragmentManager();
-                Fragment fragment = new ProfileFragment();
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                MainActivity main = (MainActivity) getActivity();
+                main.bottomNavigationView.setSelectedItemId(R.id.profileAction);
             }
         });
     }
