@@ -39,6 +39,14 @@ import com.example.spotifytest.Services.PlaylistService;
 import com.example.spotifytest.Services.SongService;
 import com.example.spotifytest.SongsViewModel;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.dynamic.SupportFragmentWrapper;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -85,12 +93,12 @@ public class GenerateFragment extends Fragment {
     private RadioButton radioIncrease;
     private RadioButton radioDecrease;
     private RadioButton radioDance;
-    private BottomNavigationView bottomNavigationView;
     private RelativeLayout relativeLayout;
     private SongService songService;
     private PlaylistService playlistService;
     private ArrayList<SongFull> allTracks;
     private SongsViewModel viewModel;
+    private GoogleMap map;
     private Place origin;
     private Place destination;
     private int time = 0;
@@ -98,6 +106,7 @@ public class GenerateFragment extends Fragment {
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
     private StringBuilder currentSearchedObjects;
+    SupportMapFragment mapFrag;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -110,6 +119,8 @@ public class GenerateFragment extends Fragment {
         songService = new SongService(view.getContext(), relativeLayout);
         destText = view.findViewById(R.id.destinationTest);
         originText = view.findViewById(R.id.originText);
+        LatLng originLatLng;
+        LatLng destinationLatLng;
         findDistanceButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
         searchResults = view.findViewById(R.id.searchObjects);
@@ -120,13 +131,20 @@ public class GenerateFragment extends Fragment {
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
         radioDance = view.findViewById(R.id.radioDance);
-        bottomNavigationView = view.findViewById(R.id.bottomNavigation);
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
         customIdArtists = new ArrayList<>();
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
         currentSearchedObjects.append("Searched Artists and Songs:");
+        mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFrag.getView().setVisibility(View.GONE);
+        mapFrag.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+            }
+        });
 
         goToPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,7 +164,7 @@ public class GenerateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 clickFromOriginText = false;
-                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                 // Start the autocomplete intent.
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                         .build(view.getContext());
@@ -158,7 +176,7 @@ public class GenerateFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 clickFromOriginText = true;
-                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                         .build(view.getContext());
                 startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
@@ -434,6 +452,12 @@ public class GenerateFragment extends Fragment {
                     startButtonSwap(makePlaylistButton, findDistanceButton);
                     timeView.setText(help2.getJSONObject("duration").getString("text"));
                     timeView.setVisibility(View.VISIBLE);
+                    try {
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin.getLatLng(), 8));
+                    } catch (Exception e) {
+                        Log.e(Tag, "Error setting bounds", e);
+                    }
+                    mapFrag.getView().setVisibility(View.VISIBLE);
                     searchResults.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -448,14 +472,14 @@ public class GenerateFragment extends Fragment {
     }
 
     public void startButtonSwap(Button goUpButton, Button goRightButton) {
-        ObjectAnimator animationButtonUp = ObjectAnimator.ofFloat(goUpButton, "translationY", -200f);
+        ObjectAnimator animationButtonUp = ObjectAnimator.ofFloat(goUpButton, "translationY", -170f);
         animationButtonUp.setDuration(2000);
         moveButtonOffScreenRight(goRightButton);
         animationButtonUp.start();
     }
 
     public void moveButtonOffScreenRight(Button button){
-        ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(button, "translationX",1800f);
+        ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(button, "translationX", 1800f);
         animationButtonRight.setDuration(1500);
         animationButtonRight.start();
     }
@@ -487,5 +511,6 @@ public class GenerateFragment extends Fragment {
         Intent intent = new Intent(getContext(), SearchActivity.class);
         startActivityForResult(intent, 2);
     }
+
 
 }
