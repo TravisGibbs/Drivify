@@ -130,6 +130,15 @@ public class PlaylistService {
         playlistExternalLink = external_urls.getString("spotify");
         playlistURI = response.getString("uri");
         addSong(songSimplifieds);
+        ArrayList<SongFull> newSongFull = new ArrayList<>();
+        int i = 0;
+        int sum = 0;
+        while(sum < time && i < songSimplifieds.size()) {
+            newSongFull.add(songSimplifieds.get(i));
+            sum += songSimplifieds.get(i).getDuration_ms();
+            i++;
+        }
+        addSong(newSongFull);
     }
 
     public String PostPlaylistEnd() {
