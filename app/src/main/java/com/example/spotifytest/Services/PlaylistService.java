@@ -148,4 +148,7 @@ public class PlaylistService {
         return playlistExternalLink;
     }
 
+    public String getPlaylistId() {
+        return playlistID;
+    }
 }

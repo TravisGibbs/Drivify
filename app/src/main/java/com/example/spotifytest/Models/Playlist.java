@@ -1,30 +1,50 @@
 package com.example.spotifytest.Models;
 
-import java.util.ArrayList;
+import com.parse.ParseClassName;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 
-public class Playlist {
-    private ArrayList<SongFull> songList;
-    private String name;
+@ParseClassName("Playlist")
+public class Playlist extends ParseObject {
 
-    public Playlist(ArrayList<SongFull> songList, String name) {
-        this.songList = songList;
-        this.name = name;
+    public static final String KEY_PLAYLIST_ID = "playlistId";
+    public static final String KEY_ORIGIN_ID = "originId";
+    public static final String KEY_USER = "user";
+    public static final String KEY_DESTINATION_ID = "destinationId";
+    public static final String KEY_REDIRECT_LINK = "redirectLink";
+
+    public Playlist(){
+        super();
     }
-
-    public ArrayList<SongFull> getSongList() {
-        return songList;
+    public String getKeyPlaylistId() {
+        return getString(KEY_PLAYLIST_ID);
     }
-
-    public void setSongList(ArrayList<SongFull> songList) {
-        this.songList = songList;
+    public void setKeyPlaylistId(String keyPlaylistId) {
+        put(KEY_PLAYLIST_ID, keyPlaylistId);
     }
-
-    public String getName() {
-        return name;
+    public String getKeyOriginId() {
+        return(getString(KEY_ORIGIN_ID));
     }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setKeyOriginId(String keyOriginId){
+        put(KEY_ORIGIN_ID, keyOriginId);
     }
-
+    public String getKeyDestinationId(){
+        return getString(KEY_DESTINATION_ID);
+    }
+    public void setKeyDestinationId(String keyDestinationId){
+        put(KEY_DESTINATION_ID, keyDestinationId);
+    }
+    public ParseUser getUser() {
+        return (_User) getParseUser(KEY_USER);
+    }
+    public void setUser(ParseUser parseUser) {
+        put(KEY_USER, parseUser);
+    }
+    public String getKeyRedirectLink() {
+        return getString(KEY_REDIRECT_LINK);
+    }
+    public void  setKeyRedirectLink(String keyRedirectLink) {
+        put(KEY_REDIRECT_LINK, keyRedirectLink);
+    }
 }

@@ -24,6 +24,7 @@ import com.example.spotifytest.LoginActivity;
 import com.example.spotifytest.MainActivity;
 import com.example.spotifytest.Models._User;
 import com.example.spotifytest.OnSwipeTouchListener;
+import com.example.spotifytest.PlaylistListActivity;
 import com.example.spotifytest.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
@@ -33,6 +34,7 @@ public class ProfileFragment extends Fragment {
 
     private final static String Tag = "profileFragment";
     private Button logoutButton;
+    private Button playlistListButton;
     private TextView userView;
     private TextView drivesView;
     private ImageView profileImage;
@@ -49,6 +51,7 @@ public class ProfileFragment extends Fragment {
         userView = view.findViewById(R.id.usernameProfView);
         profileImage = view.findViewById(R.id.profileView);
         relativeLayout = view.findViewById(R.id.profileLayout);
+        playlistListButton = view.findViewById(R.id.playlistListButton);
         bottomNavigationView = view.findViewById(R.id.bottomNavigation);
 
         Glide.with(view.getContext()).load(user.getImage().getUrl()).into(profileImage);
@@ -59,6 +62,14 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 ParseUser.logOut();
                 goToLogin();
+            }
+        });
+
+        playlistListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), PlaylistListActivity.class);
+                startActivity(intent);
             }
         });
 

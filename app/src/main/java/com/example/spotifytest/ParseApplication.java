@@ -2,8 +2,10 @@ package com.example.spotifytest;
 
 import android.app.Application;
 
+import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models._User;
 import com.parse.Parse;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import okhttp3.OkHttpClient;
@@ -15,6 +17,7 @@ public class ParseApplication extends Application {
         super.onCreate();
 
         ParseUser.registerSubclass(_User.class);
+        ParseObject.registerSubclass(Playlist.class);
 
         // Use for troubleshooting -- remove this line for production
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);

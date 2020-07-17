@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.MainActivity;
+import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.OnSwipeTouchListener;
@@ -45,6 +47,9 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -257,6 +262,25 @@ public class GenerateFragment extends Fragment {
             Snackbar.make(relativeLayout, "Please choose a route!", Snackbar.LENGTH_SHORT).show();
             return;
         }
+    }
+
+    private void playlistParsePost() {
+        Playlist playlist = new Playlist();
+        playlist.setKeyOriginId(origin.getId());
+        playlist.setKeyDestinationId(destination.getId());
+        playlist.setKeyPlaylistId(playlistService.getPlaylistId());
+        playlist.setKeyRedirectLink(playlistService.getPlaylistExternalLink());
+        playlist.setUser(ParseUser.getCurrentUser());
+        playlist.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(Tag, "post failed", e);
+                }
+                Log.i(Tag, "posted playlist");
+            }
+        });
+        return;
     }
 
     public ArrayList<SongFull> chooseSongs(ArrayList<SongFull> songList){
