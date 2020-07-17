@@ -255,6 +255,7 @@ public class GenerateFragment extends Fragment {
             allTracks = songService.getSongFulls();
             allTracks = chooseSongs(allTracks);
             viewModel.setSongList(allTracks);
+            viewModel.setPlaylistService(playlistService);
             playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
         }
