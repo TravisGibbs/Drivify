@@ -205,13 +205,13 @@ public class GenerateFragment extends Fragment {
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 MainActivity main = (MainActivity) getActivity();
-                main.bottomNavigationView.setSelectedItemId(R.id.playlistAction);
+                main.getBottomNavigationView().setSelectedItemId(R.id.playlistAction);
             }
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 MainActivity main = (MainActivity) getActivity();
-                main.bottomNavigationView.setSelectedItemId(R.id.profileAction);
+                main.getBottomNavigationView().setSelectedItemId(R.id.profileAction);
             }
         });
     }
@@ -309,7 +309,7 @@ public class GenerateFragment extends Fragment {
             return;
         }
         if (requestCode == 2) {
-            if(resultCode == 0){
+            if (resultCode == 0) {
                 return;
             }
             setSearchResults(data);
@@ -326,7 +326,7 @@ public class GenerateFragment extends Fragment {
             } else {
                 customIdArtists.add(data.getStringExtra("id"));
             }
-            for (int i = 0; i < customIdArtists.size();i++) {
+            for (int i = 0; i < customIdArtists.size(); i++) {
                 Log.i(Tag,customIdArtists.get(i) + " ");
             }
             for (int i = 0; i < customIdSongs.size();i++) {
@@ -336,14 +336,14 @@ public class GenerateFragment extends Fragment {
     }
 
     public ArrayList<SongFull> addKSongsFromList(ArrayList<SongFull> newSongList, ArrayList<SongFull> songList, int k){
-        for(int i = 0; i < (k - 1);i++){
+        for(int i = 0; i < k - 1; i++){
             newSongList.add(songList.get(i));
         }
-        return(newSongList);
+        return newSongList;
     }
 
     public void setSearchResults(Intent data) {
-        if ((customIdArtists.size() + customIdSongs.size()) > 4) {
+        if (customIdArtists.size() + customIdSongs.size() > 4) {
             int endOfLastObjectIndex = 0;
             for (int i = 0; i < currentSearchedObjects.length(); i++) {
                 if (currentSearchedObjects.charAt(i) == ',') {
@@ -353,7 +353,7 @@ public class GenerateFragment extends Fragment {
             }
             currentSearchedObjects.replace(28, endOfLastObjectIndex, data.getStringExtra("name") + " ");
         } else {
-            if ((customIdArtists.size() + customIdSongs.size()) < 1) {
+            if (customIdArtists.size() + customIdSongs.size() < 1) {
                 currentSearchedObjects.append(" ").append(data.getStringExtra("name")).append(" ");
             } else {
                 currentSearchedObjects.append(", ").append(data.getStringExtra("name")).append(" ");
@@ -380,23 +380,23 @@ public class GenerateFragment extends Fragment {
                     String temp = help2.getJSONObject("duration").getString("text");
                     Log.i(Tag,"time to destination " + temp);
                     if(temp.contains("h")){
-                        for(int i=0; i<temp.length();i++) {
+                        for(int i = 0; i < temp.length(); i++) {
                             if(temp.charAt(i) == ' ') {
                                 minutes = Integer.parseInt(temp.substring(0, i)) * 60;
                             }
-                            if(temp.charAt(i) == 's'){
-                                if(temp.contains("m")){
+                            if (temp.charAt(i) == 's') {
+                                if (temp.contains("m")) {
                                     temp = temp.substring(i + 1);
                                     break;
                                 }
                             }
                         }
                     }
-                    if(temp.contains("m")) {
+                    if (temp.contains("m")) {
                         for (int i = 1; i < temp.length(); i++) {
-                            if(temp.charAt(i) == ' '){
-                                if(temp.charAt(0) == ' '){
-                                    minutes = minutes + Integer.parseInt(temp.substring(1,i));
+                            if (temp.charAt(i) == ' ') {
+                                if (temp.charAt(0) == ' ') {
+                                    minutes = minutes + Integer.parseInt(temp.substring(1, i));
                                 } else {
                                     minutes = minutes + Integer.parseInt(temp.substring(0, i));
                                 }
@@ -440,17 +440,17 @@ public class GenerateFragment extends Fragment {
         // Check which radio button was clicked
         switch(view.getId()) {
             case R.id.radioDance:
-                if(checked) {
+                if (checked) {
                     radioButtonSelected = "Dance";
                 }
                 break;
             case R.id.radioIncrease:
-                if(checked) {
+                if (checked) {
                     radioButtonSelected = "Increase";
                 }
                 break;
             case R.id.radioDecrease:
-                if(checked) {
+                if (checked) {
                     radioButtonSelected = "Decrease";
                 }
                 break;

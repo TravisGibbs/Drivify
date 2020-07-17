@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
             public void onSwipeLeft() {
                 super.onSwipeRight();
                 MainActivity main = (MainActivity) getActivity();
-                main.bottomNavigationView.setSelectedItemId(R.id.generateAction);
+                main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
             }
         });
     }

@@ -40,7 +40,6 @@ public class PlaylistFragment extends Fragment {
   private PlaylistAdapter playlistAdapter;
   private RelativeLayout relativeLayout;
   private LinearLayoutManager linearLayoutManager;
-  //private BottomNavigationView bottomNavigationView;
   private TextView errorText;
 
   @Override
@@ -49,7 +48,6 @@ public class PlaylistFragment extends Fragment {
     rvPlaylist = view.findViewById(R.id.rvSongs);
     errorText = view.findViewById(R.id.errorText);
     relativeLayout = view.findViewById(R.id.playlistLayout);
-    //bottomNavigationView = view.findViewById(R.id.bottomNavigation);
     SongsViewModel viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     allSongs = viewModel.getSongList();
     if(allSongs.size() > 0) {
@@ -66,11 +64,10 @@ public class PlaylistFragment extends Fragment {
       public void onSwipeRight() {
         super.onSwipeRight();
         MainActivity main = (MainActivity) getActivity();
-        main.bottomNavigationView.setSelectedItemId(R.id.generateAction);
+        main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
       }
     });
   }
-
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

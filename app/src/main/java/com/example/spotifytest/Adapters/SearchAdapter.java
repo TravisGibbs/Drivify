@@ -91,7 +91,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         itemView.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
-            onClickListener.onItemClicked(getAdapterPosition(), searchObject.getSong().getId(), searchObject.getSong().getName() , true);
+            onClickListener.onItemClicked(getAdapterPosition(), searchObject.getSong().getId(), searchObject.getSong().getName(), true);
           }
         });
       }

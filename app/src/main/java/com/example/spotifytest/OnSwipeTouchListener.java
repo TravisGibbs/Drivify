@@ -5,13 +5,17 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 public class OnSwipeTouchListener implements View.OnTouchListener {
+
   private GestureDetector gestureDetector;
+
   public OnSwipeTouchListener(Context c) {
     gestureDetector = new GestureDetector(c, new GestureListener());
   }
+
   public boolean onTouch(final View view, final MotionEvent motionEvent) {
     return gestureDetector.onTouchEvent(motionEvent);
   }
+
   private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;

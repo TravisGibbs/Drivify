@@ -102,7 +102,7 @@ public class SearchActivity extends AppCompatActivity {
     intent.putExtra("id", "");
     intent.putExtra("isSong", false);
     intent.putExtra("name", "");
-    setResult(0,intent);
+    setResult(0, intent);
     finish();//finishing activity
   }
 
@@ -150,12 +150,13 @@ public class SearchActivity extends AppCompatActivity {
   }
 
   private String getUrl(String q){
-    String url = "https://api.spotify.com/v1/search?q=";
+    StringBuilder url = new StringBuilder();
+    url.append("https://api.spotify.com/v1/search?q=");
     q.replace(" ", "%20");
-    url += q;
-    url += "&type=artist,track";
-    url += "&limit=10";
+    url.append(q);
+    url.append("&type=artist,track");
+    url.append("&limit=10");
     //TODO possible offset offset=(0,2000) for infinite scrolling
-    return(url);
+    return(url.toString());
   }
 }
