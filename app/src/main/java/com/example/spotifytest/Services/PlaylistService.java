@@ -29,6 +29,7 @@ public class PlaylistService {
     private RequestQueue queue;
     private String playlistID;
     private String playlistExternalLink;
+    private String playlistURI;
 
     public PlaylistService(Context context, RelativeLayout relativeLayout) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -127,15 +128,8 @@ public class PlaylistService {
         playlistID = response.getString("id");
         JSONObject external_urls = response.getJSONObject("external_urls");
         playlistExternalLink = external_urls.getString("spotify");
-        ArrayList<SongFull> newSongFull = new ArrayList<>();
-        int i = 0;
-        int sum = 0;
-        while(sum < time && i < songSimplifieds.size()) {
-            newSongFull.add(songSimplifieds.get(i));
-            sum += songSimplifieds.get(i).getDuration_ms();
-            i++;
-        }
-        addSong(newSongFull);
+        playlistURI = response.getString("uri");
+        addSong(songSimplifieds);
     }
 
     public String PostPlaylistEnd() {
@@ -150,5 +144,9 @@ public class PlaylistService {
 
     public String getPlaylistId() {
         return playlistID;
+    }
+
+    public String getPlaylistURI() {
+        return playlistURI;
     }
 }
