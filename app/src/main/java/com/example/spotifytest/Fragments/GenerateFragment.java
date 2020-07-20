@@ -3,6 +3,7 @@ package com.example.spotifytest.Fragments;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -47,6 +48,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -55,10 +59,13 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.JsonObject;
+import com.google.maps.android.PolyUtil;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -111,7 +118,6 @@ public class GenerateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Places.initialize(view.getContext(), apiKey);
         PlacesClient placesClient = Places.createClient(view.getContext());
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
@@ -137,6 +143,7 @@ public class GenerateFragment extends Fragment {
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
         currentSearchedObjects.append("Searched Artists and Songs:");
+        
         mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFrag.getView().setVisibility(View.GONE);
         mapFrag.getMapAsync(new OnMapReadyCallback() {
@@ -405,7 +412,45 @@ public class GenerateFragment extends Fragment {
         searchResults.setText(currentSearchedObjects.toString());
     }
 
+    public void getDirections(){
+        StringBuilder url = new StringBuilder();
+        url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
+        url.append(origin.getId());
+        url.append("&destination=place_id:");
+        url.append(destination.getId());
+        url.append("&key=");
+        url.append(apiKey);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(url.toString(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(Tag,"search for directions succ");
+                JSONObject jsonObject = json.jsonObject;
+                try {
+                    JSONArray routes = (JSONArray) jsonObject.get("routes");
+                    jsonObject = (JSONObject) routes.get(0);
+                    jsonObject = (JSONObject) jsonObject.getJSONObject("overview_polyline");
+                    String polyline = jsonObject.getString("points");
+                    List<LatLng> latLngs = PolyUtil.decode(polyline);
+                    Polyline polyline1 = map.addPolyline(new PolylineOptions()
+                            .clickable(true)
+                            .color(Color.parseColor("#1ED760"))
+                            .addAll(latLngs));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(Tag,"search for directions failed", throwable);
+            }
+        });
+        Log.i(Tag, url.toString());
+    }
+
     public void getDistance(Place a, Place b){
+        getDirections();
         moveButtonOffScreenRight(searchButton);
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
@@ -422,29 +467,40 @@ public class GenerateFragment extends Fragment {
                     int minutes = 0;
                     String temp = help2.getJSONObject("duration").getString("text");
                     Log.i(Tag,"time to destination " + temp);
-                    if(temp.contains("h")){
-                        for(int i = 0; i < temp.length(); i++) {
-                            if(temp.charAt(i) == ' ') {
-                                minutes = Integer.parseInt(temp.substring(0, i)) * 60;
+                    if (temp.contains("d")){
+                        minutes += 1440;
+                        temp = temp.substring(6);
+                    }
+                    if (temp.contains("h")) {
+                        for (int i = 0; i < temp.length(); i++) {
+                            if (temp.charAt(i) == 'h') {
+                                minutes += Integer.parseInt(temp.substring(0, i - 1)) * 60;
                             }
-                            if (temp.charAt(i) == 's') {
-                                if (temp.contains("m")) {
-                                    temp = temp.substring(i + 1);
-                                    break;
-                                }
+                            if (temp.charAt(i) == 'r'){
+                                temp = temp.substring(i+2);
+                                break;
                             }
                         }
                     }
                     if (temp.contains("m")) {
-                        for (int i = 1; i < temp.length(); i++) {
-                            if (temp.charAt(i) == ' ') {
-                                if (temp.charAt(0) == ' ') {
-                                    minutes = minutes + Integer.parseInt(temp.substring(1, i));
-                                } else {
-                                    minutes = minutes + Integer.parseInt(temp.substring(0, i));
-                                }
+                        for (int i =0; i < temp.length(); i++) {
+                            if (temp.charAt(i) == 'm') {
+                                minutes += Integer.parseInt(temp.substring(0,i-1));
+                                break;
                             }
                         }
+                    }
+                    int zoomLevel;
+                    if (15 < minutes && minutes < 30) {
+                        zoomLevel = 9;
+                    }
+                    else if (minutes < 120) {
+                        zoomLevel = 7;
+                    }
+                    else if (minutes < 240) {
+                        zoomLevel = 6;
+                    } else {
+                        zoomLevel = 3;
                     }
                     Log.i(Tag, "total minutes " + minutes);
                     time = minutes*60000;
@@ -453,11 +509,17 @@ public class GenerateFragment extends Fragment {
                     timeView.setText(help2.getJSONObject("duration").getString("text"));
                     timeView.setVisibility(View.VISIBLE);
                     try {
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin.getLatLng(), 8));
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin.getLatLng(), zoomLevel));
                     } catch (Exception e) {
                         Log.e(Tag, "Error setting bounds", e);
                     }
                     mapFrag.getView().setVisibility(View.VISIBLE);
+                    map.addMarker(new MarkerOptions()
+                            .position(origin.getLatLng())
+                            .title("Start"));
+                    map.addMarker(new MarkerOptions()
+                            .position(destination.getLatLng())
+                            .title("End"));
                     searchResults.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -511,6 +573,4 @@ public class GenerateFragment extends Fragment {
         Intent intent = new Intent(getContext(), SearchActivity.class);
         startActivityForResult(intent, 2);
     }
-
-
 }
