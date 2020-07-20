@@ -159,6 +159,7 @@ public class PlaylistService {
         playlist.setKeyRedirectLink(playlistExternalLink);
         playlist.setTimeTo(String.valueOf(time));
         playlist.setUser(ParseUser.getCurrentUser());
+        playlist.setKeyTitle(origin.getName() + " to " + destination.getName());
         playlist.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
