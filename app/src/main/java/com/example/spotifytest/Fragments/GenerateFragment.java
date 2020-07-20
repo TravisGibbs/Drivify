@@ -281,32 +281,13 @@ public class GenerateFragment extends Fragment {
             allTracks = chooseSongs(allTracks);
             viewModel.setSongList(allTracks);
             viewModel.setPlaylistService(playlistService);
-            playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time);
+            playlistService.addPlaylist(origin.getName() + " to " + destination.getName(), allTracks, time, origin, destination);
             startButtonSwap(goToPlaylistButton, makePlaylistButton);
         }
         else{
             Snackbar.make(relativeLayout, "Please choose a route!", Snackbar.LENGTH_SHORT).show();
             return;
         }
-    }
-
-    private void playlistParsePost() {
-        Playlist playlist = new Playlist();
-        playlist.setKeyOriginId(origin.getId());
-        playlist.setKeyDestinationId(destination.getId());
-        playlist.setKeyPlaylistId(playlistService.getPlaylistId());
-        playlist.setKeyRedirectLink(playlistService.getPlaylistExternalLink());
-        playlist.setUser(ParseUser.getCurrentUser());
-        playlist.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(Tag, "post failed", e);
-                }
-                Log.i(Tag, "posted playlist");
-            }
-        });
-        return;
     }
 
     public ArrayList<SongFull> chooseSongs(ArrayList<SongFull> songList){
@@ -491,7 +472,10 @@ public class GenerateFragment extends Fragment {
                         }
                     }
                     int zoomLevel;
-                    if (15 < minutes && minutes < 30) {
+                    if (minutes <= 15) {
+                        zoomLevel = 11;
+                    }
+                    else if (15 < minutes && minutes <= 30) {
                         zoomLevel = 9;
                     }
                     else if (minutes < 120) {

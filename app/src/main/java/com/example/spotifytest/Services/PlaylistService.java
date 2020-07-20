@@ -9,9 +9,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,9 +42,9 @@ public class PlaylistService {
         this.relativeLayout = relativeLayout;
     }
 
-    public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds, int time) {
+    public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds, int time, Place origin, Place destination) {
         JSONObject payload = preparePutPayloadPlaylistPost(playlistTitle);
-        JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds, time);
+        JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds, time, origin, destination);
         queue.add(jsonObjectRequest);
     }
 
@@ -75,10 +80,11 @@ public class PlaylistService {
         return request;
     }
 
-    private JsonObjectRequest PlaylistPost(JSONObject payload, ArrayList<SongFull> songSimplifieds, int time) {
+    private JsonObjectRequest PlaylistPost(JSONObject payload, ArrayList<SongFull> songSimplifieds,
+                                           int time, Place origin, Place destination) {
         return new JsonObjectRequest(Request.Method.POST, PostPlaylistEnd(), payload, response -> {
             try {
-                onSuccPlaylist(response, songSimplifieds, time);
+                onSuccPlaylist(response, songSimplifieds, time, origin, destination);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -99,7 +105,9 @@ public class PlaylistService {
     }
 
     private JsonObjectRequest SongPost(JSONObject payload) {
-        return new JsonObjectRequest(Request.Method.POST, String.format("https://api.spotify.com/v1/playlists/%s/tracks",playlistID), payload, response -> {
+        return new JsonObjectRequest(Request.Method.POST,
+                String.format("https://api.spotify.com/v1/playlists/%s/tracks",playlistID),
+                payload, response -> {
             try {
                 onSuccSong(response);
             } catch (JSONException e) {
@@ -124,7 +132,8 @@ public class PlaylistService {
         Log.i(Tag,"song posted");
     }
 
-    public void onSuccPlaylist(JSONObject response, ArrayList<SongFull> songSimplifieds, int time) throws JSONException {
+    public void onSuccPlaylist(JSONObject response, ArrayList<SongFull> songSimplifieds,
+                               int time, Place origin, Place destination) throws JSONException {
         playlistID = response.getString("id");
         JSONObject external_urls = response.getJSONObject("external_urls");
         playlistExternalLink = external_urls.getString("spotify");
@@ -139,6 +148,27 @@ public class PlaylistService {
             i++;
         }
         addSong(newSongFull);
+        playlistParsePost(origin, destination, time);
+    }
+
+    private void playlistParsePost(Place origin, Place destination, int time) {
+        Playlist playlist = new Playlist();
+        playlist.setKeyOriginId(origin.getId());
+        playlist.setKeyDestinationId(destination.getId());
+        playlist.setKeyPlaylistId(playlistID);
+        playlist.setKeyRedirectLink(playlistExternalLink);
+        playlist.setTimeTo(String.valueOf(time));
+        playlist.setUser(ParseUser.getCurrentUser());
+        playlist.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(Tag, "post failed", e);
+                }
+                Log.i(Tag, "posted playlist");
+            }
+        });
+        return;
     }
 
     public String PostPlaylistEnd() {

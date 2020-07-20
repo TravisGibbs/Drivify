@@ -1,7 +1,6 @@
 package com.example.spotifytest.Models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -13,6 +12,7 @@ public class Playlist extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_DESTINATION_ID = "destinationId";
     public static final String KEY_REDIRECT_LINK = "redirectLink";
+    public static final String KEY_TIME_TO = "timeTo";
 
     public Playlist(){
         super();
@@ -46,5 +46,11 @@ public class Playlist extends ParseObject {
     }
     public void  setKeyRedirectLink(String keyRedirectLink) {
         put(KEY_REDIRECT_LINK, keyRedirectLink);
+    }
+    public String getKeyTimeTo() {
+        return getString(KEY_TIME_TO);
+    }
+    public void setTimeTo(String keyTimeTo) {
+        put(KEY_TIME_TO, keyTimeTo);
     }
 }
