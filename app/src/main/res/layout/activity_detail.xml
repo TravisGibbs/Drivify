@@ -2,17 +2,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/playlistItem"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/background">
+    android:layout_height="match_parent"
+    tools:context=".DetailActivity">
+
+    <fragment
+        android:id="@+id/mapDetail"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="415dp"
+        android:layout_height="400dp"
+        android:layout_above="@+id/distanceButton"
+        android:layout_below="@+id/searchObjects"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        tools:context="com.example.polygons.PolyActivity" />
 
     <TextView
-        android:id="@+id/playlistTitle"
+        android:id="@+id/playlistTitleDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/mapDetail"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
@@ -22,10 +34,10 @@
         tools:text="Origin to Desitination" />
 
     <TextView
-        android:id="@+id/timeAmount"
+        android:id="@+id/timeAmountDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/openLinkButton"
+        android:layout_below="@+id/openLinkButtonDetail"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
@@ -36,15 +48,14 @@
         tools:text="Total time:" />
 
     <Button
-        android:id="@+id/openLinkButton"
+        android:id="@+id/openLinkButtonDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/playlistTitle"
+        android:layout_below="@+id/playlistTitleDetail"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:text="Open Playlist" />
-
 </RelativeLayout>

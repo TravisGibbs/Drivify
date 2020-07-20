@@ -1,29 +1,43 @@
 package com.example.spotifytest.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.spotifytest.DetailActivity;
 import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
+import com.example.spotifytest.PlaylistListActivity;
 import com.example.spotifytest.R;
+
+import org.parceler.Parcel;
+import org.parceler.Parcels;
 
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
+  public interface OnClickListener {
+    void onItemClicked(String url);
+  }
+
   private static final String Tag = "ListAdapter";
   private List<Playlist> playlists;
   private Context context;
+  private OnClickListener onClickListener;
 
-  public ListAdapter(List<Playlist> playlists, Context context) {
+  public ListAdapter(List<Playlist> playlists, Context context, OnClickListener onClickListener) {
     this.playlists = playlists;
     this.context = context;
+    this.onClickListener = onClickListener;
   }
 
   @NonNull
@@ -47,20 +61,34 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
   public class ViewHolder extends RecyclerView.ViewHolder {
 
     private TextView title;
-    private TextView date;
+    private Button goToButton;
     private TextView time;
 
     public ViewHolder(@NonNull View itemView) {
       super(itemView);
       title = itemView.findViewById(R.id.playlistTitle);
-      date = itemView.findViewById(R.id.dateText);
+      goToButton = itemView.findViewById(R.id.openLinkButton);
       time = itemView.findViewById(R.id.timeAmount);
     }
 
     public void bind(Playlist playlist) {
       title.setText(playlist.getTitle());
-      time.setText(playlist.getKeyTimeTo());
-      date.setText(playlist.getKeyRedirectLink());
+      String timeText = String.valueOf(Integer.parseInt(playlist.getKeyTimeTo())/60000);
+      time.setText(String.valueOf(timeText + " minutes"));
+      goToButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          onClickListener.onItemClicked(playlist.getKeyRedirectLink());
+        }
+      });
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          Intent intent = new Intent(view.getContext(), DetailActivity.class);
+          intent.putExtra("playlist", Parcels.wrap(playlist));
+          context.startActivity(intent);
+        }
+      });
     }
   }
 }

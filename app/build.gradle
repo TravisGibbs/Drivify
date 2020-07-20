@@ -74,6 +74,8 @@ dependencies {
 
     implementation 'com.google.maps.android:android-maps-utils:2.0.3'
 
+    implementation 'org.parceler:parceler-api:1.1.12'
+    
     def lifecycle_version = "1.1.1"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
 }

@@ -119,14 +119,11 @@ public class GenerateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Places.initialize(view.getContext(), apiKey);
-        PlacesClient placesClient = Places.createClient(view.getContext());
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
         playlistService = new PlaylistService(view.getContext(), relativeLayout);
         songService = new SongService(view.getContext(), relativeLayout);
         destText = view.findViewById(R.id.destinationTest);
         originText = view.findViewById(R.id.originText);
-        LatLng originLatLng;
-        LatLng destinationLatLng;
         findDistanceButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
         searchResults = view.findViewById(R.id.searchObjects);
@@ -457,8 +454,12 @@ public class GenerateFragment extends Fragment {
                             if (temp.charAt(i) == 'h') {
                                 minutes += Integer.parseInt(temp.substring(0, i - 1)) * 60;
                             }
-                            if (temp.charAt(i) == 'r'){
+                            if (temp.charAt(i) == 'r' && !temp.contains("s")){
                                 temp = temp.substring(i+2);
+                                break;
+                            }
+                            if (temp.charAt(i) == 's') {
+                                temp = temp.substring(i + 2);
                                 break;
                             }
                         }
