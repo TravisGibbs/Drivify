@@ -9,7 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-]import android.media.AudioManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -119,49 +119,7 @@ public class PlaylistFragment extends Fragment {
 
               }
             });
-      // TODO: Consider calling
-      //    ActivityCompat#requestPermissions
-      ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
-      Log.i(Tag, "hlep");
-      // here to request the missing permissions, and then overriding
-      //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-      //                                          int[] grantResults)
-      // to handle the case where the user grants the permission. See the documentation
-      // for ActivityCompat#requestPermissions for more details.
-      return;
-    }
     errorText = view.findViewById(R.id.errorText);
-    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-      @Override
-      public void onLocationChanged(Location location) {
-        if (location==null){
-          // if you can't get speed because reasons :)
-          errorText.setText("00 km/h");
-        }
-        else{
-          //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
-
-          int speed=(int) ((location.getSpeed()*3600)/1000);
-
-          errorText.setText(speed+" km/h");
-        }
-      }
-
-      @Override
-      public void onStatusChanged(String s, int i, Bundle bundle) {
-
-      }
-
-      @Override
-      public void onProviderEnabled(String s) {
-
-      }
-
-      @Override
-      public void onProviderDisabled(String s) {
-
-      }
-    });
     rvPlaylist = view.findViewById(R.id.rvSongs);
     relativeLayout = view.findViewById(R.id.playlistLayout);
     viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
