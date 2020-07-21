@@ -1,61 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".DetailActivity">
 
     <fragment
         android:id="@+id/mapDetail"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_above="@+id/distanceButton"
-        android:layout_below="@+id/searchObjects"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        tools:context="com.example.polygons.PolyActivity" />
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
 
     <TextView
         android:id="@+id/playlistTitleDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mapDetail"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:textColor="@color/browser_actions_title_color"
-        android:textSize="24sp"
-        tools:text="Origin to Desitination" />
-
-    <TextView
-        android:id="@+id/timeAmountDetail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/openLinkButtonDetail"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"
-        tools:text="Total time:" />
+        android:textSize="24sp" />
 
     <Button
         android:id="@+id/openLinkButtonDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/playlistTitleDetail"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:text="Open Playlist" />
-</RelativeLayout>
+
+    <TextView
+        android:id="@+id/timeAmountDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+
+        android:layout_marginEnd="10dp"
+        android:textAlignment="textStart"
+        android:textSize="18sp" />
+
+</LinearLayout>

@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".SplashActivity">
-
-    <Button
-        android:id="@+id/buttonSpotifyLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="347dp"
-        android:layout_marginEnd="50dp"
-        android:background="@color/colorAccent"
-        android:text="@string/log_into_spotify" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="108dp"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight=".8"
         app:srcCompat="@drawable/spotify_green" />
-</RelativeLayout>
+
+    <Button
+        android:id="@+id/buttonSpotifyLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:background="@color/colorAccent"
+        android:padding="10dp"
+        android:text="@string/log_into_spotify" />
+
+    <ProgressBar
+        android:id="@+id/pbLoadingSplash"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

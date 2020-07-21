@@ -76,6 +76,8 @@ dependencies {
 
     implementation 'org.parceler:parceler-api:1.1.12'
 
+    implementation "androidx.cardview:cardview:1.0.0"
+
     def lifecycle_version = "1.1.1"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
 }

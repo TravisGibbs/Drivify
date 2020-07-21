@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -28,6 +29,7 @@ public class SplashActivity extends AppCompatActivity {
     private SharedPreferences msharedPreferences;
     private RequestQueue queue;
     private Button spotifyButton;
+    private ProgressBar pb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,15 @@ public class SplashActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_splash);
+        pb = findViewById(R.id.pbLoadingSplash);
+        pb.setVisibility(View.INVISIBLE);
         msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(this);
         spotifyButton = findViewById(R.id.buttonSpotifyLogin);
         spotifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                pb.setVisibility(View.VISIBLE);
                 authenticateSpotify();
             }
         });

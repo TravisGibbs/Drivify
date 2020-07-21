@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.media.AudioManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -58,13 +59,16 @@ public class PlaylistFragment extends Fragment {
   private FloatingActionButton floatingActionButton;
   private TextView errorText;
   private Boolean playing = false;
+  private int speed;
+  private int pastSpeed;
+  private AudioManager audioManager;
 
   @SuppressLint("RestrictedApi")
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
-    LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
+    audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
     if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(view.getContext(),
@@ -75,37 +79,45 @@ public class PlaylistFragment extends Fragment {
       return;
     }
     errorText = view.findViewById(R.id.errorText);
-    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-      @Override
-      public void onLocationChanged(Location location) {
-        if (location==null){
-          // if you can't get speed because reasons :)
-          errorText.setText("00 km/h");
-        }
-        else{
-          //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
+    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+            10000, // 10 second interval
+            10, // 10 meters
+            new LocationListener() {
+              @Override
+              public void onLocationChanged(Location location) {
+                if (location==null){
+                  // if you can't get speed because reasons :)
+                  errorText.setText("00 km/h");
+                }
+                else{
+                  //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
+                  speed = (int) ((location.getSpeed()*3600)/1000);
+                  if (pastSpeed + 5 < speed) {
+                    audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+                  }
+                  if (pastSpeed - 5 > speed) {
+                    audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                  }
+                  errorText.setText(speed+" km/h");
+                  pastSpeed = speed;
+                }
+              }
 
-          int speed=(int) ((location.getSpeed()*3600)/1000);
+              @Override
+              public void onStatusChanged(String s, int i, Bundle bundle) {
 
-          errorText.setText(speed+" km/h");
-        }
-      }
+              }
 
-      @Override
-      public void onStatusChanged(String s, int i, Bundle bundle) {
+              @Override
+              public void onProviderEnabled(String s) {
 
-      }
+              }
 
-      @Override
-      public void onProviderEnabled(String s) {
+              @Override
+              public void onProviderDisabled(String s) {
 
-      }
-
-      @Override
-      public void onProviderDisabled(String s) {
-
-      }
-    });
+              }
+            });
     rvPlaylist = view.findViewById(R.id.rvSongs);
     relativeLayout = view.findViewById(R.id.playlistLayout);
     viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
@@ -163,7 +175,8 @@ public class PlaylistFragment extends Fragment {
               public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
                 mSpotifyAppRemote.getPlayerApi().play(viewModel.getPlaylistService().getPlaylistURI());
-                mSpotifyAppRemote.getPlayerApi().pause();
+                floatingActionButton.setImageResource(R.drawable.pause_icon);
+
               }
 
               @Override

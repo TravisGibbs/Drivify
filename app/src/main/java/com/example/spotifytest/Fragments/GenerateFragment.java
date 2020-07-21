@@ -109,6 +109,7 @@ public class GenerateFragment extends Fragment {
     private Place origin;
     private Place destination;
     private int time = 0;
+    private int amountSongs;
     private boolean clickFromOriginText = true;
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
@@ -257,7 +258,7 @@ public class GenerateFragment extends Fragment {
         } else {
             songService.getSeedTracks(() -> {
                 allTracks = songService.getSongFulls();
-            }, customIdSongs,customIdArtists, amount);
+            }, customIdSongs, customIdArtists, amount);
         }
         return allTracks;
     }
@@ -292,26 +293,20 @@ public class GenerateFragment extends Fragment {
         songList.clear();
         songList.addAll(set);
         ArrayList<SongFull> newSongList = new ArrayList<>();
-        int amountOfSongs = time / 100000;
-        amountOfSongs = amountOfSongs + 2;
-        if(amountOfSongs > 50){
-            Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-            amountOfSongs = 30;
-        }
         if(radioButtonSelected.equals("Dance")) {
             Collections.sort(songList, SongFull.SongDanceComparator);
-            return(addKSongsFromList(newSongList, songList, amountOfSongs));
+            return(addKSongsFromList(newSongList, songList, amountSongs));
         }
         if(radioButtonSelected.equals("Increase")) {
             Collections.sort(songList, SongFull.SongEnergyComparator);
-            return(addKSongsFromList(newSongList, songList, amountOfSongs));
+            return(addKSongsFromList(newSongList, songList, amountSongs));
         }
         if(radioButtonSelected.equals("Increase")) {
             Collections.sort(songList, SongFull.SongEnergyComparator);
             Collections.reverse(songList);
-            return(addKSongsFromList(newSongList, songList, amountOfSongs));
+            return(addKSongsFromList(newSongList, songList, amountSongs));
         }
-        return(addKSongsFromList(newSongList, songList, amountOfSongs));
+        return(addKSongsFromList(newSongList, songList, amountSongs));
     }
 
     @Override
@@ -429,6 +424,10 @@ public class GenerateFragment extends Fragment {
     }
 
     public void getDistance(Place a, Place b){
+        if (customIdArtists.size() + customIdSongs.size() < 1){
+            Snackbar.make(relativeLayout, "Select an artist or song!", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
         getDirections();
         moveButtonOffScreenRight(searchButton);
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
@@ -460,7 +459,11 @@ public class GenerateFragment extends Fragment {
                                 break;
                             }
                             if (temp.charAt(i) == 's') {
-                                temp = temp.substring(i + 2);
+                                try {
+                                    temp = temp.substring(i + 2);
+                                } catch (Exception e) {
+                                    break;
+                                }
                                 break;
                             }
                         }
@@ -487,7 +490,13 @@ public class GenerateFragment extends Fragment {
                     }
                     Log.i(Tag, "total minutes " + minutes);
                     time = minutes*60000;
-                    allTracks = getTracks(30);
+                    amountSongs = time / 100000;
+                    amountSongs = amountSongs + 2;
+                    if(amountSongs > 100){
+                        Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
+                        amountSongs = 100;
+                    }
+                    allTracks = getTracks(amountSongs);
                     startButtonSwap(makePlaylistButton, findDistanceButton);
                     timeView.setText(help2.getJSONObject("duration").getString("text"));
                     timeView.setVisibility(View.VISIBLE);

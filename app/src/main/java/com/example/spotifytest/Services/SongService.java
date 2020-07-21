@@ -21,12 +21,14 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SongService {
 
+    private int i = 0;
     private static final String Tag = "SongService";
-    private ArrayList<SongFull> songFulls = new ArrayList<>();
+    private ArrayList<SongFull> SongFulls;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private RelativeLayout relativeLayout;
@@ -38,7 +40,7 @@ public class SongService {
     }
 
     public ArrayList<SongFull> getSongFulls() {
-        return songFulls;
+        return SongFulls;
     }
 
     public ArrayList<SongFull> getRecentlyPlayedTracks(final UserService.VolleyCallBack callBack , int amount) {
@@ -58,8 +60,7 @@ public class SongService {
                             e.printStackTrace();
                         }
                     }
-
-                    songFulls = getTracks(songSimplifieds, callBack);
+                    getTracks(songSimplifieds, callBack);
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -74,12 +75,11 @@ public class SongService {
             }
         };
         queue.add(jsonObjectRequest);
-        return songFulls;
+        return SongFulls;
     }
 
-    public ArrayList<SongFull> getTracks(ArrayList<SongSimplified> songSimplifieds, UserService.VolleyCallBack callBack){
+    public void getTracks(List<SongSimplified> songSimplifieds, UserService.VolleyCallBack callBack){
         String url = getURLforTracks(songSimplifieds);
-        ArrayList<SongFull> songFulls = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, response -> {
                     Gson gson = new Gson();
@@ -89,15 +89,17 @@ public class SongService {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    for (int n = 0; n < jsonArray.length(); n++) {
+                    for (int n = 0 ; n < jsonArray.length(); n++) {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
                             SongFull songFull = gson.fromJson(object.toString(), SongFull.class);
-                            songFulls.add(getTrackDetails(songFull, n, callBack));
+                            int j = n + i;
+                            SongFulls.add(getTrackDetails(songFull, j, callBack));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
+                    i = jsonArray.length();
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -112,10 +114,9 @@ public class SongService {
             }
         };
         queue.add(jsonObjectRequest);
-        return songFulls;
     }
 
-    public SongFull getTrackDetails(SongFull songFull,int position, UserService.VolleyCallBack callBack){
+    public SongFull getTrackDetails(SongFull songFull, int position, UserService.VolleyCallBack callBack){
         String url = getURLforTrackDetails(songFull);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, response -> {
@@ -124,7 +125,7 @@ public class SongService {
                         songFull.setDance(BigDecimal.valueOf(response.getDouble("danceability")).floatValue());
                         songFull.setLoudness(BigDecimal.valueOf(response.getDouble("loudness")).floatValue());
                         songFull.setTempo(BigDecimal.valueOf(response.getDouble("tempo")).floatValue());
-                        songFulls.set(position, songFull);
+                        SongFulls.set(position, songFull);
                         callBack.onSuccess();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -147,15 +148,16 @@ public class SongService {
 
 
 
-    private String getURLforTracks(ArrayList<SongSimplified> songSimplifieds) {
+    private String getURLforTracks(List<SongSimplified> songSimplifieds) {
         String url = "https://api.spotify.com/v1/tracks/?ids=";
         for(SongSimplified songSimplified: songSimplifieds) {
             url += songSimplified.getId();
             url += ",";
         }
-        url += songSimplifieds.get(0).getId();
+
+        //url += songSimplifieds.get(0).getId();
         Log.i(Tag,"URL for get tracks: " + url);
-        return url;
+        return url.substring(0, url.length()-1);
     }
 
     private String getURLforTrackDetails(SongFull songFull) {
@@ -171,6 +173,7 @@ public class SongService {
     private JsonObjectRequest prepareSongLibraryRequest(JSONObject payload) {
         return new JsonObjectRequest(Request.Method.PUT, "https://api.spotify.com/v1/me/tracks", payload, response -> {
         }, error -> {
+            Log.e(Tag, "help", error);
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -199,6 +202,7 @@ public class SongService {
     public ArrayList<SongFull> getSeedTracks(UserService.VolleyCallBack callBack, ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
         String url = getURLforSeedTracks(customIdSongs, customIdArtists, amount);
         ArrayList<SongSimplified> songSimplifieds = new ArrayList<>();
+        SongFulls = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, response -> {
                     Gson gson = new Gson();
@@ -212,8 +216,17 @@ public class SongService {
                             e.printStackTrace();
                         }
                     }
+                    if (songSimplifieds.size() > 50) {
+                        getTracks(
+                                songSimplifieds.subList(0,
+                                        songSimplifieds.size()/2), callBack);
+                        getTracks(
+                                songSimplifieds.subList(songSimplifieds.size()/2,
+                                        songSimplifieds.size()), callBack);
 
-                    songFulls = getTracks(songSimplifieds, callBack);
+                    } else {
+                        getTracks(songSimplifieds, callBack);
+                    }
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -228,7 +241,7 @@ public class SongService {
             }
         };
         queue.add(jsonObjectRequest);
-        return songFulls;
+        return SongFulls;
     }
 
 
