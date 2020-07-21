@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.MainActivity;
+import com.example.spotifytest.MapSettings;
 import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
@@ -454,13 +455,13 @@ public class GenerateFragment extends Fragment {
                             if (temp.charAt(i) == 'h') {
                                 minutes += Integer.parseInt(temp.substring(0, i - 1)) * 60;
                             }
-                            if (temp.charAt(i) == 'r' && !temp.contains("s")){
+                            if (temp.charAt(i) == 'r' && temp.charAt(i+1)!= 's'){
                                 temp = temp.substring(i+2);
                                 break;
                             }
-                            if (temp.charAt(i) == 's') {
+                            if (temp.charAt(i) == 'r' && temp.charAt(i+1) == 's') {
                                 try {
-                                    temp = temp.substring(i + 2);
+                                    temp = temp.substring(i + 3);
                                 } catch (Exception e) {
                                     break;
                                 }
@@ -476,20 +477,10 @@ public class GenerateFragment extends Fragment {
                             }
                         }
                     }
-                    int zoomLevel;
-                    if (minutes <= 15) {
-                        zoomLevel = 11;
-                    } else if (15 < minutes && minutes <= 30) {
-                        zoomLevel = 9;
-                    } else if (minutes < 120) {
-                        zoomLevel = 7;
-                    } else if (minutes < 240) {
-                        zoomLevel = 6;
-                    } else {
-                        zoomLevel = 3;
-                    }
+                    MapSettings mapSettings = new MapSettings();
                     Log.i(Tag, "total minutes " + minutes);
                     time = minutes*60000;
+                    int zoomLevel = mapSettings.getZoom(time);
                     amountSongs = time / 100000;
                     amountSongs = amountSongs + 2;
                     if(amountSongs > 100){

@@ -97,22 +97,8 @@ public class DetailActivity extends AppCompatActivity {
                   .clickable(true)
                   .color(Color.parseColor("#1ED760"))
                   .addAll(latLngs));
-          int zoomLevel;
-          int minutes = Integer.parseInt(playlist.getKeyTimeTo())/60000;
-          if (minutes <= 15) {
-            zoomLevel = 11;
-          }
-          else if (15 < minutes && minutes <= 30) {
-            zoomLevel = 9;
-          }
-          else if (minutes < 120) {
-            zoomLevel = 7;
-          }
-          else if (minutes < 240) {
-            zoomLevel = 6;
-          } else {
-            zoomLevel = 3;
-          }
+          MapSettings mapSettings = new MapSettings();
+          int zoomLevel = mapSettings.getZoom(Integer.parseInt((playlist.getKeyTimeTo())));
           try {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(latLngs.size()/2), zoomLevel));
             map.addMarker(new MarkerOptions()
