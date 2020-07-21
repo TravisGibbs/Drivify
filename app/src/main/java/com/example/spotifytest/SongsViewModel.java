@@ -7,6 +7,8 @@ import com.example.spotifytest.Services.PlaylistService;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nullable;
+
 public class SongsViewModel extends ViewModel {
 
   private ArrayList<SongFull> songList;
@@ -24,6 +26,7 @@ public class SongsViewModel extends ViewModel {
     this.songList = songList;
   }
 
+  @Nullable
   public PlaylistService getPlaylistService() {
     return playlistService;
   }

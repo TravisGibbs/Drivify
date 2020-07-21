@@ -42,9 +42,11 @@ public class PlaylistService {
         this.relativeLayout = relativeLayout;
     }
 
-    public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds, int time, Place origin, Place destination) {
+    public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds,
+                            int time, Place origin, Place destination) {
         JSONObject payload = preparePutPayloadPlaylistPost(playlistTitle);
-        JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds, time, origin, destination);
+        JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds,
+                time, origin, destination);
         queue.add(jsonObjectRequest);
     }
 
@@ -173,7 +175,8 @@ public class PlaylistService {
     }
 
     public String PostPlaylistEnd() {
-        String endpoint = String.format("https://api.spotify.com/v1/users/%s/playlists", sharedPreferences.getString("userid", "No SpotifyUser"));
+        String endpoint = String.format("https://api.spotify.com/v1/users/%s/playlists",
+                sharedPreferences.getString("userid", "No SpotifyUser"));
         Log.i(Tag,endpoint);
         return endpoint;
     }
