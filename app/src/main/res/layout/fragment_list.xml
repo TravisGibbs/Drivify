@@ -15,7 +15,6 @@
         android:id="@+id/errorText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Generate a playlist First!"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="36sp" />
@@ -32,4 +31,5 @@
         android:contentDescription="playButton"
         android:src="@drawable/play_button"
         android:visibility="gone" />
+
 </RelativeLayout>

@@ -113,7 +113,7 @@ public class GenerateFragment extends Fragment {
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
     private StringBuilder currentSearchedObjects;
-    SupportMapFragment mapFrag;
+    private SupportMapFragment mapFrag;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -410,10 +410,11 @@ public class GenerateFragment extends Fragment {
                     jsonObject = (JSONObject) jsonObject.getJSONObject("overview_polyline");
                     String polyline = jsonObject.getString("points");
                     List<LatLng> latLngs = PolyUtil.decode(polyline);
-                    Polyline polyline1 = map.addPolyline(new PolylineOptions()
-                            .clickable(true)
-                            .color(Color.parseColor("#1ED760"))
-                            .addAll(latLngs));
+                    Polyline polyline1 = map.addPolyline(
+                            new PolylineOptions()
+                                .clickable(true)
+                                .color(Color.parseColor("#1ED760"))
+                                .addAll(latLngs));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -475,14 +476,11 @@ public class GenerateFragment extends Fragment {
                     int zoomLevel;
                     if (minutes <= 15) {
                         zoomLevel = 11;
-                    }
-                    else if (15 < minutes && minutes <= 30) {
+                    } else if (15 < minutes && minutes <= 30) {
                         zoomLevel = 9;
-                    }
-                    else if (minutes < 120) {
+                    } else if (minutes < 120) {
                         zoomLevel = 7;
-                    }
-                    else if (minutes < 240) {
+                    } else if (minutes < 240) {
                         zoomLevel = 6;
                     } else {
                         zoomLevel = 3;
@@ -499,12 +497,14 @@ public class GenerateFragment extends Fragment {
                         Log.e(Tag, "Error setting bounds", e);
                     }
                     mapFrag.getView().setVisibility(View.VISIBLE);
-                    map.addMarker(new MarkerOptions()
-                            .position(origin.getLatLng())
-                            .title("Start"));
-                    map.addMarker(new MarkerOptions()
-                            .position(destination.getLatLng())
-                            .title("End"));
+                    map.addMarker(
+                            new MarkerOptions()
+                                .position(origin.getLatLng())
+                                .title("Start"));
+                    map.addMarker(
+                            new MarkerOptions()
+                                .position(destination.getLatLng())
+                                .title("End"));
                     searchResults.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();

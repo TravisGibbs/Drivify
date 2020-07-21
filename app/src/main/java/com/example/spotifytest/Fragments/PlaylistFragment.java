@@ -2,21 +2,19 @@ package com.example.spotifytest.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,32 +23,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.spotifytest.Adapters.PlaylistAdapter;
-import com.example.spotifytest.CLocation;
-import com.example.spotifytest.IBaseGpsListener;
 import com.example.spotifytest.MainActivity;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.SongsViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import java.security.acl.Permission;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Locale;
 
 
-public class PlaylistFragment extends Fragment implements IBaseGpsListener {
-
+public class PlaylistFragment extends Fragment {
 
   private static final String Tag = "PlaylistFragment";
   private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
@@ -63,7 +56,6 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
   private RelativeLayout relativeLayout;
   private LinearLayoutManager linearLayoutManager;
   private FloatingActionButton floatingActionButton;
-  private CLocation cLocation;
   private TextView errorText;
   private Boolean playing = false;
 
@@ -71,19 +63,17 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    rvPlaylist = view.findViewById(R.id.rvSongs);
-    errorText = view.findViewById(R.id.errorText);
-    relativeLayout = view.findViewById(R.id.playlistLayout);
-    viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
-    floatingActionButton = view.findViewById(R.id.playButton);
-    allSongs = viewModel.getSongList();
-    LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(getContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
+    LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
+    if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(view.getContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
       // TODO: Consider calling
-      //    ActivityCompat#requestPermissions;
+      //    ActivityCompat#requestPermissions
+      ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+      Log.i(Tag, "hlep");
       // here to request the missing permissions, and then overriding
       //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
       //                                          int[] grantResults)
@@ -91,10 +81,45 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
       // for ActivityCompat#requestPermissions for more details.
       return;
     }
-    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-    this.updateSpeed(null);
+    errorText = view.findViewById(R.id.errorText);
+    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+      @Override
+      public void onLocationChanged(Location location) {
+        if (location==null){
+          // if you can't get speed because reasons :)
+          errorText.setText("00 km/h");
+        }
+        else{
+          //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
+
+          int speed=(int) ((location.getSpeed()*3600)/1000);
+
+          errorText.setText(speed+" km/h");
+        }
+      }
+
+      @Override
+      public void onStatusChanged(String s, int i, Bundle bundle) {
+
+      }
+
+      @Override
+      public void onProviderEnabled(String s) {
+
+      }
+
+      @Override
+      public void onProviderDisabled(String s) {
+
+      }
+    });
+    rvPlaylist = view.findViewById(R.id.rvSongs);
+    relativeLayout = view.findViewById(R.id.playlistLayout);
+    viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
+    floatingActionButton = view.findViewById(R.id.playButton);
+    allSongs = viewModel.getSongList();
     if (allSongs.size() > 0) {
-      setUpRemote(view);
+      setUpSpotifyRemote(view);
       floatingActionButton.setVisibility(View.VISIBLE);
       errorText.setVisibility(View.GONE);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
@@ -109,7 +134,6 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
         }
       });
     }
-
     relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
       @Override
       public void onSwipeRight() {
@@ -119,6 +143,7 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
       }
     });
   }
+
 
   private void playOrPause() {
     if (playing) {
@@ -132,7 +157,7 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
     }
   }
 
-  private void setUpRemote(View view) {
+  private void setUpSpotifyRemote(View view) {
     ConnectionParams connectionParams =
             new ConnectionParams.Builder(CLIENT_ID)
                     .setRedirectUri(REDIRECT_URI)
@@ -156,53 +181,10 @@ public class PlaylistFragment extends Fragment implements IBaseGpsListener {
             });
   }
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_list, container, false);
-  }
-
-  private void updateSpeed(CLocation location) {
-    float nCurrentSpeed = 0;
-
-    if (location != null) {
-      nCurrentSpeed = location.getSpeed();
-    }
-
-    Formatter fmt = new Formatter(new StringBuilder());
-    fmt.format(Locale.US, "%5.1f", nCurrentSpeed);
-    String strCurrentSpeed = fmt.toString();
-    Log.i(Tag, strCurrentSpeed);
-    strCurrentSpeed = strCurrentSpeed.replace(' ', '0');
-    String strUnits = "miles/hour";
-  }
-
-  @Override
-  public void onLocationChanged(Location location) {
-    if(location != null) {
-      CLocation myLocation = new CLocation(location, false);
-      this.updateSpeed(myLocation);
-    }
-  }
-
-  @Override
-  public void onProviderDisabled(String provider) {
-  }
-
-  @Override
-  public void onProviderEnabled(String provider) {
-  }
-
-  @Override
-  public void onStatusChanged(String provider, int status, Bundle extras) {
-  }
-
-  @Override
-  public void onGpsStatusChanged(int event) {
   }
 }

@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/mapDetail"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="415dp"
+        android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_above="@+id/distanceButton"
         android:layout_below="@+id/searchObjects"
