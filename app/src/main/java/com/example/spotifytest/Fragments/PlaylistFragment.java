@@ -69,16 +69,15 @@ public class PlaylistFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
     audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
-    LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
     if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(view.getContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
-      Log.i(Tag, "hlep");
-      return;
+      Log.i(Tag, "Permission check");
     }
+    LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
     errorText = view.findViewById(R.id.errorText);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             10000, // 10 second interval
@@ -89,8 +88,7 @@ public class PlaylistFragment extends Fragment {
                 if (location==null){
                   // if you can't get speed because reasons :)
                   errorText.setText("00 km/h");
-                }
-                else{
+                } else {
                   //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
                   speed = (int) ((location.getSpeed()*3600)/1000);
                   if (pastSpeed + 5 < speed) {
@@ -178,7 +176,7 @@ public class PlaylistFragment extends Fragment {
                 mSpotifyAppRemote = spotifyAppRemote;
                 mSpotifyAppRemote.getPlayerApi().play(viewModel.getPlaylistService().getPlaylistURI());
                 floatingActionButton.setImageResource(R.drawable.pause_icon);
-
+                playing = true;
               }
 
               @Override

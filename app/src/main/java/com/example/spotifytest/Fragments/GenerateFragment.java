@@ -10,8 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -20,20 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.MainActivity;
-import com.example.spotifytest.MapSettings;
-import com.example.spotifytest.Models.Playlist;
+import com.example.spotifytest.Services.MapService;
 import com.example.spotifytest.Models.SongFull;
-import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.SearchActivity;
@@ -41,30 +35,23 @@ import com.example.spotifytest.Services.PlaylistService;
 import com.example.spotifytest.Services.SongService;
 import com.example.spotifytest.SongsViewModel;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.dynamic.SupportFragmentWrapper;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.JsonObject;
 import com.google.maps.android.PolyUtil;
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,7 +59,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -91,19 +77,26 @@ public class GenerateFragment extends Fragment {
     private String radioButtonSelected = "";
     private TextView timeView;
     private TextView searchResults;
+    private TextView danceLabel;
+    private TextView energyLabel;
+    private TextView valenceLabel;
     private EditText destText;
     private EditText originText;
     private Button goToPlaylistButton;
     private Button makePlaylistButton;
-    private Button findDistanceButton;
+    private Button getSongsButton;
     private Button searchButton;
     private RadioGroup radioGroup;
     private RadioButton radioIncrease;
     private RadioButton radioDecrease;
     private RadioButton radioDance;
+    private Slider sliderDance;
+    private Slider sliderEnergy;
+    private Slider sliderValence;
     private RelativeLayout relativeLayout;
     private SongService songService;
     private PlaylistService playlistService;
+    private MapService mapService;
     private ArrayList<SongFull> allTracks;
     private SongsViewModel viewModel;
     private GoogleMap map;
@@ -126,7 +119,7 @@ public class GenerateFragment extends Fragment {
         songService = new SongService(view.getContext(), relativeLayout);
         destText = view.findViewById(R.id.destinationTest);
         originText = view.findViewById(R.id.originText);
-        findDistanceButton = view.findViewById(R.id.distanceButton);
+        getSongsButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
         searchResults = view.findViewById(R.id.searchObjects);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
@@ -136,13 +129,19 @@ public class GenerateFragment extends Fragment {
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
         radioDance = view.findViewById(R.id.radioDance);
+        sliderDance = view.findViewById(R.id.danceSlider);
+        sliderEnergy = view.findViewById(R.id.energySlider);
+        sliderValence = view.findViewById(R.id.valenceSlider);
+        danceLabel = view.findViewById(R.id.danceLabel);
+        energyLabel = view.findViewById(R.id.energyLabel);
+        valenceLabel = view.findViewById(R.id.valenceLabel);
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
         customIdArtists = new ArrayList<>();
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
         currentSearchedObjects.append("Searched Artists and Songs:");
-        
+        mapService = new MapService();
         mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFrag.getView().setVisibility(View.GONE);
         mapFrag.getMapAsync(new OnMapReadyCallback() {
@@ -189,7 +188,7 @@ public class GenerateFragment extends Fragment {
             }
         });
 
-        findDistanceButton.setOnClickListener(new View.OnClickListener() {
+        getSongsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(origin !=null && destination !=null) {
@@ -252,6 +251,9 @@ public class GenerateFragment extends Fragment {
     }
 
     private ArrayList<SongFull> getTracks(int amount) {
+        Float danceValue = sliderDance.getValue();
+        Float energyValue = sliderEnergy.getValue();
+        Float loudnessValue = sliderValence.getValue();
         if (customIdSongs.isEmpty() && customIdArtists.isEmpty()) {
             songService.getRecentlyPlayedTracks(() -> {
                 allTracks = songService.getSongFulls();
@@ -259,7 +261,7 @@ public class GenerateFragment extends Fragment {
         } else {
             songService.getSeedTracks(() -> {
                 allTracks = songService.getSongFulls();
-            }, customIdSongs, customIdArtists, amount);
+            }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue);
         }
         return allTracks;
     }
@@ -386,50 +388,11 @@ public class GenerateFragment extends Fragment {
         searchResults.setText(currentSearchedObjects.toString());
     }
 
-    public void getDirections(){
-        StringBuilder url = new StringBuilder();
-        url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
-        url.append(origin.getId());
-        url.append("&destination=place_id:");
-        url.append(destination.getId());
-        url.append("&key=");
-        url.append(apiKey);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url.toString(), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.i(Tag,"search for directions succ");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONArray routes = (JSONArray) jsonObject.get("routes");
-                    jsonObject = (JSONObject) routes.get(0);
-                    jsonObject = (JSONObject) jsonObject.getJSONObject("overview_polyline");
-                    String polyline = jsonObject.getString("points");
-                    List<LatLng> latLngs = PolyUtil.decode(polyline);
-                    Polyline polyline1 = map.addPolyline(
-                            new PolylineOptions()
-                                .clickable(true)
-                                .color(Color.parseColor("#1ED760"))
-                                .addAll(latLngs));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(Tag,"search for directions failed", throwable);
-            }
-        });
-        Log.i(Tag, url.toString());
-    }
-
     public void getDistance(Place a, Place b){
         if (customIdArtists.size() + customIdSongs.size() < 1){
             Snackbar.make(relativeLayout, "Select an artist or song!", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        getDirections();
         moveButtonOffScreenRight(searchButton);
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
@@ -443,69 +406,48 @@ public class GenerateFragment extends Fragment {
                 try {
                     JSONObject help = (JSONObject) jsonObject.getJSONArray("rows").get(0);
                     JSONObject help2 = (JSONObject) help.getJSONArray("elements").get(0);
-                    int minutes = 0;
                     String temp = help2.getJSONObject("duration").getString("text");
                     Log.i(Tag,"time to destination " + temp);
-                    if (temp.contains("d")){
-                        minutes += 1440;
-                        temp = temp.substring(6);
-                    }
-                    if (temp.contains("h")) {
-                        for (int i = 0; i < temp.length(); i++) {
-                            if (temp.charAt(i) == 'h') {
-                                minutes += Integer.parseInt(temp.substring(0, i - 1)) * 60;
-                            }
-                            if (temp.charAt(i) == 'r' && temp.charAt(i+1)!= 's'){
-                                temp = temp.substring(i+2);
-                                break;
-                            }
-                            if (temp.charAt(i) == 'r' && temp.charAt(i+1) == 's') {
-                                try {
-                                    temp = temp.substring(i + 3);
-                                } catch (Exception e) {
-                                    break;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if (temp.contains("m")) {
-                        for (int i =0; i < temp.length(); i++) {
-                            if (temp.charAt(i) == 'm') {
-                                minutes += Integer.parseInt(temp.substring(0,i-1));
-                                break;
-                            }
-                        }
-                    }
-                    MapSettings mapSettings = new MapSettings();
-                    Log.i(Tag, "total minutes " + minutes);
-                    time = minutes*60000;
-                    int zoomLevel = mapSettings.getZoom(time);
+                    int minutes = mapService.getMinutes(temp);
+                    time = minutes * 60000;
+                    int zoomLevel = mapService.getZoom(time);
                     amountSongs = time / 100000;
                     amountSongs = amountSongs + 2;
-                    if(amountSongs > 100){
+                    if (amountSongs > 100) {
                         Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
                         amountSongs = 100;
                     }
                     allTracks = getTracks(amountSongs);
-                    startButtonSwap(makePlaylistButton, findDistanceButton);
+                    startButtonSwap(makePlaylistButton, getSongsButton);
                     timeView.setText(help2.getJSONObject("duration").getString("text"));
                     timeView.setVisibility(View.VISIBLE);
-                    try {
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin.getLatLng(), zoomLevel));
-                    } catch (Exception e) {
-                        Log.e(Tag, "Error setting bounds", e);
-                    }
+
+                    mapService.getRoute(origin.getId(), destination.getId(), new MapService.MyCallback() {
+                        @Override
+                        public void onDataGotRoute() {
+                            try {
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
+                                map.addMarker(
+                                        new MarkerOptions()
+                                                .position(mapService.getOriginLatLng())
+                                                .title("Start"));
+                                map.addMarker(
+                                        new MarkerOptions()
+                                                .position(mapService.getDestinationLatLng())
+                                                .title("End"));
+                                map.addPolyline(mapService.getPolylineOptions());
+                            } catch (Exception e) {
+                                Log.e(Tag, "Error setting bounds", e);
+                            }
+                        }
+                    });
                     mapFrag.getView().setVisibility(View.VISIBLE);
-                    map.addMarker(
-                            new MarkerOptions()
-                                .position(origin.getLatLng())
-                                .title("Start"));
-                    map.addMarker(
-                            new MarkerOptions()
-                                .position(destination.getLatLng())
-                                .title("End"));
                     searchResults.setVisibility(View.GONE);
+                    originText.setVisibility(View.GONE);
+                    destText.setVisibility(View.GONE);
+                    danceLabel.setVisibility(View.GONE);
+                    energyLabel.setVisibility(View.GONE);
+                    valenceLabel.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -513,7 +455,7 @@ public class GenerateFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(Tag, "fail");
+                Log.d(Tag, "failed getting directions");
             }
         });
     }

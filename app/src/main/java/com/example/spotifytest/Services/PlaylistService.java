@@ -11,7 +11,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
-import com.example.spotifytest.Models.SongSimplified;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseException;
@@ -45,8 +44,8 @@ public class PlaylistService {
     public void addPlaylist(String playlistTitle, ArrayList<SongFull> songSimplifieds,
                             int time, Place origin, Place destination) {
         JSONObject payload = preparePutPayloadPlaylistPost(playlistTitle);
-        JsonObjectRequest jsonObjectRequest = PlaylistPost(payload, songSimplifieds,
-                time, origin, destination);
+        JsonObjectRequest jsonObjectRequest =
+                playlistPost(payload, songSimplifieds, time, origin, destination);
         queue.add(jsonObjectRequest);
     }
 
@@ -82,9 +81,9 @@ public class PlaylistService {
         return request;
     }
 
-    private JsonObjectRequest PlaylistPost(JSONObject payload, ArrayList<SongFull> songSimplifieds,
+    private JsonObjectRequest playlistPost(JSONObject payload, ArrayList<SongFull> songSimplifieds,
                                            int time, Place origin, Place destination) {
-        return new JsonObjectRequest(Request.Method.POST, PostPlaylistEnd(), payload, response -> {
+        return new JsonObjectRequest(Request.Method.POST, getPostPlaylistURL(), payload, response -> {
             try {
                 onSuccPlaylist(response, songSimplifieds, time, origin, destination);
             } catch (JSONException e) {
@@ -174,7 +173,7 @@ public class PlaylistService {
         return;
     }
 
-    public String PostPlaylistEnd() {
+    public String getPostPlaylistURL() {
         String endpoint = String.format("https://api.spotify.com/v1/users/%s/playlists",
                 sharedPreferences.getString("userid", "No SpotifyUser"));
         Log.i(Tag,endpoint);

@@ -26,9 +26,9 @@ import java.util.Map;
 
 public class SongService {
 
-    private int i = 0;
+    private int offset = 0;
     private static final String Tag = "SongService";
-    private ArrayList<SongFull> SongFulls;
+    private ArrayList<SongFull> songFulls;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private RelativeLayout relativeLayout;
@@ -40,7 +40,7 @@ public class SongService {
     }
 
     public ArrayList<SongFull> getSongFulls() {
-        return SongFulls;
+        return songFulls;
     }
 
     public ArrayList<SongFull> getRecentlyPlayedTracks(final UserService.VolleyCallBack callBack , int amount) {
@@ -75,7 +75,7 @@ public class SongService {
             }
         };
         queue.add(jsonObjectRequest);
-        return SongFulls;
+        return songFulls;
     }
 
     public void getTracks(List<SongSimplified> songSimplifieds, UserService.VolleyCallBack callBack){
@@ -89,17 +89,17 @@ public class SongService {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    for (int n = 0 ; n < jsonArray.length(); n++) {
+                    for (int n = 0; n < jsonArray.length(); n++) {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
                             SongFull songFull = gson.fromJson(object.toString(), SongFull.class);
-                            int j = n + i;
-                            SongFulls.add(getTrackDetails(songFull, j, callBack));
+                            int position = n + offset; // The offset allows for get tracks to be called in two separate calls because the limit of the API is 50 while our tracks are up too 100
+                            songFulls.add(getTrackDetails(songFull, position, callBack));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                    i = jsonArray.length();
+                    offset += jsonArray.length();
                     callBack.onSuccess();
                 }, error -> {
                     // TODO: Handle error
@@ -125,7 +125,7 @@ public class SongService {
                         songFull.setDance(BigDecimal.valueOf(response.getDouble("danceability")).floatValue());
                         songFull.setLoudness(BigDecimal.valueOf(response.getDouble("loudness")).floatValue());
                         songFull.setTempo(BigDecimal.valueOf(response.getDouble("tempo")).floatValue());
-                        SongFulls.set(position, songFull);
+                        songFulls.set(position, songFull);
                         callBack.onSuccess();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -150,7 +150,7 @@ public class SongService {
 
     private String getURLforTracks(List<SongSimplified> songSimplifieds) {
         String url = "https://api.spotify.com/v1/tracks/?ids=";
-        for(SongSimplified songSimplified: songSimplifieds) {
+        for (SongSimplified songSimplified: songSimplifieds) {
             url += songSimplified.getId();
             url += ",";
         }
@@ -199,10 +199,14 @@ public class SongService {
         return ids;
     }
 
-    public ArrayList<SongFull> getSeedTracks(UserService.VolleyCallBack callBack, ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
-        String url = getURLforSeedTracks(customIdSongs, customIdArtists, amount);
+    public ArrayList<SongFull> getSeedTracks(UserService.VolleyCallBack callBack,
+                                             ArrayList<String> customIdSongs,
+                                             ArrayList<String> customIdArtists,
+                                             int amount, Float danceVals,
+                                             Float energyVals, Float valenceVals) {
+        String url = getURLforSeedTracks(customIdSongs, customIdArtists, amount, danceVals, energyVals, valenceVals);
         ArrayList<SongSimplified> songSimplifieds = new ArrayList<>();
-        SongFulls = new ArrayList<>();
+        songFulls = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, response -> {
                     Gson gson = new Gson();
@@ -218,11 +222,11 @@ public class SongService {
                     }
                     if (songSimplifieds.size() > 50) {
                         getTracks(
-                                songSimplifieds.subList(0,
-                                        songSimplifieds.size()/2), callBack);
+                                songSimplifieds.subList(
+                                        0, songSimplifieds.size() / 2), callBack);
                         getTracks(
-                                songSimplifieds.subList(songSimplifieds.size()/2,
-                                        songSimplifieds.size()), callBack);
+                                songSimplifieds.subList(
+                                        songSimplifieds.size() / 2, songSimplifieds.size()), callBack);
 
                     } else {
                         getTracks(songSimplifieds, callBack);
@@ -241,11 +245,14 @@ public class SongService {
             }
         };
         queue.add(jsonObjectRequest);
-        return SongFulls;
+        return songFulls;
     }
 
 
-    private String getURLforSeedTracks(ArrayList<String> customIdSongs, ArrayList<String> customIdArtists, int amount) {
+    private String getURLforSeedTracks(ArrayList<String> customIdSongs,
+                                       ArrayList<String> customIdArtists, int amount,
+                                       Float danceVals, Float energyVals,
+                                       Float valenceVals) {
         StringBuilder url = new StringBuilder();
         url.append("https://api.spotify.com/v1/recommendations?limit=").append(amount).append("&");
         if (!customIdArtists.isEmpty()) {
@@ -271,6 +278,12 @@ public class SongService {
                 }
             }
         }
+        url.append("&target_danceability=");
+        url.append(danceVals);
+        url.append("&target_energy=");
+        url.append(energyVals);
+        url.append("&target_valence=");
+        url.append(valenceVals);
         Log.i(Tag, "seed tracks url: " + url);
         return url.toString();
     }

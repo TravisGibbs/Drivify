@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.Models.Playlist;
+import com.example.spotifytest.Services.MapService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,7 +23,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
@@ -42,8 +42,9 @@ public class DetailActivity extends AppCompatActivity {
   private Button goToPlaylist;
   private TextView time;
   private GoogleMap map;
-  SupportMapFragment mapFrag;
+  private SupportMapFragment mapFrag;
   private Playlist playlist;
+  private MapService mapService;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,14 @@ public class DetailActivity extends AppCompatActivity {
     time = findViewById(R.id.timeAmountDetail);
     title = findViewById(R.id.playlistTitleDetail);
     goToPlaylist = findViewById(R.id.openLinkButtonDetail);
+    mapService = new MapService();
     playlist = Parcels.unwrap(getIntent().getParcelableExtra("playlist"));
+    mapService.getRoute(playlist.getKeyOriginId(), playlist.getKeyDestinationId(), new MapService.MyCallback() {
+      @Override
+      public void onDataGotRoute() {
+        getDirections();
+      }
+    });
     mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapDetail);
     mapFrag.getMapAsync(new OnMapReadyCallback() {
       @Override
@@ -73,58 +81,19 @@ public class DetailActivity extends AppCompatActivity {
     });
   }
 
-  public void getDirections(){
-    StringBuilder url = new StringBuilder();
-    url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
-    url.append(playlist.getKeyOriginId());
-    url.append("&destination=place_id:");
-    url.append(playlist.getKeyDestinationId());
-    url.append("&key=");
-    url.append(apiKey);
-    AsyncHttpClient client = new AsyncHttpClient();
-    client.get(url.toString(), new JsonHttpResponseHandler() {
-      @Override
-      public void onSuccess(int statusCode, Headers headers, JSON json) {
-        Log.i(Tag,"search for directions succ");
-        JSONObject jsonObject = json.jsonObject;
-        try {
-          JSONArray routes = (JSONArray) jsonObject.get("routes");
-          jsonObject = (JSONObject) routes.get(0);
-          jsonObject = (JSONObject) jsonObject.getJSONObject("overview_polyline");
-          String polyline = jsonObject.getString("points");
-          List<LatLng> latLngs = PolyUtil.decode(polyline);
-          Polyline polyline1 = map.addPolyline(new PolylineOptions()
-                  .clickable(true)
-                  .color(Color.parseColor("#1ED760"))
-                  .addAll(latLngs));
-          MapSettings mapSettings = new MapSettings();
-          int zoomLevel = mapSettings.getZoom(Integer.parseInt((playlist.getKeyTimeTo())));
-          try {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(latLngs.size()/2), zoomLevel));
-            map.addMarker(new MarkerOptions()
-                    .position(latLngs.get(0))
-                    .title("Start"));
-            map.addMarker(new MarkerOptions()
-                    .position(latLngs.get(latLngs.size()-1))
-                    .title("End"));
-          } catch (Exception e) {
-            Log.e(Tag, "Error setting bounds", e);
-          }
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-        Log.e(Tag,"search for directions failed", throwable);
-      }
-    });
-    Log.i(Tag, url.toString());
+  public void getDirections() {
+    int zoomLevel = mapService.getZoom(Integer.parseInt((playlist.getKeyTimeTo())));
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
+    map.addMarker(new MarkerOptions()
+            .position(mapService.getOriginLatLng())
+            .title("Start"));
+    map.addMarker(new MarkerOptions()
+            .position(mapService.getDestinationLatLng())
+            .title("End"));
+    map.addPolyline(mapService.getPolylineOptions());
   }
 
   public void getDistance(String OriginID, String DestinationID){
-    getDirections();
     String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
             + OriginID + "&destinations=place_id:"
             + DestinationID + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
