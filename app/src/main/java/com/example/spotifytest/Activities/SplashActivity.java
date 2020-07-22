@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.example.spotifytest.Models._User;
+import com.example.spotifytest.R;
 import com.example.spotifytest.Services.UserService;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -78,7 +79,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startLogin(){
-        Intent i = new Intent(SplashActivity.this,LoginActivity.class);
+        Intent i = new Intent(SplashActivity.this, LoginActivity.class);
         startActivity(i);
     }
 

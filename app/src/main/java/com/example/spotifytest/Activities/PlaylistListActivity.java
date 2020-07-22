@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.example.spotifytest.Adapters.ListAdapter;
 import com.example.spotifytest.Adapters.SearchAdapter;
 import com.example.spotifytest.Models.Playlist;
+import com.example.spotifytest.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;

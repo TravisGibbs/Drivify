@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -20,7 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.spotifytest.Activities.MainActivity;
 import com.example.spotifytest.Models._User;
+import com.example.spotifytest.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.LogInCallback;
 import com.parse.ParseException;

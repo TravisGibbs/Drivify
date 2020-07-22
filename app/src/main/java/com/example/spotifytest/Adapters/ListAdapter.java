@@ -2,7 +2,6 @@ package com.example.spotifytest.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.spotifytest.DetailActivity;
+import com.example.spotifytest.Activities.DetailActivity;
 import com.example.spotifytest.Models.Playlist;
-import com.example.spotifytest.Models.SongFull;
-import com.example.spotifytest.PlaylistListActivity;
 import com.example.spotifytest.R;
 
-import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import java.util.List;

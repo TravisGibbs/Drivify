@@ -6,10 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.spotifytest.LoginActivity;
-import com.example.spotifytest.MainActivity;
+import com.example.spotifytest.Activities.LoginActivity;
+import com.example.spotifytest.Activities.MainActivity;
 import com.example.spotifytest.Models._User;
 import com.example.spotifytest.OnSwipeTouchListener;
-import com.example.spotifytest.PlaylistListActivity;
+import com.example.spotifytest.Activities.PlaylistListActivity;
 import com.example.spotifytest.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;

@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.spotifytest.Models.Playlist;
+import com.example.spotifytest.R;
 import com.example.spotifytest.Services.MapService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

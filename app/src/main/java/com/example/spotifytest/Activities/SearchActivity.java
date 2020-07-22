@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +25,7 @@ import com.example.spotifytest.Models.SearchObject;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.Models.SongSimplified;
 import com.example.spotifytest.Models.SpotifyImages;
+import com.example.spotifytest.R;
 import com.example.spotifytest.Services.UserService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

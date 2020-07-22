@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +14,7 @@ import android.view.View;
 import com.example.spotifytest.Fragments.GenerateFragment;
 import com.example.spotifytest.Fragments.ProfileFragment;
 import com.example.spotifytest.Fragments.PlaylistFragment;
+import com.example.spotifytest.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

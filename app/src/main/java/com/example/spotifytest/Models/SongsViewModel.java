@@ -1,4 +1,4 @@
-package com.example.spotifytest;
+package com.example.spotifytest.Models;
 
 import androidx.lifecycle.ViewModel;
 

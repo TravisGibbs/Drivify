@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".Activities.DetailActivity"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -25,15 +25,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk" />
 
-        <activity android:name=".PlaylistListActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Activities.PlaylistListActivity" />
+        <activity android:name=".Activities.SearchActivity" />
+        <activity android:name=".Activities.RegisterActivity" />
+        <activity android:name=".Activities.LoginActivity" />
+        <activity android:name=".Activities.MainActivity" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".Activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

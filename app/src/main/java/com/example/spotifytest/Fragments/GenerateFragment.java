@@ -3,7 +3,6 @@ package com.example.spotifytest.Fragments;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -23,26 +22,21 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.codepath.asynchttpclient.AsyncHttpClient;
-import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.example.spotifytest.MainActivity;
+import com.example.spotifytest.Activities.MainActivity;
 import com.example.spotifytest.Services.MapService;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
-import com.example.spotifytest.SearchActivity;
+import com.example.spotifytest.Activities.SearchActivity;
 import com.example.spotifytest.Services.PlaylistService;
 import com.example.spotifytest.Services.SongService;
-import com.example.spotifytest.SongsViewModel;
+import com.example.spotifytest.Models.SongsViewModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -50,12 +44,7 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.maps.android.PolyUtil;
 
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +52,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import okhttp3.Headers;
 
 
 public class GenerateFragment extends Fragment {
@@ -132,6 +119,9 @@ public class GenerateFragment extends Fragment {
         sliderDance = view.findViewById(R.id.danceSlider);
         sliderEnergy = view.findViewById(R.id.energySlider);
         sliderValence = view.findViewById(R.id.valenceSlider);
+        sliderDance.setValue((float) 0.5);
+        sliderEnergy.setValue((float) 0.5);
+        sliderValence.setValue((float) 0.5);
         danceLabel = view.findViewById(R.id.danceLabel);
         energyLabel = view.findViewById(R.id.energyLabel);
         valenceLabel = view.findViewById(R.id.valenceLabel);
@@ -254,15 +244,9 @@ public class GenerateFragment extends Fragment {
         Float danceValue = sliderDance.getValue();
         Float energyValue = sliderEnergy.getValue();
         Float loudnessValue = sliderValence.getValue();
-        if (customIdSongs.isEmpty() && customIdArtists.isEmpty()) {
-            songService.getRecentlyPlayedTracks(() -> {
-                allTracks = songService.getSongFulls();
-            }, amount);
-        } else {
-            songService.getSeedTracks(() -> {
-                allTracks = songService.getSongFulls();
-            }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue);
-        }
+        songService.getSeedTracks(() -> {
+            allTracks = songService.getSongFulls();
+        }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue);
         return allTracks;
     }
 
@@ -449,6 +433,10 @@ public class GenerateFragment extends Fragment {
                 danceLabel.setVisibility(View.GONE);
                 energyLabel.setVisibility(View.GONE);
                 valenceLabel.setVisibility(View.GONE);
+                sliderDance.setVisibility(View.GONE);
+                sliderEnergy.setVisibility(View.GONE);
+                sliderValence.setVisibility(View.GONE);
+                radioGroup.setVisibility(View.VISIBLE);
             }
         });
     }

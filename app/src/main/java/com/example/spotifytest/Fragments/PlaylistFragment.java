@@ -24,24 +24,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.spotifytest.Adapters.PlaylistAdapter;
-import com.example.spotifytest.MainActivity;
+import com.example.spotifytest.Activities.MainActivity;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
-import com.example.spotifytest.SongsViewModel;
+import com.example.spotifytest.Models.SongsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.Locale;
 
 
 public class PlaylistFragment extends Fragment {
