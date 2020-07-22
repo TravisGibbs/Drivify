@@ -397,65 +397,58 @@ public class GenerateFragment extends Fragment {
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
                 + b.getId() + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, new JsonHttpResponseHandler() {
+        mapService.getDistance(a.getId(), b.getId(),
+                new MapService.MyCallback() {
             @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.d(Tag, "Time between places found.");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONObject help = (JSONObject) jsonObject.getJSONArray("rows").get(0);
-                    JSONObject help2 = (JSONObject) help.getJSONArray("elements").get(0);
-                    String temp = help2.getJSONObject("duration").getString("text");
-                    Log.i(Tag,"time to destination " + temp);
-                    int minutes = mapService.getMinutes(temp);
-                    time = minutes * 60000;
-                    int zoomLevel = mapService.getZoom(time);
-                    amountSongs = time / 100000;
-                    amountSongs = amountSongs + 2;
-                    if (amountSongs > 100) {
-                        Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-                        amountSongs = 100;
-                    }
-                    allTracks = getTracks(amountSongs);
-                    startButtonSwap(makePlaylistButton, getSongsButton);
-                    timeView.setText(help2.getJSONObject("duration").getString("text"));
-                    timeView.setVisibility(View.VISIBLE);
-
-                    mapService.getRoute(origin.getId(), destination.getId(), new MapService.MyCallback() {
-                        @Override
-                        public void onDataGotRoute() {
-                            try {
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
-                                map.addMarker(
-                                        new MarkerOptions()
-                                                .position(mapService.getOriginLatLng())
-                                                .title("Start"));
-                                map.addMarker(
-                                        new MarkerOptions()
-                                                .position(mapService.getDestinationLatLng())
-                                                .title("End"));
-                                map.addPolyline(mapService.getPolylineOptions());
-                            } catch (Exception e) {
-                                Log.e(Tag, "Error setting bounds", e);
-                            }
-                        }
-                    });
-                    mapFrag.getView().setVisibility(View.VISIBLE);
-                    searchResults.setVisibility(View.GONE);
-                    originText.setVisibility(View.GONE);
-                    destText.setVisibility(View.GONE);
-                    danceLabel.setVisibility(View.GONE);
-                    energyLabel.setVisibility(View.GONE);
-                    valenceLabel.setVisibility(View.GONE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            public void onDataGotRoute() {
             }
-
             @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(Tag, "failed getting directions");
+            public void onDataGotDistance() {
+                String temp = mapService.getTimeString();
+                Log.i(Tag,"time to destination " + temp);
+                int minutes = mapService.getMinutes(temp);
+                time = minutes * 60000;
+                int zoomLevel = mapService.getZoom(time);
+                amountSongs = time / 100000;
+                amountSongs = amountSongs + 2;
+                if (amountSongs > 100) {
+                    Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
+                    amountSongs = 100;
+                }
+                allTracks = getTracks(amountSongs);
+                startButtonSwap(makePlaylistButton, getSongsButton);
+                timeView.setText(temp);
+                timeView.setVisibility(View.VISIBLE);
+
+                mapService.getRoute(origin.getId(), destination.getId(), new MapService.MyCallback() {
+                    @Override
+                    public void onDataGotRoute() {
+                        try {
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
+                            map.addMarker(
+                                    new MarkerOptions()
+                                            .position(mapService.getOriginLatLng())
+                                            .title("Start"));
+                            map.addMarker(
+                                    new MarkerOptions()
+                                            .position(mapService.getDestinationLatLng())
+                                            .title("End"));
+                            map.addPolyline(mapService.getPolylineOptions());
+                        } catch (Exception e) {
+                            Log.e(Tag, "Error setting bounds", e);
+                        }
+                    }
+                    @Override
+                    public void onDataGotDistance() {
+                    }
+                });
+                mapFrag.getView().setVisibility(View.VISIBLE);
+                searchResults.setVisibility(View.GONE);
+                originText.setVisibility(View.GONE);
+                destText.setVisibility(View.GONE);
+                danceLabel.setVisibility(View.GONE);
+                energyLabel.setVisibility(View.GONE);
+                valenceLabel.setVisibility(View.GONE);
             }
         });
     }

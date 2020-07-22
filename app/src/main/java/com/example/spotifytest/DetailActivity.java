@@ -60,7 +60,23 @@ public class DetailActivity extends AppCompatActivity {
       public void onDataGotRoute() {
         getDirections();
       }
+
+      @Override
+      public void onDataGotDistance() {
+      }
     });
+    mapService.getDistance(playlist.getKeyOriginId(),
+            playlist.getKeyDestinationId(), new MapService.MyCallback() {
+      @Override
+      public void onDataGotRoute() {
+      }
+
+      @Override
+      public void onDataGotDistance() {
+        time.setText("time to destination " + mapService.getTimeString());
+      }
+    });
+    title.setText(playlist.getTitle());
     mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapDetail);
     mapFrag.getMapAsync(new OnMapReadyCallback() {
       @Override
@@ -68,7 +84,6 @@ public class DetailActivity extends AppCompatActivity {
         map = googleMap;
       }
     });
-    getDistance(playlist.getKeyOriginId(), playlist.getKeyDestinationId());
     goToPlaylist.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -91,34 +106,5 @@ public class DetailActivity extends AppCompatActivity {
             .position(mapService.getDestinationLatLng())
             .title("End"));
     map.addPolyline(mapService.getPolylineOptions());
-  }
-
-  public void getDistance(String OriginID, String DestinationID){
-    String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
-            + OriginID + "&destinations=place_id:"
-            + DestinationID + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
-    AsyncHttpClient client = new AsyncHttpClient();
-    client.get(url, new JsonHttpResponseHandler() {
-      @Override
-      public void onSuccess(int statusCode, Headers headers, JSON json) {
-        Log.d(Tag, "Time between places found.");
-        JSONObject jsonObject = json.jsonObject;
-        try {
-          JSONObject rows = (JSONObject) jsonObject.getJSONArray("rows").get(0);
-          JSONObject elements = (JSONObject) rows.getJSONArray("elements").get(0);
-          String temp = elements.getJSONObject("duration").getString("text");
-          Log.i(Tag,"time to destination " + temp);
-          time.setText("time to destination " + temp);
-          title.setText(playlist.getTitle());
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-        Log.d(Tag, "fail");
-      }
-    });
   }
 }

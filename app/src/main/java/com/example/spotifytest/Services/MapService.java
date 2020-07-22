@@ -30,8 +30,36 @@ public class MapService {
   private LatLng originLatLng;
   private LatLng destinationLatLng;
   private LatLng focusPointLatLng;
+  private String timeString;
 
-  public void getRoute(String originId, String destinationId, MyCallback callback) {
+  public void getDistance (String originId, String destinationId, MyCallback callback){
+    String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
+            + originId + "&destinations=place_id:"
+            + destinationId + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
+    AsyncHttpClient client = new AsyncHttpClient();
+    client.get(url, new JsonHttpResponseHandler() {
+      @Override
+      public void onSuccess(int statusCode, Headers headers, JSON json) {
+        Log.d(Tag, "Time between places found.");
+        JSONObject jsonObject = json.jsonObject;
+        try {
+          JSONObject rows = (JSONObject) jsonObject.getJSONArray("rows").get(0);
+          JSONObject elements = (JSONObject) rows.getJSONArray("elements").get(0);
+          timeString = elements.getJSONObject("duration").getString("text");
+          callback.onDataGotDistance();
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+
+      @Override
+      public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+        Log.d(Tag, "fail");
+      }
+    });
+  }
+
+  public void getRoute (String originId, String destinationId, MyCallback callback) {
     StringBuilder url = new StringBuilder();
     url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
     url.append(originId);
@@ -85,6 +113,10 @@ public class MapService {
 
   public PolylineOptions getPolylineOptions() {
     return polylineOptions;
+  }
+
+  public String getTimeString() {
+    return timeString;
   }
 
   public int getMinutes(String temp) {
