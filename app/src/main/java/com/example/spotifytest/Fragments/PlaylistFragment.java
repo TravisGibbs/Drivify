@@ -37,6 +37,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 
@@ -52,6 +55,7 @@ public class PlaylistFragment extends Fragment {
   private RecyclerView rvPlaylist;
   private PlaylistAdapter playlistAdapter;
   private RelativeLayout relativeLayout;
+  private TextView trackText;
   private LinearLayoutManager linearLayoutManager;
   private FloatingActionButton floatingActionButton;
   private TextView errorText;
@@ -59,6 +63,7 @@ public class PlaylistFragment extends Fragment {
   private int speed;
   private int pastSpeed;
   private AudioManager audioManager;
+  private Track currentTrack;
 
   @SuppressLint("RestrictedApi")
   @Override
@@ -76,6 +81,8 @@ public class PlaylistFragment extends Fragment {
     }
     LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
     errorText = view.findViewById(R.id.errorText);
+    trackText = view.findViewById(R.id.SongText);
+    trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             10000, // 10 second interval
             10, // 10 meters
@@ -123,6 +130,7 @@ public class PlaylistFragment extends Fragment {
     if (allSongs.size() > 0) {
       setUpSpotifyRemote(view);
       floatingActionButton.setVisibility(View.VISIBLE);
+      trackText.setVisibility(View.VISIBLE);
       errorText.setVisibility(View.GONE);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
@@ -145,7 +153,6 @@ public class PlaylistFragment extends Fragment {
       }
     });
   }
-
 
   private void playOrPause() {
     if (playing) {
@@ -174,6 +181,14 @@ public class PlaylistFragment extends Fragment {
                 mSpotifyAppRemote.getPlayerApi().play(viewModel.getPlaylistService().getPlaylistURI());
                 floatingActionButton.setImageResource(R.drawable.pause_icon);
                 playing = true;
+                mSpotifyAppRemote.getPlayerApi()
+                        .subscribeToPlayerState()
+                        .setEventCallback(playerState -> {
+                          final Track track = playerState.track;
+                          if (track != null) {
+                            trackText.setText(track.name + " by " + track.artist.name);
+                          }
+                        });
               }
 
               @Override
@@ -182,8 +197,9 @@ public class PlaylistFragment extends Fragment {
                 // Something went wrong when attempting to connect! Handle errors here
               }
             });
-  }
 
+
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,

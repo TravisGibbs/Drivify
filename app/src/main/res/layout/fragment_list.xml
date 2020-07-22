@@ -5,6 +5,7 @@
     android:id="@+id/playlistLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".Fragments.PlaylistFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -32,6 +33,26 @@
         android:contentDescription="playButton"
         android:src="@drawable/play_button"
         android:visibility="gone"
-        app:backgroundTint="@color/colorPrimary" />
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/greyS"
+        app:tint="@color/colorPrimaryDark" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/SongText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="35dp"
+        android:layout_toStartOf="@+id/playButton"
+        android:background="@color/colorPrimary"
+        android:bottomLeftRadius="15dp"
+        android:bottomRightRadius="15dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
 </RelativeLayout>
