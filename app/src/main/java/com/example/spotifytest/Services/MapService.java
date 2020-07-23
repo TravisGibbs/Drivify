@@ -14,17 +14,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 
 public class MapService {
 
-  public interface MyCallback {
+  public interface mapServiceCallback {
     void onDataGotRoute();
     void onDataGotDistance();
   }
 
-  private static final String apiKey = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
+  private static final String API_KEY = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
   private static final String Tag = "MapService";
   private PolylineOptions polylineOptions;
   private LatLng originLatLng;
@@ -32,7 +34,7 @@ public class MapService {
   private LatLng focusPointLatLng;
   private String timeString;
 
-  public void getDistance (String originId, String destinationId, MyCallback callback){
+  public void getDistance (String originId, String destinationId, mapServiceCallback callback){
     String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
             + originId + "&destinations=place_id:"
             + destinationId + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
@@ -59,14 +61,14 @@ public class MapService {
     });
   }
 
-  public void getRoute (String originId, String destinationId, MyCallback callback) {
+  public void getRoute (String originId, String destinationId, mapServiceCallback callback) {
     StringBuilder url = new StringBuilder();
     url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
     url.append(originId);
     url.append("&destination=place_id:");
     url.append(destinationId);
     url.append("&key=");
-    url.append(apiKey);
+    url.append(API_KEY);
     AsyncHttpClient client = new AsyncHttpClient();
     client.get(url.toString(), new JsonHttpResponseHandler() {
       @Override

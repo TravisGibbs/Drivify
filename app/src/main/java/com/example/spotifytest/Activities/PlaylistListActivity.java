@@ -30,6 +30,7 @@ public class PlaylistListActivity extends AppCompatActivity {
   private LinearLayoutManager layoutManager;
   private RelativeLayout relativeLayout;
   private RecyclerView drives;
+  private NavigatorService navigatorService;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +38,11 @@ public class PlaylistListActivity extends AppCompatActivity {
     setContentView(R.layout.activity_playlist_list);
     playlistList = new ArrayList<>();
     drives = findViewById(R.id.rvDrives);
+    navigatorService = new NavigatorService();
     ListAdapter.OnClickListener onClickListener = new ListAdapter.OnClickListener() {
       @Override
       public void onItemClicked(String url) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse(url));
-        startActivity(intent);
+        startActivity(navigatorService.openPlaylist(url));
       }
     };
     adapter = new ListAdapter(playlistList, this, onClickListener);

@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.spotifytest.Activities.MainActivity;
+import com.example.spotifytest.Activities.NavigatorService;
 import com.example.spotifytest.Services.MapService;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
@@ -45,14 +46,12 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 public class GenerateFragment extends Fragment {
 
@@ -83,6 +82,7 @@ public class GenerateFragment extends Fragment {
     private RelativeLayout relativeLayout;
     private SongService songService;
     private PlaylistService playlistService;
+    private NavigatorService navigatorService;
     private MapService mapService;
     private ArrayList<SongFull> allTracks;
     private SongsViewModel viewModel;
@@ -91,6 +91,7 @@ public class GenerateFragment extends Fragment {
     private Place destination;
     private int time = 0;
     private int amountSongs;
+    private String timeString;
     private boolean clickFromOriginText = true;
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
@@ -131,6 +132,7 @@ public class GenerateFragment extends Fragment {
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
         currentSearchedObjects.append("Searched Artists and Songs:");
+        navigatorService = new NavigatorService();
         mapService = new MapService();
         mapFrag = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFrag.getView().setVisibility(View.GONE);
@@ -245,18 +247,34 @@ public class GenerateFragment extends Fragment {
         Float energyValue = sliderEnergy.getValue();
         Float loudnessValue = sliderValence.getValue();
         songService.getSeedTracks(() -> {
-            allTracks = songService.getSongFulls();
-        }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue);
+        }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
+            @Override
+            public void onSongsFound() {
+                if (songService.getSongFulls().size() > 0) {
+                    allTracks = songService.getSongFulls();
+                    updateScreen();
+                } else {
+                    Snackbar.make(relativeLayout,
+                            "The filter provided couldn't generate enough songs",
+                            Snackbar.LENGTH_SHORT).show();
+                    resetView();
+                }
+            }
+        });
         return allTracks;
     }
 
+    private void resetView() {
+        customIdArtists.clear();
+        customIdSongs.clear();
+        searchResults.setText("");
+        sliderDance.setValue((float) .5);
+        sliderEnergy.setValue((float) .5);
+        sliderValence.setValue((float) .5);
+    }
+
     private void goToPlaylist() {
-        String URL = playlistService.getPlaylistExternalLink();
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setData(Uri.parse(URL));
-        startActivity(intent);
+        startActivity(navigatorService.openPlaylist(playlistService.getPlaylistExternalLink()));
     }
 
     private void postPlaylist() {
@@ -377,22 +395,20 @@ public class GenerateFragment extends Fragment {
             Snackbar.make(relativeLayout, "Select an artist or song!", Snackbar.LENGTH_SHORT).show();
             return;
         }
-        moveButtonOffScreenRight(searchButton);
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
                 + a.getId() + "&destinations=place_id:"
                 + b.getId() + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
         mapService.getDistance(a.getId(), b.getId(),
-                new MapService.MyCallback() {
+                new MapService.mapServiceCallback() {
             @Override
             public void onDataGotRoute() {
             }
             @Override
             public void onDataGotDistance() {
-                String temp = mapService.getTimeString();
-                Log.i(Tag,"time to destination " + temp);
-                int minutes = mapService.getMinutes(temp);
+                timeString = mapService.getTimeString();
+                Log.i(Tag,"time to destination " + timeString);
+                int minutes = mapService.getMinutes(timeString);
                 time = minutes * 60000;
-                int zoomLevel = mapService.getZoom(time);
                 amountSongs = time / 100000;
                 amountSongs = amountSongs + 2;
                 if (amountSongs > 100) {
@@ -400,45 +416,49 @@ public class GenerateFragment extends Fragment {
                     amountSongs = 100;
                 }
                 allTracks = getTracks(amountSongs);
-                startButtonSwap(makePlaylistButton, getSongsButton);
-                timeView.setText(temp);
-                timeView.setVisibility(View.VISIBLE);
-
-                mapService.getRoute(origin.getId(), destination.getId(), new MapService.MyCallback() {
-                    @Override
-                    public void onDataGotRoute() {
-                        try {
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
-                            map.addMarker(
-                                    new MarkerOptions()
-                                            .position(mapService.getOriginLatLng())
-                                            .title("Start"));
-                            map.addMarker(
-                                    new MarkerOptions()
-                                            .position(mapService.getDestinationLatLng())
-                                            .title("End"));
-                            map.addPolyline(mapService.getPolylineOptions());
-                        } catch (Exception e) {
-                            Log.e(Tag, "Error setting bounds", e);
-                        }
-                    }
-                    @Override
-                    public void onDataGotDistance() {
-                    }
-                });
-                mapFrag.getView().setVisibility(View.VISIBLE);
-                searchResults.setVisibility(View.GONE);
-                originText.setVisibility(View.GONE);
-                destText.setVisibility(View.GONE);
-                danceLabel.setVisibility(View.GONE);
-                energyLabel.setVisibility(View.GONE);
-                valenceLabel.setVisibility(View.GONE);
-                sliderDance.setVisibility(View.GONE);
-                sliderEnergy.setVisibility(View.GONE);
-                sliderValence.setVisibility(View.GONE);
-                radioGroup.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    public void updateScreen() {
+        startButtonSwap(makePlaylistButton, getSongsButton);
+        timeView.setText(timeString);
+        timeView.setVisibility(View.VISIBLE);
+        int zoomLevel = mapService.getZoom(time);
+        mapService.getRoute(origin.getId(), destination.getId(), new MapService.mapServiceCallback() {
+            @Override
+            public void onDataGotRoute() {
+                try {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(mapService.getFocusPointLatLng(), zoomLevel));
+                    map.addMarker(
+                            new MarkerOptions()
+                                    .position(mapService.getOriginLatLng())
+                                    .title("Start"));
+                    map.addMarker(
+                            new MarkerOptions()
+                                    .position(mapService.getDestinationLatLng())
+                                    .title("End"));
+                    map.addPolyline(mapService.getPolylineOptions());
+                } catch (Exception e) {
+                    Log.e(Tag, "Error setting bounds", e);
+                }
+            }
+            @Override
+            public void onDataGotDistance() {
+            }
+        });
+        moveButtonOffScreenRight(searchButton);
+        mapFrag.getView().setVisibility(View.VISIBLE);
+        searchResults.setVisibility(View.GONE);
+        originText.setVisibility(View.GONE);
+        destText.setVisibility(View.GONE);
+        danceLabel.setVisibility(View.GONE);
+        energyLabel.setVisibility(View.GONE);
+        valenceLabel.setVisibility(View.GONE);
+        sliderDance.setVisibility(View.GONE);
+        sliderEnergy.setVisibility(View.GONE);
+        sliderValence.setVisibility(View.GONE);
+        radioGroup.setVisibility(View.VISIBLE);
     }
 
     public void startButtonSwap(Button goUpButton, Button goRightButton) {

@@ -33,6 +33,10 @@ public class SongService {
     private RequestQueue queue;
     private RelativeLayout relativeLayout;
 
+    public interface songServiceCallback {
+        void onSongsFound();
+    }
+
     public SongService(Context context, RelativeLayout relativeLayout) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
@@ -203,7 +207,7 @@ public class SongService {
                                              ArrayList<String> customIdSongs,
                                              ArrayList<String> customIdArtists,
                                              int amount, Float danceVals,
-                                             Float energyVals, Float valenceVals) {
+                                             Float energyVals, Float valenceVals, songServiceCallback serviceCallback) {
         String url = getURLforSeedTracks(customIdSongs, customIdArtists, amount, danceVals, energyVals, valenceVals);
         ArrayList<SongSimplified> songSimplifieds = new ArrayList<>();
         songFulls = new ArrayList<>();
@@ -230,6 +234,9 @@ public class SongService {
 
                     } else {
                         getTracks(songSimplifieds, callBack);
+                    }
+                    if (songSimplifieds.size() > 0) {
+                        serviceCallback.onSongsFound();
                     }
                     callBack.onSuccess();
                 }, error -> {
