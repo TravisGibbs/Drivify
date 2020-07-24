@@ -38,6 +38,7 @@ import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.Models.SongsViewModel;
+import com.example.spotifytest.Services.AlgorithmService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -72,6 +73,7 @@ public class PlaylistFragment extends Fragment {
   private AudioManager audioManager;
   private Track currentTrack;
   private ArrayList<Integer> lag;
+  private AlgorithmService algorithmService;
 
 
   @RequiresApi(api = Build.VERSION_CODES.O)
@@ -81,6 +83,9 @@ public class PlaylistFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
     audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
+    int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxLevel/2, 0);
+    relativeLayout = view.findViewById(R.id.playlistLayout);
     if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(view.getContext(),
@@ -89,39 +94,45 @@ public class PlaylistFragment extends Fragment {
       ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
       Log.i(Tag, "Permission check");
     }
-    LocationProvider provider = lm.getProvider(LocationManager.GPS_PROVIDER);
+    algorithmService = new AlgorithmService(1,.5,10);
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-            100,
+            1000,
             1,
             new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
                 if (location==null){
-                  // if you can't get speed because reasons :)
                   ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
                 } else {
-                  int currentLevel= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                  int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                  //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
                   speed = (int) ((location.getSpeed()*3600)/1000);
-                  if (pastSpeed + 5 < speed && currentLevel < maxLevel) {
+                  int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                  int offset = currentLevel - maxLevel / 2;
+                  double upper = 1.5;
+                  double downer = -1.5;
+                  if (offset < 0) {
+                    upper = upper / Math.sqrt(Math.abs(offset));
+                    downer = downer * Math.sqrt(Math.abs(offset));
+                  } else if (offset > 0) {
+                    upper = upper * Math.sqrt(Math.abs(offset));
+                    downer = downer / Math.sqrt(Math.abs(offset));
+                  }
+                  Log.i(Tag, "upper: " + upper + " downer: " + downer + " offset: " + offset);
+                  int result = algorithmService.add(speed, upper, downer);
+                  if (result == 1) {
                     audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume increased!",
-                            Snackbar.LENGTH_SHORT);
-                  }
-                  if (pastSpeed - 5 > speed && currentLevel > 4) {
+                            Snackbar.LENGTH_SHORT).show();
+                  } else if (result == 2) {
                     audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume decreased!",
-                            Snackbar.LENGTH_SHORT);
+                            Snackbar.LENGTH_SHORT).show();
                   }
-                  //((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("current speed= " + speed+" km/h");
                   errorText.setText("current speed= " + speed+" km/h");
-                  pastSpeed = speed;
                 }
               }
 
@@ -142,7 +153,6 @@ public class PlaylistFragment extends Fragment {
             });
     errorText = view.findViewById(R.id.errorText);
     rvPlaylist = view.findViewById(R.id.rvSongs);
-    relativeLayout = view.findViewById(R.id.playlistLayout);
     viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     floatingActionButton = view.findViewById(R.id.playButton);
     allSongs = viewModel.getSongList();
