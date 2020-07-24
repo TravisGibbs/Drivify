@@ -262,23 +262,83 @@ public class GenerateFragment extends Fragment {
         Float danceValue = sliderDance.getValue();
         Float energyValue = sliderEnergy.getValue();
         Float loudnessValue = sliderValence.getValue();
-        songService.getSeedTracks(() -> {
-        }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
-            @Override
-            public void onSongsFound(boolean b) {
-                if (b) {
-                    allTracks = songService.getSongFulls();
-                    updateScreen();
-                } else {
-                    Snackbar.make(relativeLayout,
-                            "The filter provided couldn't generate enough songs",
-                            Snackbar.LENGTH_SHORT).show();
-                    resetView();
+        if (amount < 101) {
+            songService.getSeedTracks(() -> {
+            }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
+                /* this call back is triggered when all songs full version are found allowing
+                for the screen to move with the knowledge that all songs are found and that the post
+                function is ready
+                */
+                @Override
+                public void onSongsFound(boolean b) {
+                    if (b) {
+                        allTracks = songService.getSongFulls();
+                        updateScreen();
+                    } else {
+                        Snackbar.make(relativeLayout,
+                                "The filter provided couldn't generate enough songs",
+                                Snackbar.LENGTH_SHORT).show();
+                        resetView();
+                    }
                 }
+            });
+        } else if ((customIdArtists.size() + customIdSongs.size())*100 > amount) {
+            allTracks = new ArrayList<>();
+            int amountPerSearch = amount / (customIdSongs.size() + customIdArtists.size()) +1;
+            for (int i = 0; i < customIdArtists.size(); i++) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                ArrayList<String> blankList = new ArrayList<>();
+                arrayList.add(customIdArtists.get(i));
+                songService.getSeedTracks(() -> {
+                }, blankList, arrayList, amountPerSearch, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
+                    @Override
+                    public void onSongsFound(boolean b) {
+                        if (b) {
+                            if (songService.getTempCheck().size() >= amount) {
+                                updateScreen();
+                            }
+                        } else {
+                            Snackbar.make(relativeLayout,
+                                    "The filter provided couldn't generate enough songs",
+                                    Snackbar.LENGTH_SHORT).show();
+                            resetView();
+                        }
+                    }
+                });
             }
-        });
+            for (int i = 0; i < customIdSongs.size(); i++) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                ArrayList<String> blankList = new ArrayList<>();
+                arrayList.add(customIdSongs.get(i));
+                songService.getSeedTracks(() -> {
+                }, arrayList, blankList, amountPerSearch, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
+                    @Override
+                    public void onSongsFound(boolean b) {
+                        if (b) {
+                            if (songService.getTempCheck().size() >= amount) {
+                                updateScreen();
+                            }
+                        } else {
+                            Snackbar.make(relativeLayout,
+                                    "The filter provided couldn't generate enough songs",
+                                    Snackbar.LENGTH_SHORT).show();
+                            resetView();
+                        }
+                    }
+                });
+            }
+        } else if (amount > 500) {
+            Snackbar.make(relativeLayout,
+                    "Trip too long for app in curent version",
+                    Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(relativeLayout,
+                    "Add more songs or/and artists and try again",
+                    Snackbar.LENGTH_SHORT).show();
+        }
         return allTracks;
     }
+
 
     private void resetView() {
         customIdArtists.clear();
@@ -380,7 +440,7 @@ public class GenerateFragment extends Fragment {
     }
 
     public ArrayList<SongFull> addKSongsFromList(ArrayList<SongFull> newSongList, ArrayList<SongFull> songList, int k){
-        for(int i = 0; i < k - 1; i++){
+        for(int i = 0; i < k; i++){
             newSongList.add(songList.get(i));
         }
         return newSongList;
@@ -425,11 +485,11 @@ public class GenerateFragment extends Fragment {
                 Log.i(Tag,"time to destination " + timeString);
                 int minutes = mapService.getMinutes(timeString);
                 time = minutes * 60000;
-                amountSongs = time / 100000;
+                amountSongs = time / 210000;
                 amountSongs = amountSongs + 2;
-                if (amountSongs > 100) {
-                    Snackbar.make(relativeLayout, "Drive too long for full playlists!", Snackbar.LENGTH_SHORT).show();
-                    amountSongs = 100;
+                if (amountSongs > 500) {
+                    Snackbar.make(relativeLayout, "Drive too long for playlist!", Snackbar.LENGTH_SHORT).show();
+                    amountSongs = 500;
                 }
                 allTracks = getTracks(amountSongs);
             }

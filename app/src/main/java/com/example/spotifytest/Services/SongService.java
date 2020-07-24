@@ -29,6 +29,7 @@ public class SongService {
     private int offset = 0;
     private static final String Tag = "SongService";
     private ArrayList<SongFull> songFulls;
+    private ArrayList<SongSimplified> tempCheck;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private RelativeLayout relativeLayout;
@@ -41,6 +42,19 @@ public class SongService {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
         this.relativeLayout = relativeLayout;
+        tempCheck = new ArrayList<>();
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public ArrayList<SongSimplified> getTempCheck() {
+        return tempCheck;
+    }
+
+    public void setTempCheck(ArrayList<SongSimplified> tempCheck) {
+        this.tempCheck = tempCheck;
     }
 
     public ArrayList<SongFull> getSongFulls() {
@@ -235,6 +249,7 @@ public class SongService {
                     } else {
                         getTracks(songSimplifieds, callBack);
                     }
+                    tempCheck.addAll(songSimplifieds);
                     if (songSimplifieds.size() > 0) {
                         serviceCallback.onSongsFound(true);
                     } else {

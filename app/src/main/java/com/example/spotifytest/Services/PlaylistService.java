@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlaylistService {
@@ -49,10 +50,25 @@ public class PlaylistService {
         queue.add(jsonObjectRequest);
     }
 
-    public void addSong(ArrayList<SongFull> songSimplifieds) {
-        JSONObject payload = preparePutPayloadSongPost(songSimplifieds);
+    public void addSong(ArrayList<SongFull> songFulls) {
+        int fullSearches = songFulls.size() / 100;
+        int songsRemaining = songFulls.size();
+        int i = 0;
+        int startOfSublist = 0;
+        int endOfSublist = 100;
+        while (i < fullSearches) {
+            List<SongFull> postList = songFulls.subList(startOfSublist, endOfSublist);
+            JSONObject payload = preparePutPayloadSongPost((postList));
+            JsonObjectRequest jsonObjectRequest = SongPost(payload);
+            queue.add(jsonObjectRequest);
+            startOfSublist += 100;
+            endOfSublist += 100;
+            i++;
+            songsRemaining = songsRemaining - 100;
+        }
+        List<SongFull> postList = songFulls.subList(startOfSublist, startOfSublist + songsRemaining);
+        JSONObject payload = preparePutPayloadSongPost(postList);
         JsonObjectRequest jsonObjectRequest = SongPost(payload);
-        queue.add(jsonObjectRequest);
     }
 
     private JSONObject preparePutPayloadPlaylistPost(String song) {
@@ -67,11 +83,11 @@ public class PlaylistService {
         return playlist;
     }
 
-    private JSONObject preparePutPayloadSongPost(ArrayList<SongFull> songSimplifieds) {
+    private JSONObject preparePutPayloadSongPost(List<SongFull> songFulls) {
         JSONObject request = new JSONObject();
         JSONArray uri = new JSONArray();
-        for(SongFull songSimplified : songSimplifieds){
-            uri.put(songSimplified.getUri());
+        for(SongFull songFull : songFulls){
+            uri.put(songFull.getUri());
         }
         try {
             request.put("uris",uri);
@@ -115,7 +131,7 @@ public class PlaylistService {
                 e.printStackTrace();
             }
         }, error -> {
-            Log.i(Tag,"help");
+            Log.i(Tag,"song not posted");
         }) {
 
             @Override
