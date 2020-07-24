@@ -3,13 +3,14 @@ package com.example.spotifytest.Fragments;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,6 +98,7 @@ public class GenerateFragment extends Fragment {
     private ArrayList<String> customIdArtists;
     private StringBuilder currentSearchedObjects;
     private SupportMapFragment mapFrag;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -120,9 +122,9 @@ public class GenerateFragment extends Fragment {
         sliderDance = view.findViewById(R.id.danceSlider);
         sliderEnergy = view.findViewById(R.id.energySlider);
         sliderValence = view.findViewById(R.id.valenceSlider);
-        sliderDance.setValue((float) 0.5);
-        sliderEnergy.setValue((float) 0.5);
-        sliderValence.setValue((float) 0.5);
+        sliderDance.setValue(0.5f);
+        sliderEnergy.setValue(0.5f);
+        sliderValence.setValue(0.5f);
         danceLabel = view.findViewById(R.id.danceLabel);
         energyLabel = view.findViewById(R.id.energyLabel);
         valenceLabel = view.findViewById(R.id.valenceLabel);
@@ -234,7 +236,21 @@ public class GenerateFragment extends Fragment {
                 main.getBottomNavigationView().setSelectedItemId(R.id.profileAction);
             }
         });
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity main = (MainActivity) getActivity();
+                main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                R.color.colorPrimary,
+                R.color.colorAccent,
+                R.color.colorPrimary);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -249,8 +265,8 @@ public class GenerateFragment extends Fragment {
         songService.getSeedTracks(() -> {
         }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
             @Override
-            public void onSongsFound() {
-                if (songService.getSongFulls().size() > 0) {
+            public void onSongsFound(boolean b) {
+                if (b) {
                     allTracks = songService.getSongFulls();
                     updateScreen();
                 } else {
@@ -268,9 +284,9 @@ public class GenerateFragment extends Fragment {
         customIdArtists.clear();
         customIdSongs.clear();
         searchResults.setText("");
-        sliderDance.setValue((float) .5);
-        sliderEnergy.setValue((float) .5);
-        sliderValence.setValue((float) .5);
+        sliderDance.setValue(.5f);
+        sliderEnergy.setValue(.5f);
+        sliderValence.setValue(.5f);
     }
 
     private void goToPlaylist() {

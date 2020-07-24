@@ -2,6 +2,7 @@ package com.example.spotifytest.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -10,10 +11,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.AudioManager;
+import android.media.AudioPlaybackConfiguration;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -34,6 +39,7 @@ import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
 import com.example.spotifytest.Models.SongsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -42,6 +48,7 @@ import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class PlaylistFragment extends Fragment {
@@ -64,7 +71,10 @@ public class PlaylistFragment extends Fragment {
   private int pastSpeed;
   private AudioManager audioManager;
   private Track currentTrack;
+  private ArrayList<Integer> lag;
 
+
+  @RequiresApi(api = Build.VERSION_CODES.O)
   @SuppressLint("RestrictedApi")
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -84,24 +94,33 @@ public class PlaylistFragment extends Fragment {
     trackText = view.findViewById(R.id.SongText);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-            10000, // 10 second interval
-            10, // 10 meters
+            100,
+            1,
             new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
                 if (location==null){
                   // if you can't get speed because reasons :)
-                  errorText.setText("00 km/h");
+                  ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
                 } else {
+                  int currentLevel= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                  int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                   //int speed=(int) ((location.getSpeed()) is the standard which returns meters per second. In this example i converted it to kilometers per hour
                   speed = (int) ((location.getSpeed()*3600)/1000);
-                  if (pastSpeed + 5 < speed) {
+                  if (pastSpeed + 5 < speed && currentLevel < maxLevel) {
                     audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+                    Snackbar.make(relativeLayout,
+                            "volume increased!",
+                            Snackbar.LENGTH_SHORT);
                   }
-                  if (pastSpeed - 5 > speed) {
+                  if (pastSpeed - 5 > speed && currentLevel > 4) {
                     audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                    Snackbar.make(relativeLayout,
+                            "volume decreased!",
+                            Snackbar.LENGTH_SHORT);
                   }
-                  errorText.setText(speed+" km/h");
+                  //((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("current speed= " + speed+" km/h");
+                  errorText.setText("current speed= " + speed+" km/h");
                   pastSpeed = speed;
                 }
               }
@@ -131,7 +150,6 @@ public class PlaylistFragment extends Fragment {
       setUpSpotifyRemote(view);
       floatingActionButton.setVisibility(View.VISIBLE);
       trackText.setVisibility(View.VISIBLE);
-      errorText.setVisibility(View.GONE);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
       rvPlaylist.setAdapter(playlistAdapter);

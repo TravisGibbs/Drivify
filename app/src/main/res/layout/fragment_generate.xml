@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
     android:id="@+id/generateFragmentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -137,7 +142,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="-50dp"
+        android:layout_marginBottom="-55dp"
         android:background="@color/colorAccent"
         android:padding="10dp"
         android:text="Generate a playlist" />
@@ -247,3 +252,5 @@
         tools:context="com.example.polygons.PolyActivity" />
 
 </RelativeLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

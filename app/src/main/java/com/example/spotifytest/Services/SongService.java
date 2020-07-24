@@ -34,7 +34,7 @@ public class SongService {
     private RelativeLayout relativeLayout;
 
     public interface songServiceCallback {
-        void onSongsFound();
+        void onSongsFound(boolean b);
     }
 
     public SongService(Context context, RelativeLayout relativeLayout) {
@@ -236,7 +236,9 @@ public class SongService {
                         getTracks(songSimplifieds, callBack);
                     }
                     if (songSimplifieds.size() > 0) {
-                        serviceCallback.onSongsFound();
+                        serviceCallback.onSongsFound(true);
+                    } else {
+                        serviceCallback.onSongsFound(false);
                     }
                     callBack.onSuccess();
                 }, error -> {

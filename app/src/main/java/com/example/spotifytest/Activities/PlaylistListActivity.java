@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.example.spotifytest.Adapters.ListAdapter;
@@ -31,11 +33,14 @@ public class PlaylistListActivity extends AppCompatActivity {
   private RelativeLayout relativeLayout;
   private RecyclerView drives;
   private NavigatorService navigatorService;
+  private ProgressBar progressBar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_playlist_list);
+    progressBar = findViewById(R.id.pbLoadingPlaylistList);
+    progressBar.setVisibility(View.VISIBLE);
     playlistList = new ArrayList<>();
     drives = findViewById(R.id.rvDrives);
     navigatorService = new NavigatorService();
@@ -63,6 +68,7 @@ public class PlaylistListActivity extends AppCompatActivity {
       public void done(List<Playlist> objects, ParseException e) {
         playlistList.addAll(objects);
         Log.i(Tag, "Query succ");
+        progressBar.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
       }
     });

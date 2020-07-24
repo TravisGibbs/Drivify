@@ -11,6 +11,8 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
         android:layout_weight=".8"
         app:srcCompat="@drawable/spotify_green" />
 

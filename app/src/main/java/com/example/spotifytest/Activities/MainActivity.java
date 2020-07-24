@@ -1,6 +1,7 @@
 package com.example.spotifytest.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -59,18 +60,17 @@ public class MainActivity extends AppCompatActivity {
     public FragmentTransaction setFragmentManager(Fragment fragmentCurrent, Fragment fragmentNext) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (fragmentCurrent == null) {
-        }
-        else if (fragmentCurrent instanceof ProfileFragment) {
+        } else if (fragmentCurrent instanceof ProfileFragment) {
             ft.setCustomAnimations(R.anim.activity_open_enter_reverse,
                     R.anim.activity_open_exit_reverse,
                     R.anim.activity_close_enter,
                     R.anim.activity_close_exit);
-        }
-        else if (fragmentCurrent instanceof GenerateFragment && fragmentNext instanceof PlaylistFragment) {
+        } else if (fragmentCurrent instanceof GenerateFragment && fragmentNext instanceof PlaylistFragment) {
             ft.setCustomAnimations(R.anim.activity_open_enter_reverse,
                     R.anim.activity_open_exit_reverse,
                     R.anim.activity_close_enter,
                     R.anim.activity_close_exit);
+        } else if(fragmentCurrent instanceof GenerateFragment && fragmentNext instanceof GenerateFragment){
         } else {
             ft.setCustomAnimations(R.anim.activity_open_enter,
                     R.anim.activity_open_exit,

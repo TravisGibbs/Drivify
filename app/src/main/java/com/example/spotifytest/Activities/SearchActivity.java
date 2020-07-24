@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.android.volley.AuthFailureError;
@@ -49,16 +52,19 @@ public class SearchActivity extends AppCompatActivity {
   private SearchAdapter searchAdapter;
   private LinearLayoutManager linearLayoutManager;
   private ArrayList<SearchObject> searchObjects;
+  private ImageButton backButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_search);
+    getSupportActionBar().hide();
     sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
     queue = Volley.newRequestQueue(this);
     searchObjects = new ArrayList<>();
     rvSearch = findViewById(R.id.rvSearch);
     searchText = findViewById(R.id.searchBar);
+    backButton = findViewById(R.id.backButton);
     SearchAdapter.OnClickListener onClickListener = new SearchAdapter.OnClickListener() {
       @Override
       public void onItemClicked(int position, String id, String name, Boolean isSong) {
@@ -94,11 +100,20 @@ public class SearchActivity extends AppCompatActivity {
       public void afterTextChanged(Editable editable) {
       }
     });
-
+    backButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        goBack();
+      }
+    });
   }
 
   @Override
   public void onBackPressed() {
+    goBack();
+  }
+
+  public void goBack() {
     Intent intent = new Intent();
     intent.putExtra("id", "");
     intent.putExtra("isSong", false);
