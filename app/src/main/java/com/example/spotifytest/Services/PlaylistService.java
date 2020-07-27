@@ -58,8 +58,7 @@ public class PlaylistService {
         int endOfSublist = 100;
         while (i < fullSearches) {
             List<SongFull> postList = songFulls.subList(startOfSublist, endOfSublist);
-            JSONObject payload = preparePutPayloadSongPost((postList));
-            JsonObjectRequest jsonObjectRequest = SongPost(payload);
+            JsonObjectRequest jsonObjectRequest = SongPost(postList);
             queue.add(jsonObjectRequest);
             startOfSublist += 100;
             endOfSublist += 100;
@@ -67,8 +66,8 @@ public class PlaylistService {
             songsRemaining = songsRemaining - 100;
         }
         List<SongFull> postList = songFulls.subList(startOfSublist, startOfSublist + songsRemaining);
-        JSONObject payload = preparePutPayloadSongPost(postList);
-        JsonObjectRequest jsonObjectRequest = SongPost(payload);
+        JsonObjectRequest jsonObjectRequest = SongPost(postList);
+        queue.add(jsonObjectRequest);
     }
 
     private JSONObject preparePutPayloadPlaylistPost(String song) {
@@ -81,20 +80,6 @@ public class PlaylistService {
         }
 
         return playlist;
-    }
-
-    private JSONObject preparePutPayloadSongPost(List<SongFull> songFulls) {
-        JSONObject request = new JSONObject();
-        JSONArray uri = new JSONArray();
-        for(SongFull songFull : songFulls){
-            uri.put(songFull.getUri());
-        }
-        try {
-            request.put("uris",uri);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return request;
     }
 
     private JsonObjectRequest playlistPost(JSONObject payload, ArrayList<SongFull> songSimplifieds,
@@ -121,10 +106,10 @@ public class PlaylistService {
         };
     }
 
-    private JsonObjectRequest SongPost(JSONObject payload) {
+    private JsonObjectRequest SongPost(List<SongFull> songFullList) {
         return new JsonObjectRequest(Request.Method.POST,
-                String.format("https://api.spotify.com/v1/playlists/%s/tracks",playlistID),
-                payload, response -> {
+                getSongPostURL(songFullList),
+                null, response -> {
             try {
                 onSuccSong(response);
             } catch (JSONException e) {
@@ -145,6 +130,16 @@ public class PlaylistService {
         };
     }
 
+    private String getSongPostURL(List<SongFull> songFullList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format("https://api.spotify.com/v1/playlists/%s/tracks?uris=",playlistID));
+        for (SongFull songFull : songFullList) {
+            stringBuilder.append(songFull.getUri());
+            stringBuilder.append(",");
+        }
+        return stringBuilder.substring(0, stringBuilder.length()-1);
+    }
+
     public void onSuccSong(JSONObject response) throws JSONException {
         Log.i(Tag,"song posted");
     }
@@ -155,7 +150,6 @@ public class PlaylistService {
         JSONObject external_urls = response.getJSONObject("external_urls");
         playlistExternalLink = external_urls.getString("spotify");
         playlistURI = response.getString("uri");
-        addSong(songSimplifieds);
         ArrayList<SongFull> newSongFull = new ArrayList<>();
         int i = 0;
         int sum = 0;

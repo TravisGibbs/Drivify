@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -50,6 +51,9 @@ import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class PlaylistFragment extends Fragment {
@@ -66,6 +70,7 @@ public class PlaylistFragment extends Fragment {
   private TextView trackText;
   private LinearLayoutManager linearLayoutManager;
   private FloatingActionButton floatingActionButton;
+  private ProgressBar progressBar;
   private TextView errorText;
   private Boolean playing = false;
   private int speed;
@@ -74,6 +79,9 @@ public class PlaylistFragment extends Fragment {
   private Track currentTrack;
   private ArrayList<Integer> lag;
   private AlgorithmService algorithmService;
+  private String trackName;
+  private Long songLength;
+  private int songProgress;
 
 
   @RequiresApi(api = Build.VERSION_CODES.O)
@@ -94,9 +102,11 @@ public class PlaylistFragment extends Fragment {
       ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
       Log.i(Tag, "Permission check");
     }
+    trackName = "";
     algorithmService = new AlgorithmService(1,.5,10);
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
+    progressBar = view.findViewById(R.id.progressBarSong);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             1000,
@@ -160,6 +170,8 @@ public class PlaylistFragment extends Fragment {
       setUpSpotifyRemote(view);
       floatingActionButton.setVisibility(View.VISIBLE);
       trackText.setVisibility(View.VISIBLE);
+      progressBar.setVisibility(View.VISIBLE);
+      progressBar.setProgress(50);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
       rvPlaylist.setAdapter(playlistAdapter);
@@ -180,6 +192,20 @@ public class PlaylistFragment extends Fragment {
         main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
       }
     });
+    ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+    exec.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        if (playing) {
+          updateProgressbar();
+        }
+      }
+    }, 0, 2, TimeUnit.SECONDS);
+  }
+
+  private void updateProgressbar () {
+    songProgress += 2000;
+    progressBar.setProgress(songProgress);
   }
 
   private void playOrPause() {
@@ -202,10 +228,10 @@ public class PlaylistFragment extends Fragment {
                     .build();
     SpotifyAppRemote.connect(view.getContext(), connectionParams,
             new Connector.ConnectionListener() {
-
               @Override
               public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
+                Log.i(Tag, viewModel.getPlaylistService().getPlaylistURI());
                 mSpotifyAppRemote.getPlayerApi().play(viewModel.getPlaylistService().getPlaylistURI());
                 floatingActionButton.setImageResource(R.drawable.pause_icon);
                 playing = true;
@@ -214,11 +240,16 @@ public class PlaylistFragment extends Fragment {
                         .setEventCallback(playerState -> {
                           final Track track = playerState.track;
                           if (track != null) {
-                            trackText.setText(track.name + " by " + track.artist.name);
+                            if (trackName.isEmpty() || !trackName.equals(track.name)) {
+                              trackName = track.name;
+                              songLength = track.duration;
+                              songProgress = 0;
+                              progressBar.setMax((int) track.duration);
+                              trackText.setText(track.name + " by " + track.artist.name);
+                            }
                           }
                         });
               }
-
               @Override
               public void onFailure(Throwable throwable) {
                 Log.e("MainActivity", throwable.getMessage(), throwable);
