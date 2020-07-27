@@ -2,12 +2,12 @@ package com.example.spotifytest.Models;
 
 public class DataPoint {
 
-  int speed;
-  boolean isSignal = false;
+  private int speed;
+  private boolean isPastThreshold = false;
 
-  public DataPoint(int speed, boolean isSignal){
+  public DataPoint(int speed, boolean isPastThreshold){
     this.speed = speed;
-    this.isSignal = isSignal;
+    this.isPastThreshold = isPastThreshold;
   }
 
   public int getSpeed() {
@@ -18,11 +18,11 @@ public class DataPoint {
     this.speed = speed;
   }
 
-  public boolean isSignal() {
-    return isSignal;
+  public boolean isPastThreshold() {
+    return isPastThreshold;
   }
 
-  public void setSignal(boolean signal) {
-    isSignal = signal;
+  public void setPastThreshold(boolean pastThreshold) {
+    isPastThreshold = pastThreshold;
   }
 }

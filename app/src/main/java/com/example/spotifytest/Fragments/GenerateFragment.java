@@ -1,6 +1,7 @@
 package com.example.spotifytest.Fragments;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -99,6 +100,13 @@ public class GenerateFragment extends Fragment {
     private StringBuilder currentSearchedObjects;
     private SupportMapFragment mapFrag;
     private SwipeRefreshLayout swipeContainer;
+    private Context mContext;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -129,7 +137,6 @@ public class GenerateFragment extends Fragment {
         energyLabel = view.findViewById(R.id.energyLabel);
         valenceLabel = view.findViewById(R.id.valenceLabel);
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
-        viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
         customIdArtists = new ArrayList<>();
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
@@ -251,7 +258,6 @@ public class GenerateFragment extends Fragment {
                 R.color.colorPrimary);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -270,8 +276,8 @@ public class GenerateFragment extends Fragment {
                 function is ready
                 */
                 @Override
-                public void onSongsFound(boolean b) {
-                    if (b) {
+                public void onSongsFound(boolean songsFound) {
+                    if (songsFound) {
                         allTracks = songService.getSongFulls();
                         updateScreen();
                     } else {
@@ -282,9 +288,9 @@ public class GenerateFragment extends Fragment {
                     }
                 }
             });
-        } else if ((customIdArtists.size() + customIdSongs.size())*100 > amount) {
+        } else if ((customIdArtists.size() + customIdSongs.size()) * 100 > amount) {
             allTracks = new ArrayList<>();
-            int amountPerSearch = amount / (customIdSongs.size() + customIdArtists.size()) +1;
+            int amountPerSearch = amount / (customIdSongs.size() + customIdArtists.size()) + 1;
             for (int i = 0; i < customIdArtists.size(); i++) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<String> blankList = new ArrayList<>();
@@ -338,7 +344,6 @@ public class GenerateFragment extends Fragment {
         }
         return allTracks;
     }
-
 
     private void resetView() {
         customIdArtists.clear();

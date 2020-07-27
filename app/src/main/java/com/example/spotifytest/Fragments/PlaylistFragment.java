@@ -61,6 +61,11 @@ public class PlaylistFragment extends Fragment {
   private static final String Tag = "PlaylistFragment";
   private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
   private static final String REDIRECT_URI = "https://developer.spotify.com/dashboard";
+  private static final double DEFAULT_THRESHOLD = 1;
+  private static final double DEFAULT_INFLUENCE = .5;
+  private static final int DEFAULT_LAG = 10;
+  private static final int DEFAULT_METERS = 20;
+  private static final int DEFAULT_MS = 1000;
   private SpotifyAppRemote mSpotifyAppRemote;
   private ArrayList<SongFull> allSongs = new ArrayList<>();
   private SongsViewModel viewModel;
@@ -74,21 +79,19 @@ public class PlaylistFragment extends Fragment {
   private TextView errorText;
   private Boolean playing = false;
   private int speed;
-  private int pastSpeed;
   private AudioManager audioManager;
   private Track currentTrack;
-  private ArrayList<Integer> lag;
   private AlgorithmService algorithmService;
   private String trackName;
   private Long songLength;
   private int songProgress;
+  private View view;
 
-
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @SuppressLint("RestrictedApi")
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    this.view = view;
     LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
     audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
     int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -103,14 +106,14 @@ public class PlaylistFragment extends Fragment {
       Log.i(Tag, "Permission check");
     }
     trackName = "";
-    algorithmService = new AlgorithmService(1,.5,10);
+    algorithmService = new AlgorithmService(DEFAULT_THRESHOLD, DEFAULT_INFLUENCE, DEFAULT_LAG);
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
     progressBar = view.findViewById(R.id.progressBarSong);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-            1000,
-            1,
+            DEFAULT_MS,
+            DEFAULT_METERS,
             new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
@@ -201,6 +204,12 @@ public class PlaylistFragment extends Fragment {
         }
       }
     }, 0, 2, TimeUnit.SECONDS);
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
   }
 
   private void updateProgressbar () {
