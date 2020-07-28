@@ -11,7 +11,7 @@
     android:orientation="vertical"
     android:paddingTop="100dp"
     android:paddingBottom="10dp"
-    tools:context=".Activities.LoginActivity">
+    tools:context=".activities.LoginActivity">
 
     <TextView
         android:id="@+id/usernameText"

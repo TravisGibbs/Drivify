@@ -2,8 +2,8 @@ package com.example.spotifytest;
 
 import android.app.Application;
 
-import com.example.spotifytest.Models.Playlist;
-import com.example.spotifytest.Models._User;
+import com.example.spotifytest.models.Playlist;
+import com.example.spotifytest.models._User;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
