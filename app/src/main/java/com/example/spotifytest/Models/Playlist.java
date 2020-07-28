@@ -17,6 +17,7 @@ public class Playlist extends ParseObject {
     public static final String KEY_REDIRECT_LINK = "redirectLink";
     public static final String KEY_TIME_TO = "timeTo";
     public static final String KEY_TITLE = "title";
+    public static final String KEY_URI = "uri";
 
     public Playlist(){
         super();
@@ -62,5 +63,9 @@ public class Playlist extends ParseObject {
     }
     public void setKeyTitle(String title) {
         put(KEY_TITLE, title);
+    }
+    public String getKeyUri() { return  getString(KEY_URI);}
+    public void setKeyUri(String keyUri) {
+        put(KEY_URI, keyUri);
     }
 }

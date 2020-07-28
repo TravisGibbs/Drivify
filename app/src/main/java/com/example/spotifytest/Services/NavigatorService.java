@@ -1,4 +1,4 @@
-package com.example.spotifytest.Activities;
+package com.example.spotifytest.Services;
 
 import android.content.Intent;
 import android.net.Uri;

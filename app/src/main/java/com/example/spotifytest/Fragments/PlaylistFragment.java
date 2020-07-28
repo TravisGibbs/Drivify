@@ -66,6 +66,7 @@ public class PlaylistFragment extends Fragment {
   private static final int DEFAULT_LAG = 10;
   private static final int DEFAULT_METERS = 20;
   private static final int DEFAULT_MS = 1000;
+  private Boolean attach = false;
   private SpotifyAppRemote mSpotifyAppRemote;
   private ArrayList<SongFull> allSongs = new ArrayList<>();
   private SongsViewModel viewModel;
@@ -83,6 +84,7 @@ public class PlaylistFragment extends Fragment {
   private Track currentTrack;
   private AlgorithmService algorithmService;
   private String trackName;
+  private String playlistURI;
   private Long songLength;
   private int songProgress;
   private View view;
@@ -106,6 +108,7 @@ public class PlaylistFragment extends Fragment {
       Log.i(Tag, "Permission check");
     }
     trackName = "";
+    Activity MainActivity = getActivity();
     algorithmService = new AlgorithmService(DEFAULT_THRESHOLD, DEFAULT_INFLUENCE, DEFAULT_LAG);
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
@@ -169,12 +172,20 @@ public class PlaylistFragment extends Fragment {
     viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     floatingActionButton = view.findViewById(R.id.playButton);
     allSongs = viewModel.getSongList();
+    try {
+      playlistURI = viewModel.getPlaylistService().getPlaylistURI();
+    } catch (Exception e) {
+
+    }
+    if (allSongs.size() < 1) {
+      MainActivity activity = (MainActivity) getActivity();
+      allSongs = activity.getAllTracks();
+      playlistURI = activity.getPlaylistURI();
+    }
     if (allSongs.size() > 0) {
       setUpSpotifyRemote(view);
-      floatingActionButton.setVisibility(View.VISIBLE);
       trackText.setVisibility(View.VISIBLE);
       progressBar.setVisibility(View.VISIBLE);
-      progressBar.setProgress(50);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
       rvPlaylist.setAdapter(playlistAdapter);
@@ -195,6 +206,7 @@ public class PlaylistFragment extends Fragment {
         main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
       }
     });
+    //Using this executor to update song progress every 2 seconds
     ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
     exec.scheduleAtFixedRate(new Runnable() {
       @Override
@@ -206,14 +218,8 @@ public class PlaylistFragment extends Fragment {
     }, 0, 2, TimeUnit.SECONDS);
   }
 
-  @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-    viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
-  }
-
   private void updateProgressbar () {
-    songProgress += 2000;
+    songProgress += 2000; // every 2 seconds this thread is triggered so 2000 ms are added to progress
     progressBar.setProgress(songProgress);
   }
 
@@ -240,8 +246,9 @@ public class PlaylistFragment extends Fragment {
               @Override
               public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                 mSpotifyAppRemote = spotifyAppRemote;
-                Log.i(Tag, viewModel.getPlaylistService().getPlaylistURI());
-                mSpotifyAppRemote.getPlayerApi().play(viewModel.getPlaylistService().getPlaylistURI());
+                mSpotifyAppRemote.getPlayerApi().setShuffle(false);
+                mSpotifyAppRemote.getPlayerApi().play(playlistURI);
+                floatingActionButton.setVisibility(View.VISIBLE);
                 floatingActionButton.setImageResource(R.drawable.pause_icon);
                 playing = true;
                 mSpotifyAppRemote.getPlayerApi()
@@ -267,6 +274,17 @@ public class PlaylistFragment extends Fragment {
             });
 
 
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    Log.i(Tag, "help");
+    try {
+      floatingActionButton.setVisibility(View.GONE);
+    } catch (Exception e) {
+
+    }
   }
 
   @Override

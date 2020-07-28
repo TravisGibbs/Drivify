@@ -10,6 +10,8 @@ public class SongSimplified {
     private ArrayList<Artist> artists;
     private int duration_ms;
 
+    public SongSimplified () {}
+
     public SongSimplified(String id, String name, int duration_ms, String uri, ArrayList<Artist> artists) {
         this.name = name;
         this.id = id;

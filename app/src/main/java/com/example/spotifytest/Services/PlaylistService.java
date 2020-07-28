@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -13,6 +14,7 @@ import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.Models.SongFull;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -20,21 +22,31 @@ import com.parse.SaveCallback;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Parcel(analyze = PlaylistService.class)
 public class PlaylistService {
 
+    public interface playlistServiceCallback {
+        void onSearchFinish(boolean found);
+    }
+
     private final static String Tag = "PlaylistService";
+    private int page = 0;
     private RelativeLayout relativeLayout;
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private String playlistID;
     private String playlistExternalLink;
-    private String playlistURI;
+    private String playlistURI = "";
+    private ArrayList<SongFull> songFulls = new ArrayList<>();
+
+    public PlaylistService (){}
 
     public PlaylistService(Context context, RelativeLayout relativeLayout) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
@@ -137,7 +149,7 @@ public class PlaylistService {
             stringBuilder.append(songFull.getUri());
             stringBuilder.append(",");
         }
-        return stringBuilder.substring(0, stringBuilder.length()-1);
+        return stringBuilder.substring(0, stringBuilder.length() - 1);
     }
 
     public void onSuccSong(JSONObject response) throws JSONException {
@@ -168,6 +180,7 @@ public class PlaylistService {
         playlist.setKeyDestinationId(destination.getId());
         playlist.setKeyPlaylistId(playlistID);
         playlist.setKeyRedirectLink(playlistExternalLink);
+        playlist.setKeyUri(playlistURI);
         playlist.setTimeTo(String.valueOf(time));
         playlist.setUser(ParseUser.getCurrentUser());
         playlist.setKeyTitle(origin.getName() + " to " + destination.getName());
@@ -181,6 +194,47 @@ public class PlaylistService {
             }
         });
         return;
+    }
+
+    public void getPlaylistItems(String playlistID, playlistServiceCallback playlistServiceCallback) {
+        String URL = String.format("https://api.spotify.com/v1/playlists/%s/tracks?offset=%d", playlistID, page);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, URL, null, response -> {
+                    Gson gson = new Gson();
+                    JSONArray jsonArray = null;
+                    try {
+                        jsonArray = response.getJSONArray("items");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    for (int n = 0; n < jsonArray.length(); n++) {
+                        try {
+                            JSONObject object = jsonArray.getJSONObject(n).getJSONObject("track");
+                            SongFull songFull = gson.fromJson(object.toString(), SongFull.class);
+                            songFulls.add(songFull);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (jsonArray.length() == 100) {
+                        page += 1;
+                        getPlaylistItems(playlistID, playlistServiceCallback);
+                    } else {
+                        playlistServiceCallback.onSearchFinish(true);
+                    }
+                }, error -> {
+                    // TODO: Handle error
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        queue.add(jsonObjectRequest);
     }
 
     public String getPostPlaylistURL() {
@@ -200,5 +254,9 @@ public class PlaylistService {
 
     public String getPlaylistURI() {
         return playlistURI;
+    }
+
+    public ArrayList<SongFull> getSongFulls() {
+        return songFulls;
     }
 }

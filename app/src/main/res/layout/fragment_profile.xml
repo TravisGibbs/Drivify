@@ -61,17 +61,4 @@
         android:textSize="24sp"
         tools:text="Username" />
 
-    <TextView
-        android:id="@+id/driveView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/usernameProfView"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="25dp"
-        android:layout_toEndOf="@+id/profileView"
-        android:lineSpacingExtra="24sp"
-        android:text="Number of drives:"
-        tools:text="Number of drives:" />
 </RelativeLayout>

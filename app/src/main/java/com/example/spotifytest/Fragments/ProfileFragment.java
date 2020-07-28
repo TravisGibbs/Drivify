@@ -43,7 +43,6 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         _User user = (_User) ParseUser.getCurrentUser();
         logoutButton = view.findViewById(R.id.logoutButton);
-        drivesView = view.findViewById(R.id.driveView);
         userView = view.findViewById(R.id.usernameProfView);
         profileImage = view.findViewById(R.id.profileView);
         relativeLayout = view.findViewById(R.id.profileLayout);

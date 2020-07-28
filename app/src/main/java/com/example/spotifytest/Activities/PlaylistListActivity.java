@@ -4,18 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.example.spotifytest.Adapters.ListAdapter;
-import com.example.spotifytest.Adapters.SearchAdapter;
 import com.example.spotifytest.Models.Playlist;
 import com.example.spotifytest.R;
+import com.example.spotifytest.Services.NavigatorService;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -38,6 +37,7 @@ public class PlaylistListActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     setContentView(R.layout.activity_playlist_list);
     progressBar = findViewById(R.id.pbLoadingPlaylistList);
     progressBar.setVisibility(View.VISIBLE);

@@ -35,7 +35,7 @@ public class SongService {
     private RelativeLayout relativeLayout;
 
     public interface songServiceCallback {
-        void onSongsFound(boolean b);
+        void onSearchFinish(boolean found);
     }
 
     public SongService(Context context, RelativeLayout relativeLayout) {
@@ -251,9 +251,9 @@ public class SongService {
                     }
                     tempCheck.addAll(songSimplifieds);
                     if (songSimplifieds.size() > 0) {
-                        serviceCallback.onSongsFound(true);
+                        serviceCallback.onSearchFinish(true);
                     } else {
-                        serviceCallback.onSongsFound(false);
+                        serviceCallback.onSearchFinish(false);
                     }
                     callBack.onSuccess();
                 }, error -> {

@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -25,7 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.spotifytest.Activities.MainActivity;
-import com.example.spotifytest.Activities.NavigatorService;
+import com.example.spotifytest.Services.NavigatorService;
 import com.example.spotifytest.Services.MapService;
 import com.example.spotifytest.Models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
@@ -276,8 +275,8 @@ public class GenerateFragment extends Fragment {
                 function is ready
                 */
                 @Override
-                public void onSongsFound(boolean songsFound) {
-                    if (songsFound) {
+                public void onSearchFinish(boolean found) {
+                    if (found) {
                         allTracks = songService.getSongFulls();
                         updateScreen();
                     } else {
@@ -298,8 +297,8 @@ public class GenerateFragment extends Fragment {
                 songService.getSeedTracks(() -> {
                 }, blankList, arrayList, amountPerSearch, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
                     @Override
-                    public void onSongsFound(boolean b) {
-                        if (b) {
+                    public void onSearchFinish(boolean found) {
+                        if (found) {
                             if (songService.getTempCheck().size() >= amount) {
                                 updateScreen();
                             }
@@ -319,8 +318,8 @@ public class GenerateFragment extends Fragment {
                 songService.getSeedTracks(() -> {
                 }, arrayList, blankList, amountPerSearch, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
                     @Override
-                    public void onSongsFound(boolean b) {
-                        if (b) {
+                    public void onSearchFinish(boolean found) {
+                        if (found) {
                             if (songService.getTempCheck().size() >= amount) {
                                 updateScreen();
                             }

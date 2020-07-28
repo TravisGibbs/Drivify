@@ -3,15 +3,19 @@ package com.example.spotifytest.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.spotifytest.Models.Playlist;
+import com.example.spotifytest.Models.SongsViewModel;
 import com.example.spotifytest.R;
 import com.example.spotifytest.Services.MapService;
+import com.example.spotifytest.Services.NavigatorService;
+import com.example.spotifytest.Services.PlaylistService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,21 +30,29 @@ public class DetailActivity extends AppCompatActivity {
   private static final String Tag = "detailActivity";
   private TextView title;
   private Button goToPlaylist;
+  private Button goToDrivify;
+  private PlaylistService playlistService;
   private TextView time;
   private GoogleMap map;
   private SupportMapFragment mapFrag;
   private Playlist playlist;
   private MapService mapService;
   private NavigatorService navigatorService;
+  private RelativeLayout relativeLayout;
+  private SongsViewModel viewModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     setContentView(R.layout.activity_detail);
     time = findViewById(R.id.timeAmountDetail);
     title = findViewById(R.id.playlistTitleDetail);
     goToPlaylist = findViewById(R.id.openLinkButtonDetail);
+    goToDrivify = findViewById(R.id.drivifyButton);
+    relativeLayout = findViewById(R.id.listLayout);
     mapService = new MapService();
+    playlistService = new PlaylistService(this,relativeLayout);
     navigatorService = new NavigatorService();
     playlist = Parcels.unwrap(getIntent().getParcelableExtra("playlist"));
     mapService.getRoute(playlist.getKeyOriginId(),
@@ -79,6 +91,16 @@ public class DetailActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         startActivity(navigatorService.openPlaylist(playlist.getKeyRedirectLink()));
+      }
+    });
+    goToDrivify.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+        intent.putExtra("goToPlaylist", true);
+        intent.putExtra("playlistID", playlist.getKeyPlaylistId());
+        intent.putExtra("playlistURI", playlist.getKeyUri());
+        startActivity(intent);
       }
     });
   }

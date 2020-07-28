@@ -6,30 +6,48 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProvider.NewInstanceFactory;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import com.example.spotifytest.Fragments.GenerateFragment;
 import com.example.spotifytest.Fragments.ProfileFragment;
 import com.example.spotifytest.Fragments.PlaylistFragment;
+import com.example.spotifytest.Models.SongFull;
+import com.example.spotifytest.Models.SongsViewModel;
 import com.example.spotifytest.R;
+import com.example.spotifytest.Services.PlaylistService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
+public class MainActivity extends AppCompatActivity {
     private final static String Tag = "MainActivity";
     private FragmentManager fragmentManager;
     private BottomNavigationView bottomNavigationView;
+    private PlaylistService playlistService;
+    private RelativeLayout relativeLayout;
+    private ArrayList<SongFull> allTracks = new ArrayList();
+    private String playlistURI;
+    private String playlistID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
         bottomNavigationView = findViewById(R.id.bottomNavigation);
+        relativeLayout = findViewById(R.id.mainLayout);
+        playlistService = new PlaylistService(this, relativeLayout);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -54,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        bottomNavigationView.setSelectedItemId(R.id.generateAction);
+        if (getIntent().getBooleanExtra("goToPlaylist", false)==true) {
+            openPlaylist();
+        } else {
+            bottomNavigationView.setSelectedItemId(R.id.generateAction);
+        }
     }
 
     public FragmentTransaction setFragmentManager(Fragment fragmentCurrent, Fragment fragmentNext) {
@@ -82,5 +104,32 @@ public class MainActivity extends AppCompatActivity {
 
     public BottomNavigationView getBottomNavigationView() {
         return bottomNavigationView;
+    }
+
+    public ArrayList<SongFull> getAllTracks() {
+        return allTracks;
+    }
+
+    public String getPlaylistURI() {
+        return playlistURI;
+    }
+
+    public String getPlaylistID() {
+        return playlistID;
+    }
+
+    private void openPlaylist () {
+        playlistService.getPlaylistItems(getIntent().getStringExtra("playlistID"),
+                new PlaylistService.playlistServiceCallback() {
+            @Override
+            public void onSearchFinish(boolean found) {
+                if (found) {
+                    allTracks = playlistService.getSongFulls();
+                    playlistID = getIntent().getStringExtra("playlistID");
+                    playlistURI = getIntent().getStringExtra("playlistURI");
+                    bottomNavigationView.setSelectedItemId(R.id.playlistAction);
+                }
+            }
+        });
     }
 }

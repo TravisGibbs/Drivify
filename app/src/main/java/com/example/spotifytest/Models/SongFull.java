@@ -1,15 +1,22 @@
 package com.example.spotifytest.Models;
 
+import org.parceler.Parcel;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class SongFull extends SongSimplified {
+public class SongFull extends SongSimplified implements Serializable {
 
     private Album album;
     private float dance;
     private float energy;
     private float loudness;
     private float tempo;
+
+    public SongFull(){
+        super();
+    }
 
     public SongFull(String id, String name, int duration_ms, String uri, ArrayList<Artist> artists, Album album) {
         super(id, name, duration_ms, uri, artists);
