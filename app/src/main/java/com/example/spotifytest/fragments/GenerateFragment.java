@@ -44,6 +44,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -63,7 +65,12 @@ public class GenerateFragment extends Fragment {
     private static final String Tag = "generateFrag";
     private String radioButtonSelected = "";
     private TextView timeView;
-    private TextView searchResults;
+    private ChipGroup searchResults;
+    private Chip chip0;
+    private Chip chip1;
+    private Chip chip2;
+    private Chip chip3;
+    private Chip chip4;
     private TextView danceLabel;
     private TextView energyLabel;
     private TextView valenceLabel;
@@ -96,6 +103,7 @@ public class GenerateFragment extends Fragment {
     private boolean clickFromOriginText = true;
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
+    private ArrayList<String> currentChipId = new ArrayList<>();
     private StringBuilder currentSearchedObjects;
     private SupportMapFragment mapFrag;
     private SwipeRefreshLayout swipeContainer;
@@ -118,10 +126,15 @@ public class GenerateFragment extends Fragment {
         originText = view.findViewById(R.id.originText);
         getSongsButton = view.findViewById(R.id.distanceButton);
         timeView = view.findViewById(R.id.timeText);
-        searchResults = view.findViewById(R.id.searchObjects);
         goToPlaylistButton = view.findViewById(R.id.goToButton);
         makePlaylistButton = view.findViewById(R.id.makePlaylistButton);
         searchButton = view.findViewById(R.id.searchButton);
+        searchResults = view.findViewById(R.id.searchObjects);
+        chip0 = view.findViewById(R.id.chip0);
+        chip1 = view.findViewById(R.id.chip1);
+        chip2 = view.findViewById(R.id.chip2);
+        chip3 = view.findViewById(R.id.chip3);
+        chip4 = view.findViewById(R.id.chip4);
         radioGroup = view.findViewById(R.id.radioGroup);
         radioIncrease = view.findViewById(R.id.radioIncrease);
         radioDecrease = view.findViewById(R.id.radioDecrease);
@@ -203,7 +216,11 @@ public class GenerateFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startSearchActivity();
+                if (customIdSongs.size() + customIdArtists.size() >= 5) {
+                    Snackbar.make(relativeLayout, "Remove an artist and try again", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    startSearchActivity();
+                }
             }
         });
 
@@ -228,6 +245,134 @@ public class GenerateFragment extends Fragment {
             }
         });
 
+        for (int i = 0; i < 5; i++) {
+            currentChipId.add(i, "");
+        }
+
+        chip0.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chip0.setVisibility(View.GONE);
+                chip0.setText("");
+                if (customIdArtists.contains(currentChipId.get(0))) {
+                    for (int i = 0; i < customIdArtists.size(); i++) {
+                        if (customIdArtists.get(i).equals(currentChipId.get(0))) {
+                            customIdArtists.remove(i);
+                            currentChipId.set(0, "");
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < customIdSongs.size(); i++) {
+                        if (customIdSongs.get(i).equals(currentChipId.get(0))) {
+                            customIdSongs.remove(i);
+                            currentChipId.set(0, "");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        chip1.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chip1.setVisibility(View.GONE);
+                chip1.setText("");
+                if (customIdArtists.contains(currentChipId.get(1))) {
+                    for (int i = 0; i < customIdArtists.size(); i++) {
+                        if (customIdArtists.get(i).equals(currentChipId.get(1))) {
+                            customIdArtists.remove(i);
+                            currentChipId.set(1, "");
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < customIdSongs.size(); i++) {
+                        if (customIdSongs.get(i).equals(currentChipId.get(1))) {
+                            customIdSongs.remove(i);
+                            currentChipId.set(1, "");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        chip2.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chip2.setVisibility(View.GONE);
+                chip2.setText("");
+                if (customIdArtists.contains(currentChipId.get(2))) {
+                    for (int i = 0; i < customIdArtists.size(); i++) {
+                        if (customIdArtists.get(i).equals(currentChipId.get(2))) {
+                            customIdArtists.remove(i);
+                            currentChipId.set(2, "");
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < customIdSongs.size(); i++) {
+                        if (customIdSongs.get(i).equals(currentChipId.get(2))) {
+                            customIdSongs.remove(i);
+                            currentChipId.set(2, "");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        chip3.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chip3.setVisibility(View.GONE);
+                chip3.setText("");
+                if (customIdArtists.contains(currentChipId.get(3))) {
+                    for (int i = 0; i < customIdArtists.size(); i++) {
+                        if (customIdArtists.get(i).equals(currentChipId.get(3))) {
+                            customIdArtists.remove(i);
+                            currentChipId.set(3, "");
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < customIdSongs.size(); i++) {
+                        if (customIdSongs.get(i).equals(currentChipId.get(3))) {
+                            customIdSongs.remove(i);
+                            currentChipId.set(3, "");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
+        chip4.setOnCloseIconClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chip4.setVisibility(View.GONE);
+                chip4.setText("");
+                if (customIdArtists.contains(currentChipId.get(4))) {
+                    for (int i = 0; i < customIdArtists.size(); i++) {
+                        if (customIdArtists.get(i).equals(currentChipId.get(4))) {
+                            customIdArtists.remove(i);
+                            currentChipId.set(4, "");
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < customIdSongs.size(); i++) {
+                        if (customIdSongs.get(i).equals(currentChipId.get(4))) {
+                            customIdSongs.remove(i);
+                            currentChipId.set(4, "");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
         relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
             @Override
             public void onSwipeLeft() {
@@ -347,7 +492,16 @@ public class GenerateFragment extends Fragment {
     private void resetView() {
         customIdArtists.clear();
         customIdSongs.clear();
-        searchResults.setText("");
+        chip0.setVisibility(View.GONE);
+        chip1.setVisibility(View.GONE);
+        chip2.setVisibility(View.GONE);
+        chip3.setVisibility(View.GONE);
+        chip4.setVisibility(View.GONE);
+        chip0.setText("");
+        chip1.setText("");
+        chip2.setText("");
+        chip3.setText("");
+        chip4.setText("");
         sliderDance.setValue(.5f);
         sliderEnergy.setValue(.5f);
         sliderValence.setValue(.5f);
@@ -421,14 +575,6 @@ public class GenerateFragment extends Fragment {
                 return;
             }
             setSearchResults(data);
-            if ((customIdArtists.size() + customIdSongs.size()) > 4) {
-                if (!customIdArtists.isEmpty()) {
-                    customIdArtists.remove(0);
-
-                } else {
-                    customIdSongs.remove(0);
-                }
-            }
             if (data.getBooleanExtra("isSong", false)) {
                 customIdSongs.add(data.getStringExtra("id"));
             } else {
@@ -451,23 +597,27 @@ public class GenerateFragment extends Fragment {
     }
 
     public void setSearchResults(Intent data) {
-        if (customIdArtists.size() + customIdSongs.size() > 4) {
-            int endOfLastObjectIndex = 0;
-            for (int i = 0; i < currentSearchedObjects.length(); i++) {
-                if (currentSearchedObjects.charAt(i) == ',') {
-                    endOfLastObjectIndex = i;
-                    break;
-                }
-            }
-            currentSearchedObjects.replace(28, endOfLastObjectIndex, data.getStringExtra("name") + " ");
-        } else {
-            if (customIdArtists.size() + customIdSongs.size() < 1) {
-                currentSearchedObjects.append(" ").append(data.getStringExtra("name")).append(" ");
-            } else {
-                currentSearchedObjects.append(", ").append(data.getStringExtra("name")).append(" ");
-            }
+        if (chip0.getText().toString().equals("")) {
+            chip0.setText(data.getStringExtra("name"));
+            chip0.setVisibility(View.VISIBLE);
+            currentChipId.set(0, data.getStringExtra("id"));
+        } else if (chip1.getText().toString().equals("")) {
+            chip1.setText(data.getStringExtra("name"));
+            chip1.setVisibility(View.VISIBLE);
+            currentChipId.set(1, data.getStringExtra("id"));
+        } else if (chip2.getText().toString().equals("")) {
+            chip2.setText(data.getStringExtra("name"));
+            chip2.setVisibility(View.VISIBLE);
+            currentChipId.set(2, data.getStringExtra("id"));
+        } else if (chip3.getText().toString().equals("")) {
+            chip3.setText(data.getStringExtra("name"));
+            chip3.setVisibility(View.VISIBLE);
+            currentChipId.set(3, data.getStringExtra("id"));
+        } else if (chip4.getText().toString().equals("")) {
+            chip4.setText(data.getStringExtra("name"));
+            chip4.setVisibility(View.VISIBLE);
+            currentChipId.set(4, data.getStringExtra("id"));
         }
-        searchResults.setText(currentSearchedObjects.toString());
     }
 
     public void getDistance(Place a, Place b){
