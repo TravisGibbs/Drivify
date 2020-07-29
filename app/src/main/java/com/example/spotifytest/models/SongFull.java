@@ -12,10 +12,6 @@ public class SongFull extends SongSimplified implements Serializable {
     private float loudness;
     private float tempo;
 
-    public SongFull(){
-        super();
-    }
-
     public SongFull(String id, String name, int duration_ms, String uri, ArrayList<Artist> artists, Album album) {
         super(id, name, duration_ms, uri, artists);
         this.album = album;

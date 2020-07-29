@@ -23,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.spotifytest.adapters.SearchAdapter;
 import com.example.spotifytest.models.Artist;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.SearchObject;
 import com.example.spotifytest.models.SongFull;
 import com.example.spotifytest.R;
@@ -66,9 +67,9 @@ public class SearchActivity extends AppCompatActivity {
       @Override
       public void onItemClicked(int position, String id, String name, Boolean isSong) {
         Intent intent = new Intent();
-        intent.putExtra("id", id);
-        intent.putExtra("isSong", isSong);
-        intent.putExtra("name",name);
+        intent.putExtra(Const.getobjectIDKey(), id);
+        intent.putExtra(Const.getIsSongKey(), isSong);
+        intent.putExtra(Const.getObjectNameKey(),name);
         setResult(2,intent);
         finish();//finishing activity
       }

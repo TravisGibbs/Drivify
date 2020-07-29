@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.example.spotifytest.adapters.PlaylistAdapter;
 import com.example.spotifytest.activities.MainActivity;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.SongFull;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
@@ -51,13 +52,11 @@ import java.util.concurrent.TimeUnit;
 public class PlaylistFragment extends Fragment {
 
   private static final String Tag = "PlaylistFragment";
-  private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
-  private static final String REDIRECT_URI = "https://developer.spotify.com/dashboard";
   private static final double DEFAULT_THRESHOLD = 1;
   private static final double DEFAULT_INFLUENCE = .5;
   private static final int DEFAULT_LAG = 10;
-  private static final int DEFAULT_METERS = 20;
-  private static final int DEFAULT_MS = 1000;
+  private static final int DEFAULT_METERS_BETWEEN_SEARCH = 20;
+  private static final int DEFAULT_MS_BETWEEN_SEARCH = 1000;
   private Boolean attach = false;
   private SpotifyAppRemote mSpotifyAppRemote;
   private ArrayList<SongFull> allSongs = new ArrayList<>();
@@ -107,8 +106,8 @@ public class PlaylistFragment extends Fragment {
     progressBar = view.findViewById(R.id.progressBarSong);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-            DEFAULT_MS,
-            DEFAULT_METERS,
+            DEFAULT_MS_BETWEEN_SEARCH,
+            DEFAULT_METERS_BETWEEN_SEARCH,
             new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
@@ -163,11 +162,11 @@ public class PlaylistFragment extends Fragment {
     rvPlaylist = view.findViewById(R.id.rvSongs);
     viewModel = ViewModelProviders.of(this.getActivity()).get(SongsViewModel.class);
     floatingActionButton = view.findViewById(R.id.playButton);
-    allSongs = viewModel.getSongList();
     try {
+      allSongs = viewModel.getSongList();
       playlistURI = viewModel.getPlaylistService().getPlaylistURI();
     } catch (Exception e) {
-
+      Log.i(Tag, "View model empty, checking main activity");
     }
     if (allSongs.size() < 1) {
       MainActivity activity = (MainActivity) getActivity();
@@ -229,8 +228,8 @@ public class PlaylistFragment extends Fragment {
 
   private void setUpSpotifyRemote(View view) {
     ConnectionParams connectionParams =
-            new ConnectionParams.Builder(CLIENT_ID)
-                    .setRedirectUri(REDIRECT_URI)
+            new ConnectionParams.Builder(Const.getSpotifyClientId())
+                    .setRedirectUri(Const.getSpotifyRedirectLink())
                     .showAuthView(true)
                     .build();
     SpotifyAppRemote.connect(view.getContext(), connectionParams,
@@ -271,11 +270,8 @@ public class PlaylistFragment extends Fragment {
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    Log.i(Tag, "help");
-    try {
+    if (floatingActionButton != null) {
       floatingActionButton.setVisibility(View.GONE);
-    } catch (Exception e) {
-
     }
   }
 

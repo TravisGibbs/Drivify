@@ -64,7 +64,9 @@ public class Playlist extends ParseObject {
     public void setKeyTitle(String title) {
         put(KEY_TITLE, title);
     }
-    public String getKeyUri() { return  getString(KEY_URI);}
+    public String getKeyUri() {
+        return getString(KEY_URI);
+    }
     public void setKeyUri(String keyUri) {
         put(KEY_URI, keyUri);
     }

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.Playlist;
 import com.example.spotifytest.models.SongsViewModel;
 import com.example.spotifytest.R;
@@ -97,9 +98,9 @@ public class DetailActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-        intent.putExtra("goToPlaylist", true);
-        intent.putExtra("playlistID", playlist.getKeyPlaylistId());
-        intent.putExtra("playlistURI", playlist.getKeyUri());
+        intent.putExtra(Const.getGoToPlaylistKey(), true);
+        intent.putExtra(Const.getPlaylistIDKey(), playlist.getKeyPlaylistId());
+        intent.putExtra(Const.getPlaylistURIKey(), playlist.getKeyUri());
         startActivity(intent);
       }
     });

@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.spotifytest.activities.MainActivity;
+import com.example.spotifytest.models.Const;
+import com.example.spotifytest.models.objectID;
 import com.example.spotifytest.services.NavigatorService;
 import com.example.spotifytest.services.MapService;
 import com.example.spotifytest.models.SongFull;
@@ -52,6 +54,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +64,6 @@ public class GenerateFragment extends Fragment {
     private static final int RESULT_OK = -1;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final int RESULT_CANCELED = 0;
-    private static final String apiKey = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
     private static final String Tag = "generateFrag";
     private String radioButtonSelected = "";
     private TextView timeView;
@@ -103,10 +105,10 @@ public class GenerateFragment extends Fragment {
     private boolean clickFromOriginText = true;
     private ArrayList<String> customIdSongs;
     private ArrayList<String> customIdArtists;
-    private ArrayList<String> currentChipId = new ArrayList<>();
     private StringBuilder currentSearchedObjects;
     private SupportMapFragment mapFrag;
     private SwipeRefreshLayout swipeContainer;
+    HashMap<String, objectID> nameIdMap = new HashMap<String, objectID>();
     private Context mContext;
 
     @Override
@@ -118,7 +120,7 @@ public class GenerateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Places.initialize(view.getContext(), apiKey);
+        Places.initialize(view.getContext(), Const.getGoogleApiKey());
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
         playlistService = new PlaylistService(view.getContext(), relativeLayout);
         songService = new SongService(view.getContext(), relativeLayout);
@@ -148,7 +150,6 @@ public class GenerateFragment extends Fragment {
         danceLabel = view.findViewById(R.id.danceLabel);
         energyLabel = view.findViewById(R.id.energyLabel);
         valenceLabel = view.findViewById(R.id.valenceLabel);
-        SharedPreferences sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
         customIdArtists = new ArrayList<>();
         customIdSongs = new ArrayList<>();
         currentSearchedObjects = new StringBuilder();
@@ -216,7 +217,7 @@ public class GenerateFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (customIdSongs.size() + customIdArtists.size() >= 5) {
+                if (nameIdMap.size() >= 5) {
                     Snackbar.make(relativeLayout, "Remove an artist and try again", Snackbar.LENGTH_SHORT).show();
                 } else {
                     startSearchActivity();
@@ -245,132 +246,38 @@ public class GenerateFragment extends Fragment {
             }
         });
 
-        for (int i = 0; i < 5; i++) {
-            currentChipId.add(i, "");
-        }
-
         chip0.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chip0.setVisibility(View.GONE);
-                chip0.setText("");
-                if (customIdArtists.contains(currentChipId.get(0))) {
-                    for (int i = 0; i < customIdArtists.size(); i++) {
-                        if (customIdArtists.get(i).equals(currentChipId.get(0))) {
-                            customIdArtists.remove(i);
-                            currentChipId.set(0, "");
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < customIdSongs.size(); i++) {
-                        if (customIdSongs.get(i).equals(currentChipId.get(0))) {
-                            customIdSongs.remove(i);
-                            currentChipId.set(0, "");
-                            break;
-                        }
-                    }
-                }
+                chipListenerResponse(chip0);
             }
         });
 
         chip1.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chip1.setVisibility(View.GONE);
-                chip1.setText("");
-                if (customIdArtists.contains(currentChipId.get(1))) {
-                    for (int i = 0; i < customIdArtists.size(); i++) {
-                        if (customIdArtists.get(i).equals(currentChipId.get(1))) {
-                            customIdArtists.remove(i);
-                            currentChipId.set(1, "");
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < customIdSongs.size(); i++) {
-                        if (customIdSongs.get(i).equals(currentChipId.get(1))) {
-                            customIdSongs.remove(i);
-                            currentChipId.set(1, "");
-                            break;
-                        }
-                    }
-                }
+                chipListenerResponse(chip1);
             }
         });
 
         chip2.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chip2.setVisibility(View.GONE);
-                chip2.setText("");
-                if (customIdArtists.contains(currentChipId.get(2))) {
-                    for (int i = 0; i < customIdArtists.size(); i++) {
-                        if (customIdArtists.get(i).equals(currentChipId.get(2))) {
-                            customIdArtists.remove(i);
-                            currentChipId.set(2, "");
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < customIdSongs.size(); i++) {
-                        if (customIdSongs.get(i).equals(currentChipId.get(2))) {
-                            customIdSongs.remove(i);
-                            currentChipId.set(2, "");
-                            break;
-                        }
-                    }
-                }
+                chipListenerResponse(chip2);
             }
         });
 
         chip3.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chip3.setVisibility(View.GONE);
-                chip3.setText("");
-                if (customIdArtists.contains(currentChipId.get(3))) {
-                    for (int i = 0; i < customIdArtists.size(); i++) {
-                        if (customIdArtists.get(i).equals(currentChipId.get(3))) {
-                            customIdArtists.remove(i);
-                            currentChipId.set(3, "");
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < customIdSongs.size(); i++) {
-                        if (customIdSongs.get(i).equals(currentChipId.get(3))) {
-                            customIdSongs.remove(i);
-                            currentChipId.set(3, "");
-                            break;
-                        }
-                    }
-                }
+                chipListenerResponse(chip3);
             }
         });
 
         chip4.setOnCloseIconClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chip4.setVisibility(View.GONE);
-                chip4.setText("");
-                if (customIdArtists.contains(currentChipId.get(4))) {
-                    for (int i = 0; i < customIdArtists.size(); i++) {
-                        if (customIdArtists.get(i).equals(currentChipId.get(4))) {
-                            customIdArtists.remove(i);
-                            currentChipId.set(4, "");
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < customIdSongs.size(); i++) {
-                        if (customIdSongs.get(i).equals(currentChipId.get(4))) {
-                            customIdSongs.remove(i);
-                            currentChipId.set(4, "");
-                            break;
-                        }
-                    }
-                }
+                chipListenerResponse(chip4);
             }
         });
         relativeLayout.setOnTouchListener(new OnSwipeTouchListener(view.getContext()) {
@@ -402,6 +309,37 @@ public class GenerateFragment extends Fragment {
                 R.color.colorPrimary);
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(Tag, "Place: " + place.getName() + ", " + place.getId());
+                if (clickFromOriginText){
+                    origin = place;
+                    originText.setText(place.getName());
+                } else {
+                    destination = place;
+                    destText.setText(place.getName());
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        if (requestCode == 2) {
+            if (resultCode == 0) {
+                return;
+            }
+            setSearchResults(data);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -412,6 +350,13 @@ public class GenerateFragment extends Fragment {
         Float danceValue = sliderDance.getValue();
         Float energyValue = sliderEnergy.getValue();
         Float loudnessValue = sliderValence.getValue();
+        for (objectID objectID : nameIdMap.values()) {
+            if (objectID.isSong()) {
+                customIdSongs.add(objectID.getId());
+            } else {
+                customIdArtists.add(objectID.getId());
+            }
+        }
         if (amount < 101) {
             songService.getSeedTracks(() -> {
             }, customIdSongs, customIdArtists, amount, danceValue, energyValue, loudnessValue, new SongService.songServiceCallback() {
@@ -527,7 +472,7 @@ public class GenerateFragment extends Fragment {
         }
     }
 
-    public ArrayList<SongFull> chooseSongs(ArrayList<SongFull> songList){
+    private ArrayList<SongFull> chooseSongs(ArrayList<SongFull> songList){
         Set<SongFull> set = new HashSet<>(songList);
         songList.clear();
         songList.addAll(set);
@@ -548,80 +493,36 @@ public class GenerateFragment extends Fragment {
         return(addKSongsFromList(newSongList, songList, amountSongs));
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(Tag, "Place: " + place.getName() + ", " + place.getId());
-                if (clickFromOriginText){
-                    origin = place;
-                    originText.setText(place.getName());
-                } else {
-                    destination = place;
-                    destText.setText(place.getName());
-                }
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-            return;
-        }
-        if (requestCode == 2) {
-            if (resultCode == 0) {
-                return;
-            }
-            setSearchResults(data);
-            if (data.getBooleanExtra("isSong", false)) {
-                customIdSongs.add(data.getStringExtra("id"));
-            } else {
-                customIdArtists.add(data.getStringExtra("id"));
-            }
-            for (int i = 0; i < customIdArtists.size(); i++) {
-                Log.i(Tag,customIdArtists.get(i) + " ");
-            }
-            for (int i = 0; i < customIdSongs.size();i++) {
-                Log.i(Tag,customIdSongs.get(i) + " ");
-            }
-        }
-    }
-
-    public ArrayList<SongFull> addKSongsFromList(ArrayList<SongFull> newSongList, ArrayList<SongFull> songList, int k){
+    private ArrayList<SongFull> addKSongsFromList(ArrayList<SongFull> newSongList, ArrayList<SongFull> songList, int k){
         for(int i = 0; i < k; i++){
             newSongList.add(songList.get(i));
         }
         return newSongList;
     }
 
-    public void setSearchResults(Intent data) {
+    private void setSearchResults(Intent data) {
+        nameIdMap.put(data.getStringExtra(Const.getObjectNameKey()),
+                new objectID(data.getBooleanExtra(Const.getIsSongKey(), false), data.getStringExtra(Const.getobjectIDKey())));
         if (chip0.getText().toString().equals("")) {
-            chip0.setText(data.getStringExtra("name"));
+            chip0.setText(data.getStringExtra(Const.getObjectNameKey()));
             chip0.setVisibility(View.VISIBLE);
-            currentChipId.set(0, data.getStringExtra("id"));
         } else if (chip1.getText().toString().equals("")) {
-            chip1.setText(data.getStringExtra("name"));
+            chip1.setText(data.getStringExtra(Const.getObjectNameKey()));
             chip1.setVisibility(View.VISIBLE);
-            currentChipId.set(1, data.getStringExtra("id"));
         } else if (chip2.getText().toString().equals("")) {
-            chip2.setText(data.getStringExtra("name"));
+            chip2.setText(data.getStringExtra(Const.getObjectNameKey()));
             chip2.setVisibility(View.VISIBLE);
-            currentChipId.set(2, data.getStringExtra("id"));
         } else if (chip3.getText().toString().equals("")) {
-            chip3.setText(data.getStringExtra("name"));
+            chip3.setText(data.getStringExtra(Const.getObjectNameKey()));
             chip3.setVisibility(View.VISIBLE);
-            currentChipId.set(3, data.getStringExtra("id"));
         } else if (chip4.getText().toString().equals("")) {
-            chip4.setText(data.getStringExtra("name"));
+            chip4.setText(data.getStringExtra(Const.getObjectNameKey()));
             chip4.setVisibility(View.VISIBLE);
-            currentChipId.set(4, data.getStringExtra("id"));
         }
     }
 
-    public void getDistance(Place a, Place b){
-        if (customIdArtists.size() + customIdSongs.size() < 1){
+    private void getDistance(Place a, Place b){
+        if (nameIdMap.size() < 1){
             Snackbar.make(relativeLayout, "Select an artist or song!", Snackbar.LENGTH_SHORT).show();
             return;
         }
@@ -650,7 +551,7 @@ public class GenerateFragment extends Fragment {
         });
     }
 
-    public void updateScreen() {
+    private void updateScreen() {
         startButtonSwap(makePlaylistButton, getSongsButton);
         timeView.setText(timeString);
         timeView.setVisibility(View.VISIBLE);
@@ -691,20 +592,20 @@ public class GenerateFragment extends Fragment {
         radioGroup.setVisibility(View.VISIBLE);
     }
 
-    public void startButtonSwap(Button goUpButton, Button goRightButton) {
+    private void startButtonSwap(Button goUpButton, Button goRightButton) {
         ObjectAnimator animationButtonUp = ObjectAnimator.ofFloat(goUpButton, "translationY", -170f);
         animationButtonUp.setDuration(2000);
         moveButtonOffScreenRight(goRightButton);
         animationButtonUp.start();
     }
 
-    public void moveButtonOffScreenRight(Button button){
+    private void moveButtonOffScreenRight(Button button){
         ObjectAnimator animationButtonRight = ObjectAnimator.ofFloat(button, "translationX", 1800f);
         animationButtonRight.setDuration(1500);
         animationButtonRight.start();
     }
 
-    public void onRadioButtonClicked(View view) {
+    private void onRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
         // Check which radio button was clicked
         switch(view.getId()) {
@@ -727,8 +628,15 @@ public class GenerateFragment extends Fragment {
         Log.i(Tag, "Radio button selected: " + radioButtonSelected);
     }
 
-    public void startSearchActivity() {
+    private void startSearchActivity() {
         Intent intent = new Intent(getContext(), SearchActivity.class);
         startActivityForResult(intent, 2);
+    }
+
+
+    private void chipListenerResponse(Chip chip) {
+        nameIdMap.remove(chip.getText().toString());
+        chip.setVisibility(View.GONE);
+        chip.setText("");
     }
 }

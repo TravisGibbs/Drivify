@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.example.spotifytest.fragments.GenerateFragment;
 import com.example.spotifytest.fragments.ProfileFragment;
 import com.example.spotifytest.fragments.PlaylistFragment;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.SongFull;
 import com.example.spotifytest.R;
 import com.example.spotifytest.services.PlaylistService;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        if (getIntent().getBooleanExtra("goToPlaylist", false)==true) {
+        if (getIntent().getBooleanExtra(Const.getGoToPlaylistKey(), false)) {
             openPlaylist();
         } else {
             bottomNavigationView.setSelectedItemId(R.id.generateAction);
@@ -111,14 +112,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openPlaylist () {
-        playlistService.getPlaylistItems(getIntent().getStringExtra("playlistID"),
+        playlistService.getPlaylistItems(getIntent().getStringExtra(Const.getPlaylistIDKey()),
                 new PlaylistService.playlistServiceCallback() {
             @Override
             public void onSearchFinish(boolean found) {
                 if (found) {
                     allTracks = playlistService.getSongFulls();
-                    playlistID = getIntent().getStringExtra("playlistID");
-                    playlistURI = getIntent().getStringExtra("playlistURI");
+                    playlistID = getIntent().getStringExtra(Const.getPlaylistIDKey());
+                    playlistURI = getIntent().getStringExtra(Const.getPlaylistURIKey());
                     bottomNavigationView.setSelectedItemId(R.id.playlistAction);
                 }
             }

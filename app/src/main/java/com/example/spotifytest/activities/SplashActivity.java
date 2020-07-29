@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models._User;
 import com.example.spotifytest.R;
 import com.example.spotifytest.services.UserService;
@@ -22,8 +23,6 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final String CLIENT_ID = "16b8f7e96bbb4d12b021825527475319";
-    private static final String REDIRECT_URI = "https://developer.spotify.com/dashboard";
     private static final int REQUEST_CODE = 1337;
     private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-modify-public,playlist-modify-private";
     private SharedPreferences.Editor editor;
@@ -53,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void authenticateSpotify() {
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(Const.getSpotifyClientId(), AuthenticationResponse.Type.TOKEN, Const.getSpotifyRedirectLink());
         builder.setScopes(new String[]{SCOPES});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
