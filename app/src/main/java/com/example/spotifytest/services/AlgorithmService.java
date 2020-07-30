@@ -23,6 +23,14 @@ public class AlgorithmService {
     this.values = new ArrayList<>();
   }
 
+  public double getStd() {
+    return std;
+  }
+
+  public double getMean() {
+    return mean;
+  }
+
   public double getThreshold() {
     return threshold;
   }

@@ -55,8 +55,8 @@ public class PlaylistFragment extends Fragment {
   private static final double DEFAULT_THRESHOLD = 1;
   private static final double DEFAULT_INFLUENCE = .5;
   private static final int DEFAULT_LAG = 10;
-  private static final int DEFAULT_METERS_BETWEEN_SEARCH = 20;
-  private static final int DEFAULT_MS_BETWEEN_SEARCH = 1000;
+  private static final int DEFAULT_METERS_BETWEEN_SEARCH = 100;
+  private static final int DEFAULT_MS_BETWEEN_SEARCH = 5000;
   private Boolean attach = false;
   private SpotifyAppRemote mSpotifyAppRemote;
   private ArrayList<SongFull> allSongs = new ArrayList<>();

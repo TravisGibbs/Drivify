@@ -3,6 +3,10 @@
     <color name="colorPrimary">#1ED760</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorAccent">#1ED760</color>
-    <color name="greyS">#C3C6DB</color>
+    <color name="spotifyDarkGrey">#535353</color>
+    <color name="spotifyLightGrey">#b3b3b3</color>
+    <color name="paleGreen">#98fb98</color>
+    <color name="greyS">#b3b3b3</color>
+
 
 </resources>
