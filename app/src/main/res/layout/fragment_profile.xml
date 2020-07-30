@@ -8,6 +8,22 @@
     tools:context=".fragments.ProfileFragment">
 
     <Button
+        android:id="@+id/testAlgoButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/playlistListButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:padding="10dp"
+        android:text="Test Algorithm"
+        android:visibility="visible" />
+
+    <Button
         android:id="@+id/playlistListButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

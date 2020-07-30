@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.spotifytest.activities.AlgorithmTestActivity;
 import com.example.spotifytest.activities.LoginActivity;
 import com.example.spotifytest.activities.MainActivity;
 import com.example.spotifytest.models._User;
@@ -31,6 +32,7 @@ public class ProfileFragment extends Fragment {
     private final static String Tag = "profileFragment";
     private Button logoutButton;
     private Button playlistListButton;
+    private Button testAlgoButton;
     private TextView userView;
     private TextView drivesView;
     private ImageView profileImage;
@@ -46,6 +48,7 @@ public class ProfileFragment extends Fragment {
         profileImage = view.findViewById(R.id.profileView);
         relativeLayout = view.findViewById(R.id.profileLayout);
         playlistListButton = view.findViewById(R.id.playlistListButton);
+        testAlgoButton = view.findViewById(R.id.testAlgoButton);
         bottomNavigationView = view.findViewById(R.id.bottomNavigation);
 
         Glide.with(view.getContext()).load(user.getImage().getUrl()).into(profileImage);
@@ -73,6 +76,14 @@ public class ProfileFragment extends Fragment {
                 super.onSwipeRight();
                 MainActivity main = (MainActivity) getActivity();
                 main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
+            }
+        });
+
+        testAlgoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), AlgorithmTestActivity.class);
+                startActivity(intent);
             }
         });
     }
