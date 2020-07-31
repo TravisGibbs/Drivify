@@ -81,7 +81,7 @@ public class MapService {
           List<LatLng> latLngs = PolyUtil.decode(polyline);
           polylineOptions = new PolylineOptions()
                           .clickable(true)
-                          .color(Color.parseColor("#1ED760"))
+                          .color(Color.parseColor("#6CBCDB"))
                           .addAll(latLngs);
           originLatLng = latLngs.get(0);
           focusPointLatLng = latLngs.get(latLngs.size()/2);

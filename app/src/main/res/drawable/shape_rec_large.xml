@@ -2,20 +2,18 @@
     android:shape="rectangle">
 
     <corners
-        android:radius="10dp" />
+        android:radius="1dp" />
 
     <gradient
+        android:useLevel="true"
         android:angle="45"
         android:startColor="@color/colorPrimaryDark"
-        android:endColor="@color/colorPrimary"
+        android:endColor="@color/darkGrey"
         android:type="linear" />
 
     <size
         android:width="82dp"
         android:height="40dp" />
 
-    <stroke
-        android:width="2dp"
-        android:color="#FFFFFF" />
 
 </shape>

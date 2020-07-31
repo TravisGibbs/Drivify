@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1ED760</color>
-    <color name="colorPrimaryDark">#FFFFFF</color>
-    <color name="colorAccent">#1ED760</color>
-    <color name="spotifyDarkGrey">#535353</color>
-    <color name="spotifyLightGrey">#b3b3b3</color>
-    <color name="paleGreen">#98fb98</color>
-    <color name="greyS">#b3b3b3</color>
+    <color name="colorPrimary">#6CBCDB</color>
+    <color name="colorPrimaryDark">#1F2C45</color>
+    <color name="colorAccent">#89ACAE</color>
+    <color name="darkGrey">#718F91</color>
+    <color name="black">#89ACAE</color>
+    <color name="white">#FFFFFF</color>
 
 
 </resources>

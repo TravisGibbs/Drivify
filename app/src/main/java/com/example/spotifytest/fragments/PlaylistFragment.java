@@ -15,18 +15,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.spotifytest.adapters.PlaylistAdapter;
 import com.example.spotifytest.activities.MainActivity;
@@ -43,7 +48,14 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,13 +91,17 @@ public class PlaylistFragment extends Fragment {
   private Long songLength;
   private int songProgress;
   private View view;
+  private Button saveDataButton;
+  private EditText editText;
+  private ArrayList<String> speedData = new ArrayList<>();
+  private LocationManager lm;
 
   @SuppressLint("RestrictedApi")
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     this.view = view;
-    LocationManager lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
+    lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
     audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
     int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxLevel/2, 0);
@@ -104,17 +120,20 @@ public class PlaylistFragment extends Fragment {
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
     progressBar = view.findViewById(R.id.progressBarSong);
+    saveDataButton = view.findViewById(R.id.saveData);
+    editText = view.findViewById(R.id.editTextFileName);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             DEFAULT_MS_BETWEEN_SEARCH,
             DEFAULT_METERS_BETWEEN_SEARCH,
-            new LocationListener() {
+            new LocationListener()  {
               @Override
               public void onLocationChanged(Location location) {
                 if (location==null){
                   ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
                 } else {
                   speed = (int) ((location.getSpeed()*3600)/1000);
+                  speedData.add(String.valueOf(speed));
                   int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                   int offset = currentLevel - maxLevel / 2;
                   double upper = 1.5;
@@ -174,6 +193,8 @@ public class PlaylistFragment extends Fragment {
       playlistURI = activity.getPlaylistURI();
     }
     if (allSongs.size() > 0) {
+      saveDataButton.setVisibility(View.GONE);
+      editText.setVisibility(View.GONE);
       setUpSpotifyRemote(view);
       trackText.setVisibility(View.VISIBLE);
       progressBar.setVisibility(View.VISIBLE);
@@ -195,6 +216,23 @@ public class PlaylistFragment extends Fragment {
         super.onSwipeRight();
         MainActivity main = (MainActivity) getActivity();
         main.getBottomNavigationView().setSelectedItemId(R.id.generateAction);
+      }
+    });
+    saveDataButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        for (String speed : speedData) {
+          Log.i(Tag, "speed saved: " + speed);
+        }
+        if (permissionWriteCheck()) {
+          try {
+            writeToFile(speedData.toString());
+          } catch (FileNotFoundException e) {
+            e.printStackTrace();
+          }
+        } else {
+          Log.i(Tag, "Permission Error");
+        }
       }
     });
     //Using this executor to update song progress every 2 seconds
@@ -273,11 +311,36 @@ public class PlaylistFragment extends Fragment {
     if (floatingActionButton != null) {
       floatingActionButton.setVisibility(View.GONE);
     }
+    if (mSpotifyAppRemote != null) {
+      mSpotifyAppRemote.getPlayerApi().pause();
+      SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+    }
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_list, container, false);
+  }
+
+  private void writeToFile(String data) throws FileNotFoundException {
+    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), editText.getText().toString());
+    FileOutputStream fileOutputStream = new FileOutputStream(file);
+    try {
+      fileOutputStream.write(data.getBytes());
+      fileOutputStream.close();
+      Toast.makeText(view.getContext(), "File saved", Toast.LENGTH_LONG).show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  private boolean permissionWriteCheck() {
+    int check = ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+    if (check < 0) {
+      ActivityCompat.requestPermissions((Activity) view.getContext(),
+              new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+              100);
+    }
+    return (check == PackageManager.PERMISSION_GRANTED);
   }
 }

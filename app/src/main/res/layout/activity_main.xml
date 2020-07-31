@@ -13,6 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimaryDark"
+        app:itemIconTint="@color/colorPrimary"
+        app:itemTextAppearanceActive="@style/AppTheme"
+        app:itemTextAppearanceInactive="@style/AppTheme"
+        app:itemTextColor="@color/cardview_light_background"
         app:menu="@menu/menu_bottom_navigation" />
 
     <FrameLayout
