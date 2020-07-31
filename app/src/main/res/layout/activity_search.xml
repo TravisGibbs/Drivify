@@ -28,11 +28,12 @@
             android:hint="Enter a Song or Artist"
             android:inputType="textPersonName"
             android:paddingTop="12dp"
-            android:textColor="@color/quantum_black_100"
-            android:textColorHighlight="@color/colorPrimaryDark"
-            android:textColorHint="@color/places_ui_default_primary_dark"
-            android:textColorLink="@color/places_ui_default_primary_dark"
-            android:textCursorDrawable="@color/places_autocomplete_error_message"
+            android:shadowColor="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:textColorHighlight="@color/white"
+            android:textColorHint="@color/white"
+            android:textColorLink="@color/white"
+            android:textCursorDrawable="@color/white"
             android:textSize="18sp" />
 
         <ImageButton
@@ -41,7 +42,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/colorPrimary"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/back_icon" />
 

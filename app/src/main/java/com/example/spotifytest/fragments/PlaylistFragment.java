@@ -115,7 +115,6 @@ public class PlaylistFragment extends Fragment {
       Log.i(Tag, "Permission check");
     }
     trackName = "";
-    Activity MainActivity = getActivity();
     algorithmService = new AlgorithmService(DEFAULT_THRESHOLD, DEFAULT_INFLUENCE, DEFAULT_LAG);
     errorText = view.findViewById(R.id.errorText);
     trackText = view.findViewById(R.id.SongText);
@@ -324,7 +323,7 @@ public class PlaylistFragment extends Fragment {
   }
 
   private void writeToFile(String data) throws FileNotFoundException {
-    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), editText.getText().toString());
+    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), editText.getText().toString() + ".txt");
     FileOutputStream fileOutputStream = new FileOutputStream(file);
     try {
       fileOutputStream.write(data.getBytes());

@@ -193,7 +193,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="Hype me up!"
-                android:textColor="@color/places_ui_default_primary"
+                android:textColor="@color/darkGrey"
                 android:textSize="24sp" />
 
             <RadioButton
@@ -201,7 +201,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="Calm me down."
-                android:textColor="@color/places_ui_default_primary"
+                android:textColor="@color/darkGrey"
                 android:textSize="24sp" />
 
             <RadioButton
@@ -209,7 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="Make me dance!"
-                android:textColor="@color/places_ui_default_primary"
+                android:textColor="@color/darkGrey"
                 android:textSize="24sp"
                 android:visibility="visible"
                 tools:visibility="visible" />
@@ -241,36 +241,52 @@
                 android:id="@+id/chip0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/colorPrimary"
+                android:textColor="@color/white"
                 android:visibility="gone"
+                app:closeIconTint="@color/colorPrimaryDark"
                 app:closeIconVisible="true" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/colorPrimary"
+                android:textColor="@color/white"
                 android:visibility="gone"
+                app:closeIconTint="@color/colorPrimaryDark"
                 app:closeIconVisible="true" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/colorPrimary"
+                android:textColor="@color/white"
                 android:visibility="gone"
-                app:closeIconVisible="true" />
+                app:closeIconTint="@color/colorPrimaryDark"
+                app:closeIconVisible="true"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/colorPrimary"
+                android:textColor="@color/white"
                 android:visibility="gone"
+                app:closeIconTint="@color/colorPrimaryDark"
                 app:closeIconVisible="true" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/colorPrimary"
+                android:textColor="@color/white"
                 android:visibility="gone"
+                app:closeIconTint="@color/colorPrimaryDark"
                 app:closeIconVisible="true" />
+            
         </com.google.android.material.chip.ChipGroup>
 
         <fragment

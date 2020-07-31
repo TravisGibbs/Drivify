@@ -12,9 +12,9 @@
     <application
         android:name=".ParseApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/drvifiy_icon"
         android:label="Drivify"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/drvifiy_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
