@@ -286,7 +286,7 @@
                 android:visibility="gone"
                 app:closeIconTint="@color/colorPrimaryDark"
                 app:closeIconVisible="true" />
-            
+
         </com.google.android.material.chip.ChipGroup>
 
         <fragment

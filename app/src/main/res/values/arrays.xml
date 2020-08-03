@@ -4,4 +4,8 @@
         <item>0.0</item>
         <item>1.0</item>
     </array>
+    <array name="initial_settings_values">
+        <item>0.0</item>
+        <item>14.0</item>
+    </array>
 </resources>

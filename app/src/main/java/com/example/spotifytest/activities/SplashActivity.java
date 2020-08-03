@@ -54,7 +54,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void authenticateSpotify() {
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(Const.getSpotifyClientId(), AuthenticationResponse.Type.TOKEN, Const.getSpotifyRedirectLink());
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(Const.spotifyClientId,
+                AuthenticationResponse.Type.TOKEN,
+                Const.spotifyRedirectLink);
         builder.setScopes(new String[]{SCOPES});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);

@@ -4,15 +4,18 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -95,7 +98,9 @@ public class PlaylistFragment extends Fragment {
   private EditText editText;
   private ArrayList<String> speedData = new ArrayList<>();
   private LocationManager lm;
+  private SharedPreferences sharedPreferences;
 
+  @RequiresApi(api = Build.VERSION_CODES.P)
   @SuppressLint("RestrictedApi")
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -103,8 +108,10 @@ public class PlaylistFragment extends Fragment {
     this.view = view;
     lm = (LocationManager) view.getContext().getSystemService(Context.LOCATION_SERVICE);
     audioManager = (AudioManager) view.getContext().getSystemService(Context.AUDIO_SERVICE);
-    int maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxLevel/2, 0);
+    sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
+    int maxLevel = sharedPreferences.getInt("maxVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
+    int minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
     relativeLayout = view.findViewById(R.id.playlistLayout);
     if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED &&
@@ -125,7 +132,7 @@ public class PlaylistFragment extends Fragment {
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             DEFAULT_MS_BETWEEN_SEARCH,
             DEFAULT_METERS_BETWEEN_SEARCH,
-            new LocationListener()  {
+            new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
                 if (location==null){
@@ -146,12 +153,12 @@ public class PlaylistFragment extends Fragment {
                   }
                   Log.i(Tag, "upper: " + upper + " downer: " + downer + " offset: " + offset);
                   int result = algorithmService.add(speed, upper, downer);
-                  if (result == 1) {
+                  if (result == 1 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) < maxLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
                     audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume increased!",
                             Snackbar.LENGTH_SHORT).show();
-                  } else if (result == 2) {
+                  } else if (result == 2 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > minLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
                     audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume decreased!",
@@ -265,8 +272,8 @@ public class PlaylistFragment extends Fragment {
 
   private void setUpSpotifyRemote(View view) {
     ConnectionParams connectionParams =
-            new ConnectionParams.Builder(Const.getSpotifyClientId())
-                    .setRedirectUri(Const.getSpotifyRedirectLink())
+            new ConnectionParams.Builder(Const.spotifyClientId)
+                    .setRedirectUri(Const.spotifyRedirectLink)
                     .showAuthView(true)
                     .build();
     SpotifyAppRemote.connect(view.getContext(), connectionParams,
@@ -300,8 +307,6 @@ public class PlaylistFragment extends Fragment {
                 // Something went wrong when attempting to connect! Handle errors here
               }
             });
-
-
   }
 
   @Override
@@ -333,6 +338,7 @@ public class PlaylistFragment extends Fragment {
       e.printStackTrace();
     }
   }
+
   private boolean permissionWriteCheck() {
     int check = ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
     if (check < 0) {

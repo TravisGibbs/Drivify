@@ -40,9 +40,9 @@ import java.util.Map;
 
 public class SearchActivity extends AppCompatActivity {
 
+  private SharedPreferences sharedPreferences;
   private static final String Tag = "SearchActivity";
   private RelativeLayout relativeLayout;
-  private SharedPreferences sharedPreferences;
   private RequestQueue queue;
   private RecyclerView rvSearch;
   private EditText searchText;
@@ -67,9 +67,9 @@ public class SearchActivity extends AppCompatActivity {
       @Override
       public void onItemClicked(int position, String id, String name, Boolean isSong) {
         Intent intent = new Intent();
-        intent.putExtra(Const.getobjectIDKey(), id);
-        intent.putExtra(Const.getIsSongKey(), isSong);
-        intent.putExtra(Const.getObjectNameKey(),name);
+        intent.putExtra(Const.objectIDKey, id);
+        intent.putExtra(Const.isSongKey, isSong);
+        intent.putExtra(Const.objectNameKey,name);
         setResult(2,intent);
         finish();//finishing activity
       }

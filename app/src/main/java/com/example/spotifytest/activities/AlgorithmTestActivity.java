@@ -4,10 +4,15 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.example.spotifytest.R;
 import com.example.spotifytest.services.AlgorithmService;
@@ -37,14 +42,22 @@ public class AlgorithmTestActivity extends AppCompatActivity {
   private GraphView graphVolume;
   private AudioManager audioManager;
   private int maxLevel;
+  private int minLevel;
+  private SharedPreferences sharedPreferences;
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_algorithm_test);
+    sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
     audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-    maxLevel = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    maxLevel = sharedPreferences.getInt("maxVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
+    } else {
+      minLevel = sharedPreferences.getInt("minVolume", 0);
+    }
     GraphView graph = findViewById(R.id.graph1);
     GraphView graphOutlier = findViewById(R.id.graph2);
     GraphView graphVolume = findViewById(R.id.graph3);
@@ -97,7 +110,7 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     if (isRandom) {
       generateTestVals(amountOfVals);
     } // add possible loading for list of chosen values
-    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxLevel/2, 0);
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
     AlgorithmService algorithmService = new AlgorithmService(2, .5, lag);
     int speed = 0;
     for (int i = 0; i < amountOfVals; i++) {
@@ -126,11 +139,11 @@ public class AlgorithmTestActivity extends AppCompatActivity {
       }
       Log.i(Tag, "upper: " + upper + " downer: " + downer + " offset: " + offset);
       int result = algorithmService.add(speed, upper, downer);
-      if (result == 1) {
+      if (result == 1 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) < maxLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume increased with speed: " + speed);
         outlierData.appendData(new DataPoint(i,1), true, 500, false);
-      } else if (result == 2) {
+      } else if (result == 2 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > minLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume lowered with speed: " + speed);
         outlierData.appendData(new DataPoint(i,-1), true, 500, false);
@@ -138,6 +151,22 @@ public class AlgorithmTestActivity extends AppCompatActivity {
         outlierData.appendData(new DataPoint(i,0), true, 500, false);
       }
       volumeData.appendData(new DataPoint(i, audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)), true, 500, false);
+    }
+  }
+
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_main, menu);
+    return true;
+  }
+
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.settings:
+        startActivity(new Intent(this, SettingsActivity.class));
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
     }
   }
 

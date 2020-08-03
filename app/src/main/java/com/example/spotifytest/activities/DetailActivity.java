@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -98,12 +101,28 @@ public class DetailActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-        intent.putExtra(Const.getGoToPlaylistKey(), true);
-        intent.putExtra(Const.getPlaylistIDKey(), playlist.getKeyPlaylistId());
-        intent.putExtra(Const.getPlaylistURIKey(), playlist.getKeyUri());
+        intent.putExtra(Const.goToPlaylistKey, true);
+        intent.putExtra(Const.playlistIDKey, playlist.getKeyPlaylistId());
+        intent.putExtra(Const.playlistURIKey, playlist.getKeyUri());
         startActivity(intent);
       }
     });
+  }
+
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_main, menu);
+    return true;
+  }
+
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.settings:
+        startActivity(new Intent(this, SettingsActivity.class));
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
   public void getDirections() {

@@ -11,9 +11,4 @@
         android:endColor="@color/darkGrey"
         android:type="linear" />
 
-    <size
-        android:width="82dp"
-        android:height="40dp" />
-
-
 </shape>

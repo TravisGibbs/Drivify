@@ -119,7 +119,7 @@ public class GenerateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Places.initialize(view.getContext(), Const.getGoogleApiKey());
+        Places.initialize(view.getContext(), Const.googleApiKey);
         relativeLayout = view.findViewById(R.id.generateFragmentLayout);
         playlistService = new PlaylistService(view.getContext(), relativeLayout);
         songService = new SongService(view.getContext(), relativeLayout);
@@ -500,22 +500,22 @@ public class GenerateFragment extends Fragment {
     }
 
     private void setSearchResults(Intent data) {
-        nameIdMap.put(data.getStringExtra(Const.getObjectNameKey()),
-                new objectID(data.getBooleanExtra(Const.getIsSongKey(), false), data.getStringExtra(Const.getobjectIDKey())));
+        nameIdMap.put(data.getStringExtra(Const.objectNameKey),
+                new objectID(data.getBooleanExtra(Const.isSongKey, false), data.getStringExtra(Const.objectIDKey)));
         if (chip0.getText().toString().equals("")) {
-            chip0.setText(data.getStringExtra(Const.getObjectNameKey()));
+            chip0.setText(data.getStringExtra(Const.objectNameKey));
             chip0.setVisibility(View.VISIBLE);
         } else if (chip1.getText().toString().equals("")) {
-            chip1.setText(data.getStringExtra(Const.getObjectNameKey()));
+            chip1.setText(data.getStringExtra(Const.objectNameKey));
             chip1.setVisibility(View.VISIBLE);
         } else if (chip2.getText().toString().equals("")) {
-            chip2.setText(data.getStringExtra(Const.getObjectNameKey()));
+            chip2.setText(data.getStringExtra(Const.objectNameKey));
             chip2.setVisibility(View.VISIBLE);
         } else if (chip3.getText().toString().equals("")) {
-            chip3.setText(data.getStringExtra(Const.getObjectNameKey()));
+            chip3.setText(data.getStringExtra(Const.objectNameKey));
             chip3.setVisibility(View.VISIBLE);
         } else if (chip4.getText().toString().equals("")) {
-            chip4.setText(data.getStringExtra(Const.getObjectNameKey()));
+            chip4.setText(data.getStringExtra(Const.objectNameKey));
             chip4.setVisibility(View.VISIBLE);
         }
     }

@@ -6,7 +6,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -65,10 +68,26 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        if (getIntent().getBooleanExtra(Const.getGoToPlaylistKey(), false)) {
+        if (getIntent().getBooleanExtra(Const.goToPlaylistKey, false)) {
             openPlaylist();
         } else {
             bottomNavigationView.setSelectedItemId(R.id.generateAction);
+        }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -112,14 +131,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openPlaylist () {
-        playlistService.getPlaylistItems(getIntent().getStringExtra(Const.getPlaylistIDKey()),
+        playlistService.getPlaylistItems(getIntent().getStringExtra(Const.playlistIDKey),
                 new PlaylistService.playlistServiceCallback() {
             @Override
             public void onSearchFinish(boolean found) {
                 if (found) {
                     allTracks = playlistService.getSongFulls();
-                    playlistID = getIntent().getStringExtra(Const.getPlaylistIDKey());
-                    playlistURI = getIntent().getStringExtra(Const.getPlaylistURIKey());
+                    playlistID = getIntent().getStringExtra(Const.playlistIDKey);
+                    playlistURI = getIntent().getStringExtra(Const.playlistURIKey);
                     bottomNavigationView.setSelectedItemId(R.id.playlistAction);
                 }
             }
