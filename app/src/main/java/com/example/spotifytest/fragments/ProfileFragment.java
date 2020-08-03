@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.spotifytest.activities.AlgorithmTestActivity;
 import com.example.spotifytest.activities.LoginActivity;
 import com.example.spotifytest.activities.MainActivity;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models._User;
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.activities.PlaylistListActivity;
@@ -33,6 +34,7 @@ public class ProfileFragment extends Fragment {
     private Button logoutButton;
     private Button playlistListButton;
     private Button testAlgoButton;
+    private Button testAlgoButtonReal;
     private TextView userView;
     private TextView drivesView;
     private ImageView profileImage;
@@ -49,6 +51,7 @@ public class ProfileFragment extends Fragment {
         relativeLayout = view.findViewById(R.id.profileLayout);
         playlistListButton = view.findViewById(R.id.playlistListButton);
         testAlgoButton = view.findViewById(R.id.testAlgoButton);
+        testAlgoButtonReal = view.findViewById(R.id.realvalsTestButton);
         bottomNavigationView = view.findViewById(R.id.bottomNavigation);
 
         Glide.with(view.getContext()).load(user.getImage().getUrl()).into(profileImage);
@@ -83,6 +86,16 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), AlgorithmTestActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        testAlgoButtonReal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), AlgorithmTestActivity.class);
+                intent.putExtra(Const.dataKey, Const.dataSet0.replace("\n", " "));
+                intent.putExtra(Const.msKey, true);
                 startActivity(intent);
             }
         });

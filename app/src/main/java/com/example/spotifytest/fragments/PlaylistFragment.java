@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -36,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.spotifytest.activities.AlgorithmTestActivity;
 import com.example.spotifytest.adapters.PlaylistAdapter;
 import com.example.spotifytest.activities.MainActivity;
 import com.example.spotifytest.models.Const;
@@ -70,8 +72,8 @@ public class PlaylistFragment extends Fragment {
   private static final double DEFAULT_THRESHOLD = 1;
   private static final double DEFAULT_INFLUENCE = .5;
   private static final int DEFAULT_LAG = 10;
-  private static final int DEFAULT_METERS_BETWEEN_SEARCH = 100;
-  private static final int DEFAULT_MS_BETWEEN_SEARCH = 5000;
+  private static final int DEFAULT_METERS_BETWEEN_SEARCH = 10;
+  private static final int DEFAULT_MS_BETWEEN_SEARCH = 1000;
   private Boolean attach = false;
   private SpotifyAppRemote mSpotifyAppRemote;
   private ArrayList<SongFull> allSongs = new ArrayList<>();
@@ -80,6 +82,7 @@ public class PlaylistFragment extends Fragment {
   private PlaylistAdapter playlistAdapter;
   private RelativeLayout relativeLayout;
   private TextView trackText;
+  private TextView thankText;
   private LinearLayoutManager linearLayoutManager;
   private FloatingActionButton floatingActionButton;
   private ProgressBar progressBar;
@@ -95,10 +98,13 @@ public class PlaylistFragment extends Fragment {
   private int songProgress;
   private View view;
   private Button saveDataButton;
+  private Button finishDriveButton;
+  private Button goToGraphButton;
   private EditText editText;
-  private ArrayList<String> speedData = new ArrayList<>();
+  private String speedData = "";
   private LocationManager lm;
   private SharedPreferences sharedPreferences;
+  private Boolean driving = false;
 
   @RequiresApi(api = Build.VERSION_CODES.P)
   @SuppressLint("RestrictedApi")
@@ -128,6 +134,9 @@ public class PlaylistFragment extends Fragment {
     progressBar = view.findViewById(R.id.progressBarSong);
     saveDataButton = view.findViewById(R.id.saveData);
     editText = view.findViewById(R.id.editTextFileName);
+    finishDriveButton = view.findViewById(R.id.finishDriveButton);
+    thankText = view.findViewById(R.id.thankyouText);
+    goToGraphButton = view.findViewById(R.id.toGraphButton);
     trackText.setVisibility(View.GONE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,
             DEFAULT_MS_BETWEEN_SEARCH,
@@ -137,9 +146,10 @@ public class PlaylistFragment extends Fragment {
               public void onLocationChanged(Location location) {
                 if (location==null){
                   ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
-                } else {
+                } else if (driving) {
                   speed = (int) ((location.getSpeed()*3600)/1000);
-                  speedData.add(String.valueOf(speed));
+                  speedData += " " + String.valueOf(speed);
+                  Log.i(Tag, String.valueOf(speed));
                   int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                   int offset = currentLevel - maxLevel / 2;
                   double upper = 1.5;
@@ -199,11 +209,13 @@ public class PlaylistFragment extends Fragment {
       playlistURI = activity.getPlaylistURI();
     }
     if (allSongs.size() > 0) {
+      driving = true;
       saveDataButton.setVisibility(View.GONE);
       editText.setVisibility(View.GONE);
       setUpSpotifyRemote(view);
       trackText.setVisibility(View.VISIBLE);
       progressBar.setVisibility(View.VISIBLE);
+      finishDriveButton.setVisibility(View.VISIBLE);
       linearLayoutManager = new LinearLayoutManager(view.getContext());
       playlistAdapter = new PlaylistAdapter(allSongs, view.getContext());
       rvPlaylist.setAdapter(playlistAdapter);
@@ -227,18 +239,41 @@ public class PlaylistFragment extends Fragment {
     saveDataButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        for (String speed : speedData) {
-          Log.i(Tag, "speed saved: " + speed);
-        }
         if (permissionWriteCheck()) {
           try {
-            writeToFile(speedData.toString());
+            writeToFile(speedData);
           } catch (FileNotFoundException e) {
             e.printStackTrace();
           }
         } else {
           Log.i(Tag, "Permission Error");
         }
+      }
+    });
+    finishDriveButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        driving = false;
+        mSpotifyAppRemote.getPlayerApi().pause();
+        floatingActionButton.setImageResource(R.drawable.play_button);
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        rvPlaylist.setVisibility(View.GONE);
+        floatingActionButton.setVisibility(View.GONE);
+        errorText.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        trackText.setVisibility(View.GONE);
+        finishDriveButton.setVisibility(View.GONE);
+        goToGraphButton.setVisibility(View.VISIBLE);
+        thankText.setVisibility(View.VISIBLE);
+      }
+    });
+    goToGraphButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent intent = new Intent(view.getContext(), AlgorithmTestActivity.class);
+        intent.putExtra(Const.dataKey, speedData);
+        startActivity(intent);
+        //send speed data
       }
     });
     //Using this executor to update song progress every 2 seconds

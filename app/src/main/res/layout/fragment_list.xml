@@ -5,6 +5,7 @@
     android:id="@+id/playlistLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@drawable/background"
     tools:context=".fragments.PlaylistFragment">
 
@@ -40,6 +41,8 @@
         android:id="@+id/errorText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="150dp"
         android:background="@drawable/background"
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
@@ -104,5 +107,46 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name" />
+
+    <Button
+        android:id="@+id/finishDriveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/errorText"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="-150dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@+id/errorText"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Finish Drive"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/thankyouText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="Thank you for driving with drivify!"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/toGraphButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/thankyouText"
+        android:layout_alignStart="@+id/thankyouText"
+        android:layout_alignEnd="@+id/thankyouText"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        android:text="view speed data!"
+        android:visibility="gone" />
 
 </RelativeLayout>

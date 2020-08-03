@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.spotifytest.R;
+import com.example.spotifytest.models.Const;
 import com.example.spotifytest.services.AlgorithmService;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -28,9 +29,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AlgorithmTestActivity extends AppCompatActivity {
+  private static final int samplingRate = 4; //samples every x seconds
+  private static final int trimToSize = 400;
   private static final String Tag = "AlgorithmTestActivity";
   private static final int lag =  5;
-  private static final int sizeOfTest = 100;
+  private int sizeOfTest = 100;
   private ArrayList<Integer> testVals = new ArrayList<>();
   private LineGraphSeries<DataPoint> rawData;
   private BarGraphSeries<DataPoint> outlierData;
@@ -57,6 +60,24 @@ public class AlgorithmTestActivity extends AppCompatActivity {
       minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
     } else {
       minLevel = sharedPreferences.getInt("minVolume", 0);
+    }
+    if (getIntent().getStringExtra(Const.dataKey) != null) {
+      String[] dataList = getIntent().getStringExtra(Const.dataKey).split(" ");
+      for (int i = 0; i < dataList.length; i++) {
+        if (!dataList[i].isEmpty()) {
+          if (getIntent().getBooleanExtra(Const.msKey, false)) {
+            if (i % 4 == 0) {
+              testVals.add((int) Math.round(Float.parseFloat(dataList[i]) * 3.6));
+            }
+          } else {
+            testVals.add(Integer.valueOf(dataList[i]));
+          }
+        }
+      }
+      if (testVals.size() > trimToSize) {
+        testVals.subList(trimToSize, testVals.size()).clear();
+      }
+      sizeOfTest = testVals.size();
     }
     GraphView graph = findViewById(R.id.graph1);
     GraphView graphOutlier = findViewById(R.id.graph2);
@@ -102,18 +123,22 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     graph.setTitle("mock speed data graph");
     graphOutlier.setTitle("outlier graph");
     graphVolume.setTitle("volume graph");
-    runTest(sizeOfTest, true);
+    if (getIntent().getStringExtra(Const.dataKey) == null){
+      runTest(true);
+    } else {
+      runTest(false);
+    }
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
-  private void runTest(int amountOfVals, boolean isRandom) {
+  private void runTest(boolean isRandom) {
     if (isRandom) {
-      generateTestVals(amountOfVals);
-    } // add possible loading for list of chosen values
+      generateTestVals(sizeOfTest);
+    }
     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
     AlgorithmService algorithmService = new AlgorithmService(2, .5, lag);
     int speed = 0;
-    for (int i = 0; i < amountOfVals; i++) {
+    for (int i = 0; i < sizeOfTest; i++) {
       speed = testVals.get(i);
       rawData.appendData(new DataPoint(i,speed), true, 500, false);
       int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
