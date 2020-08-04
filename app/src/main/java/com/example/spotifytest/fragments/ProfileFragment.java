@@ -94,7 +94,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), AlgorithmTestActivity.class);
-                intent.putExtra(Const.dataKey, Const.dataSet0.replace("\n", " "));
+                intent.putExtra(Const.dataKey, Const.dataSet1.replace("\n", " "));
                 intent.putExtra(Const.msKey, true);
                 startActivity(intent);
             }

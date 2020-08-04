@@ -43,11 +43,11 @@ public class SettingsActivity extends AppCompatActivity {
 
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     editor = getSharedPreferences("SPOTIFY", 0).edit();
     editor.putInt("minVolume", Math.round(volumeSlider.getValues().get(0)));
     editor.putInt("maxVolume", Math.round(volumeSlider.getValues().get(1)));
     editor.putBoolean("isDynamicVolume", dynamicSwitch.isChecked());
     editor.commit();
-    super.onDestroy();
   }
 }

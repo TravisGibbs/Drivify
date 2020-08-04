@@ -55,9 +55,11 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     setContentView(R.layout.activity_algorithm_test);
     sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
     audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-    maxLevel = sharedPreferences.getInt("maxVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+    maxLevel = sharedPreferences.getInt("maxVolume",
+            audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
+      minLevel = sharedPreferences.getInt("minVolume",
+              audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
     } else {
       minLevel = sharedPreferences.getInt("minVolume", 0);
     }
@@ -135,13 +137,13 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     if (isRandom) {
       generateTestVals(sizeOfTest);
     }
-    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel - minLevel) / 2, 0);
+    int currentLevel = minLevel + (maxLevel - minLevel) / 2;
     AlgorithmService algorithmService = new AlgorithmService(2, .5, lag);
     int speed = 0;
     for (int i = 0; i < sizeOfTest; i++) {
       speed = testVals.get(i);
       rawData.appendData(new DataPoint(i,speed), true, 500, false);
-      int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
       int offset = currentLevel - maxLevel / 2;
       double upper = 1.5;
       double downer = -1.5;
@@ -153,32 +155,38 @@ public class AlgorithmTestActivity extends AppCompatActivity {
         downer = downer / Math.sqrt(Math.abs(offset));
       }
       if (i > lag) {
-        Log.i(Tag, String.valueOf(algorithmService.getMean() + algorithmService.getStd() * upper));
-        Log.i(Tag, String.valueOf(algorithmService.getMean() + algorithmService.getStd() * upper));
-        upperData.appendData(new DataPoint(i, algorithmService.getMean() + algorithmService.getStd() * upper), true, 500, false);
-        downerData.appendData(new DataPoint(i, algorithmService.getMean() + algorithmService.getStd() * downer), true, 500, false);
+        upperData.appendData(new DataPoint(i,
+                algorithmService.getMean() + algorithmService.getStd() * upper), true, 500, false);
+        downerData.appendData(new DataPoint(i,
+                algorithmService.getMean() + algorithmService.getStd() * downer), true, 500, false);
       } else {
         upperData.appendData(new DataPoint(i, 0), true, 500, false);
         downerData.appendData(new DataPoint(i, 0), true, 500, false);
 
       }
-      Log.i(Tag, "upper: " + upper + " downer: " + downer + " offset: " + offset);
       int result = algorithmService.add(speed, upper, downer);
-      if (result == 1 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) < maxLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
+      if (result == 1
+              && currentLevel < maxLevel
+              && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume increased with speed: " + speed);
         outlierData.appendData(new DataPoint(i,1), true, 500, false);
-      } else if (result == 2 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > minLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
+        currentLevel += 1;
+      } else if (result == 2
+              && currentLevel > minLevel
+              && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume lowered with speed: " + speed);
         outlierData.appendData(new DataPoint(i,-1), true, 500, false);
+        currentLevel -= 1;
       } else {
         outlierData.appendData(new DataPoint(i,0), true, 500, false);
       }
-      volumeData.appendData(new DataPoint(i, audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)), true, 500, false);
+      volumeData.appendData(new DataPoint(i, currentLevel), true, 500, false);
     }
   }
 
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_main, menu);

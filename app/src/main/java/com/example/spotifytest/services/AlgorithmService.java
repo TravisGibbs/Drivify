@@ -73,7 +73,6 @@ https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-t
     if (values.size() < lag) {
       DataPoint dataPoint = new DataPoint(speed, false);
       values.add(dataPoint);
-      Log.i(TAG, "datapoint with speed: " + dataPoint.getSpeed() + " is a signal: " + dataPoint.isPastThreshold());
       return 0;
     }
     DataPoint dataPoint;
@@ -89,7 +88,6 @@ https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-t
     }
     values.remove(0);
     values.add(dataPoint);
-    Log.i(TAG,"datapoint with speed: " + dataPoint.getSpeed() + " is a signal: " + dataPoint.isPastThreshold());
     if (!dataPoint.isPastThreshold()) {
       return 0;
     } else if (upperSignal) {
@@ -127,10 +125,5 @@ https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-t
       }
     }
     this.std = Math.pow(stdDevSum / values.size(), .5);
-    Log.i(TAG,"signal count: " + signalCount +
-            ", factor for non signals: " + factorForNotSignals +
-            ", values size: " + values.size() +
-            ", mean: " + sum +
-            ", std: " + std);
   }
 }

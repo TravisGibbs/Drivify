@@ -124,7 +124,9 @@ public class PlaylistFragment extends Fragment {
             ActivityCompat.checkSelfPermission(view.getContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions((Activity) view.getContext(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+      ActivityCompat.requestPermissions((Activity) view.getContext(),
+              new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+              100);
       Log.i(Tag, "Permission check");
     }
     trackName = "";
@@ -163,12 +165,16 @@ public class PlaylistFragment extends Fragment {
                   }
                   Log.i(Tag, "upper: " + upper + " downer: " + downer + " offset: " + offset);
                   int result = algorithmService.add(speed, upper, downer);
-                  if (result == 1 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) < maxLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
+                  if (result == 1
+                          && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) < maxLevel
+                          && sharedPreferences.getBoolean("isDynamicVolume", true)) {
                     audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume increased!",
                             Snackbar.LENGTH_SHORT).show();
-                  } else if (result == 2 && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > minLevel && sharedPreferences.getBoolean("isDynamicVolume", true)) {
+                  } else if (result == 2
+                          && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) > minLevel
+                          && sharedPreferences.getBoolean("isDynamicVolume", true)) {
                     audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
                     Snackbar.make(relativeLayout,
                             "volume decreased!",
@@ -363,7 +369,8 @@ public class PlaylistFragment extends Fragment {
   }
 
   private void writeToFile(String data) throws FileNotFoundException {
-    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), editText.getText().toString() + ".txt");
+    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+            editText.getText().toString() + ".txt");
     FileOutputStream fileOutputStream = new FileOutputStream(file);
     try {
       fileOutputStream.write(data.getBytes());
