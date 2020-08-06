@@ -37,6 +37,8 @@ public class SettingsActivity extends AppCompatActivity {
     dynamicSwitch = findViewById(R.id.dyanamicSwitch);
     dynamicSwitch.setChecked(sharedPreferences.getBoolean("isDynamicVolume", true));
     volumeSlider = findViewById(R.id.volumeSlider);
+    Log.i("settings", String.valueOf(audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC)));
+    Log.i("settings", String.valueOf(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
     volumeSlider.setValues((float) sharedPreferences.getInt("minVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC)),
               (float) sharedPreferences.getInt("maxVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
   }

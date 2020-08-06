@@ -29,11 +29,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AlgorithmTestActivity extends AppCompatActivity {
-  private static final int samplingRate = 4; //samples every x seconds
-  private static final int trimToSize = 400;
+  private static final int samplingRate = 5; //samples every x seconds
+  private static final int trimToSize = 240; // multiply by sample rate for total timr
   private static final String Tag = "AlgorithmTestActivity";
-  private static final int lag =  5;
-  private int sizeOfTest = 100;
+  private static final int lag =  10;
+  private static final double inluence = .5;
+  private int sizeOfTest = 100; // set this for random tests
   private ArrayList<Integer> testVals = new ArrayList<>();
   private LineGraphSeries<DataPoint> rawData;
   private BarGraphSeries<DataPoint> outlierData;
@@ -139,7 +140,7 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     }
     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel - minLevel) / 2, 0);
     int currentLevel = minLevel + (maxLevel - minLevel) / 2;
-    AlgorithmService algorithmService = new AlgorithmService(2, .5, lag);
+    AlgorithmService algorithmService = new AlgorithmService(2, inluence, lag);
     int speed = 0;
     for (int i = 0; i < sizeOfTest; i++) {
       speed = testVals.get(i);

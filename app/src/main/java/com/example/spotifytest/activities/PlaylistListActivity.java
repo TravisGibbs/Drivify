@@ -86,10 +86,14 @@ public class PlaylistListActivity extends AppCompatActivity {
     query.findInBackground(new FindCallback<Playlist>() {
       @Override
       public void done(List<Playlist> objects, ParseException e) {
-        playlistList.addAll(objects);
-        Log.i(Tag, "Query succ");
-        progressBar.setVisibility(View.GONE);
-        adapter.notifyDataSetChanged();
+        if (e == null) {
+          playlistList.addAll(objects);
+          Log.i(Tag, "Query succ");
+          progressBar.setVisibility(View.GONE);
+          adapter.notifyDataSetChanged();
+        } else {
+          Log.e(Tag, "error finding playlists", e);
+        }
       }
     });
   }

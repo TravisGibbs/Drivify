@@ -38,7 +38,7 @@
         android:layout_marginBottom="10dp"
         android:stepSize="1.0"
         android:valueFrom="0.0"
-        android:valueTo="14.0"
+        android:valueTo="15.0"
         app:values="@array/initial_settings_values" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial

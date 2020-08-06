@@ -119,15 +119,20 @@ public class PlaylistFragment extends Fragment {
     int minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
     relativeLayout = view.findViewById(R.id.playlistLayout);
-    if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(view.getContext(),
+    if (ActivityCompat.checkSelfPermission(view.getContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions((Activity) view.getContext(),
-              new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+              new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
               100);
-      Log.i(Tag, "Permission check");
+      Log.i(Tag, "Permission check coarse");
+    }
+    if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions((Activity) view.getContext(),
+              new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+              100);
+      Log.i(Tag, "Permission check fine");
     }
     trackName = "";
     algorithmService = new AlgorithmService(DEFAULT_THRESHOLD, DEFAULT_INFLUENCE, DEFAULT_LAG);
@@ -360,12 +365,19 @@ public class PlaylistFragment extends Fragment {
       mSpotifyAppRemote.getPlayerApi().pause();
       SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
+    driving = false;
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_list, container, false);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    driving = true;
   }
 
   private void writeToFile(String data) throws FileNotFoundException {
