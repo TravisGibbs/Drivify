@@ -27,59 +27,23 @@ The app will use google maps and spotify to try to deliver a playlist and music 
 
 **Required Must-have Stories**
 
-* User Register/Log in to driving app
-* User can log into spotify
-* User can enter current location and destination to get route time
-* User can specify a genre or songSimplified that songSimplifieds selected can be based off using spotify seed
-* User recieves a link to a playlist that is genre specific and matches route time well
+[x] User Register/Log in to driving app
+[x] User can log into spotify
+[x] User can enter current location and destination to get route time
+[x] User can specify a genre or songSimplified that songSimplifieds selected can be based off using spotify seed
+[x] User recieves a link to a playlist that is genre specific and matches route time well
 
 **Optional Nice-to-have Stories**
 
-* User can view previous drives via google maps sdk
-* User can choose whether the playlist is gaining, waining, or peaking in intensity
+[x] User can view previous drives via google maps sdk
+[x] User can choose whether the playlist is gaining, waining, or peaking in intensity
+[x] User's speed is tracked and used in an algorithm to determine volume
 
-### 2. Screen Archetypes
+### 3. Demo
+- **Algorithm Testing**
+Using data sets from https://github.com/Intelligent-Vehicle-Perception/Intelligent-Vehicle-Perception-Based-on-Inertial-Sensing-and-Artificial-Intelligence
+**Test1:**
+<img src='https://github.com/TravisGibbs/Drivify/blob/master/demonstration/Test1.png?raw=true' title='Test1' width='536' height='895' alt='test1' />
+**Test2**
+<img src='https://github.com/TravisGibbs/Drivify/blob/master/demonstration/Test2.png?raw=true' title='Test2' width='536' height='895' alt='test1' />
 
-* Log in/registration page
-   * Make a user profile
-   * If registering also log into spotify
-* Playlist making page
-   * Allow input of destination and origin
-   * Allow user to input a songSimplified or genre to base playlist off of
-   * Return a link to a playlist
-* Map and previous drives page
-   * Allows users to plot previous routes or destinations and stores playlist links
-* Profile Page
-   * Allows users to view their profile image and to sign out or modify personal details
-
-### 3. Navigation
-
-**Tab Navigation** (Tab to Screen)
-
-* first tab - profile acivity
-* second tab - playlist activity
-* third tab - map activity
-
-**Flow Navigation** (Screen to Screen)
-
-* Login/registration page
-   * Navigates to main three tab page from here
-* Playlist page
-   * navigates to spotify via a link from here
-
-## Wireframes
-[Add picture of your hand sketched wireframes in this section]
-<img src="YOUR_WIREFRAME_IMAGE_URL" width=600>
-
-### [BONUS] Digital Wireframes & Mockups
-
-### [BONUS] Interactive Prototype
-
-## Schema 
-[This section will be completed in Unit 9]
-### Models
-[Add table of models]
-### Networking
-- [Add list of network requests by screen ]
-- [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
