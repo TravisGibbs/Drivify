@@ -32,7 +32,7 @@ public class AlgorithmTestActivity extends AppCompatActivity {
   private static final int samplingRate = 5; //samples every x seconds
   private static final int trimToSize = 240; // multiply by sample rate for total timr
   private static final String Tag = "AlgorithmTestActivity";
-  private static final int lag =  10;
+  private static final int lag = 10;
   private static final double inluence = .5;
   private int sizeOfTest = 100; // set this for random tests
   private ArrayList<Integer> testVals = new ArrayList<>();
@@ -85,19 +85,19 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     GraphView graph = findViewById(R.id.graph1);
     GraphView graphOutlier = findViewById(R.id.graph2);
     GraphView graphVolume = findViewById(R.id.graph3);
-    rawData = new LineGraphSeries<DataPoint>(new DataPoint[] {
+    rawData = new LineGraphSeries<DataPoint>(new DataPoint[]{
             new DataPoint(0, 0),
     });
-    outlierData = new BarGraphSeries<DataPoint>(new DataPoint[] {
+    outlierData = new BarGraphSeries<DataPoint>(new DataPoint[]{
             new DataPoint(0, 0),
     });
-    upperData = new LineGraphSeries<DataPoint>(new DataPoint[] {
+    upperData = new LineGraphSeries<DataPoint>(new DataPoint[]{
             new DataPoint(0, 0),
     });
-    downerData = new LineGraphSeries<DataPoint>(new DataPoint[] {
+    downerData = new LineGraphSeries<DataPoint>(new DataPoint[]{
             new DataPoint(0, 0),
     });
-    volumeData = new BarGraphSeries<DataPoint>(new DataPoint[] {
+    volumeData = new BarGraphSeries<DataPoint>(new DataPoint[]{
             new DataPoint(0, audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)),
     });
     graph.addSeries(upperData);
@@ -126,7 +126,7 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     graph.setTitle("mock speed data graph");
     graphOutlier.setTitle("outlier graph");
     graphVolume.setTitle("volume graph");
-    if (getIntent().getStringExtra(Const.dataKey) == null){
+    if (getIntent().getStringExtra(Const.dataKey) == null) {
       runTest(true);
     } else {
       runTest(false);
@@ -144,7 +144,7 @@ public class AlgorithmTestActivity extends AppCompatActivity {
     int speed = 0;
     for (int i = 0; i < sizeOfTest; i++) {
       speed = testVals.get(i);
-      rawData.appendData(new DataPoint(i,speed), true, 500, false);
+      rawData.appendData(new DataPoint(i, speed), true, 500, false);
       int offset = currentLevel - maxLevel / 2;
       double upper = 1.5;
       double downer = -1.5;
@@ -171,17 +171,17 @@ public class AlgorithmTestActivity extends AppCompatActivity {
               && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume increased with speed: " + speed);
-        outlierData.appendData(new DataPoint(i,1), true, 500, false);
+        outlierData.appendData(new DataPoint(i, 1), true, 500, false);
         currentLevel += 1;
       } else if (result == 2
               && currentLevel > minLevel
               && sharedPreferences.getBoolean("isDynamicVolume", true)) {
         audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
         Log.i(Tag, "volume lowered with speed: " + speed);
-        outlierData.appendData(new DataPoint(i,-1), true, 500, false);
+        outlierData.appendData(new DataPoint(i, -1), true, 500, false);
         currentLevel -= 1;
       } else {
-        outlierData.appendData(new DataPoint(i,0), true, 500, false);
+        outlierData.appendData(new DataPoint(i, 0), true, 500, false);
       }
       volumeData.appendData(new DataPoint(i, currentLevel), true, 500, false);
     }
@@ -207,19 +207,19 @@ public class AlgorithmTestActivity extends AppCompatActivity {
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void generateTestVals(int amountOfVals) {
     Random r = new Random();
-    Stream<Integer> stream = r.ints(amountOfVals/5, 40, 60).boxed();
+    Stream<Integer> stream = r.ints(amountOfVals / 5, 40, 60).boxed();
     List<Integer> tempList = stream.collect(Collectors.toList());
     testVals.addAll(tempList);
-    stream = r.ints(amountOfVals/5, 70, 90).boxed();
+    stream = r.ints(amountOfVals / 5, 70, 90).boxed();
     tempList = stream.collect(Collectors.toList());
     testVals.addAll(tempList);
-    stream = r.ints(amountOfVals/5, 110, 130).boxed();
+    stream = r.ints(amountOfVals / 5, 110, 130).boxed();
     tempList = stream.collect(Collectors.toList());
     testVals.addAll(tempList);
-    stream = r.ints(amountOfVals/5, 70, 90).boxed();
+    stream = r.ints(amountOfVals / 5, 70, 90).boxed();
     tempList = stream.collect(Collectors.toList());
     testVals.addAll(tempList);
-    stream = r.ints(amountOfVals/5, 40, 60).boxed();
+    stream = r.ints(amountOfVals / 5, 40, 60).boxed();
     tempList = stream.collect(Collectors.toList());
     testVals.addAll(tempList);
   }

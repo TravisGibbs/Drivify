@@ -5,7 +5,7 @@ public class DataPoint {
   private int speed;
   private boolean isPastThreshold = false;
 
-  public DataPoint(int speed, boolean isPastThreshold){
+  public DataPoint(int speed, boolean isPastThreshold) {
     this.speed = speed;
     this.isPastThreshold = isPastThreshold;
   }

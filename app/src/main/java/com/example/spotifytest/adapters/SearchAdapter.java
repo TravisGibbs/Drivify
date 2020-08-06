@@ -18,15 +18,10 @@ import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
-  public interface OnClickListener {
-    void onItemClicked(int position, String id, String name, Boolean isSong);
-  }
-
   private static final String Tag = "SearchAdapter";
   private List<SearchObject> searchObjectsList;
   private Context context;
   private OnClickListener onClickListener;
-
   public SearchAdapter(List<SearchObject> searchObjects, Context context, OnClickListener onClickListener) {
     this.searchObjectsList = searchObjects;
     this.context = context;
@@ -53,6 +48,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     return searchObjectsList.size();
   }
 
+  public interface OnClickListener {
+    void onItemClicked(int position, String id, String name, Boolean isSong);
+  }
+
   class ViewHolder extends RecyclerView.ViewHolder {
 
     private TextView topText;
@@ -77,7 +76,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
           @Override
           public void onClick(View view) {
             onClickListener.onItemClicked(getAdapterPosition(), searchObject.getArtist().getId(),
-                    searchObject.getArtist().getName() , false);
+                    searchObject.getArtist().getName(), false);
           }
         });
       }

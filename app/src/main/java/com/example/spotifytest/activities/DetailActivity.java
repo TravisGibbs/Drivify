@@ -56,7 +56,7 @@ public class DetailActivity extends AppCompatActivity {
     goToDrivify = findViewById(R.id.drivifyButton);
     relativeLayout = findViewById(R.id.listLayout);
     mapService = new MapService();
-    playlistService = new PlaylistService(this,relativeLayout);
+    playlistService = new PlaylistService(this, relativeLayout);
     navigatorService = new NavigatorService();
     playlist = Parcels.unwrap(getIntent().getParcelableExtra("playlist"));
     mapService.getRoute(playlist.getKeyOriginId(),

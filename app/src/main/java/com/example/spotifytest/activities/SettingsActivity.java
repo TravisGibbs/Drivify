@@ -34,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
     Log.i("settings", String.valueOf(audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC)));
     Log.i("settings", String.valueOf(audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
     volumeSlider.setValues((float) sharedPreferences.getInt("minVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC)),
-              (float) sharedPreferences.getInt("maxVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
+            (float) sharedPreferences.getInt("maxVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)));
   }
 
   @Override

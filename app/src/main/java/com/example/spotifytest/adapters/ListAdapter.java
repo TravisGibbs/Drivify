@@ -21,15 +21,10 @@ import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-  public interface OnClickListener {
-    void onItemClicked(String url);
-  }
-
   private static final String Tag = "ListAdapter";
   private List<Playlist> playlists;
   private Context context;
   private OnClickListener onClickListener;
-
   public ListAdapter(List<Playlist> playlists, Context context, OnClickListener onClickListener) {
     this.playlists = playlists;
     this.context = context;
@@ -54,6 +49,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     return playlists.size();
   }
 
+  public interface OnClickListener {
+    void onItemClicked(String url);
+  }
+
   public class ViewHolder extends RecyclerView.ViewHolder {
 
     private TextView title;
@@ -69,7 +68,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     public void bind(Playlist playlist) {
       title.setText(playlist.getTitle());
-      String timeText = String.valueOf(Integer.parseInt(playlist.getKeyTimeTo())/60000);
+      String timeText = String.valueOf(Integer.parseInt(playlist.getKeyTimeTo()) / 60000);
       time.setText(timeText + " minutes");
       goToButton.setOnClickListener(new View.OnClickListener() {
         @Override

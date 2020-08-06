@@ -40,8 +40,8 @@ import java.util.Map;
 
 public class SearchActivity extends AppCompatActivity {
 
-  private SharedPreferences sharedPreferences;
   private static final String Tag = "SearchActivity";
+  private SharedPreferences sharedPreferences;
   private RelativeLayout relativeLayout;
   private RequestQueue queue;
   private RecyclerView rvSearch;
@@ -69,8 +69,8 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(Const.objectIDKey, id);
         intent.putExtra(Const.isSongKey, isSong);
-        intent.putExtra(Const.objectNameKey,name);
-        setResult(2,intent);
+        intent.putExtra(Const.objectNameKey, name);
+        setResult(2, intent);
         finish();//finishing activity
       }
     };
@@ -123,21 +123,21 @@ public class SearchActivity extends AppCompatActivity {
   public void getSearchObjects(final UserService.VolleyCallBack callBack, String q) {
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
             (Request.Method.GET, getUrl(q), null, response -> {
-              Log.i(Tag,"searched " + q);
+              Log.i(Tag, "searched " + q);
               Gson gson = new Gson();
               searchObjects.clear();
               JSONArray artists = new JSONArray();
               JSONArray songs = new JSONArray();
               try {
                 artists = response.getJSONObject("artists").getJSONArray("items");
-                for (int i = 0; i < artists.length();i++) {
+                for (int i = 0; i < artists.length(); i++) {
                   JSONObject jsonObject = (JSONObject) artists.get(i);
                   Artist artist = gson.fromJson(jsonObject.toString(), Artist.class);
                   SearchObject searchObject = new SearchObject(null, artist);
                   searchObjects.add(searchObject);
                 }
                 songs = response.getJSONObject("tracks").getJSONArray("items");
-                for (int i = 0; i < songs.length();i++) {
+                for (int i = 0; i < songs.length(); i++) {
                   JSONObject jsonObject = (JSONObject) songs.get(i);
                   SongFull song = gson.fromJson(jsonObject.toString(), SongFull.class);
                   SearchObject searchObject = new SearchObject(song, null);
@@ -163,7 +163,7 @@ public class SearchActivity extends AppCompatActivity {
     queue.add(jsonObjectRequest);
   }
 
-  private String getUrl(String q){
+  private String getUrl(String q) {
     StringBuilder url = new StringBuilder();
     url.append("https://api.spotify.com/v1/search?q=");
     q.replace(" ", "%20");
@@ -171,6 +171,6 @@ public class SearchActivity extends AppCompatActivity {
     url.append("&type=artist,track");
     url.append("&limit=10");
     //TODO possible offset offset=(0,2000) for infinite scrolling
-    return(url.toString());
+    return (url.toString());
   }
 }

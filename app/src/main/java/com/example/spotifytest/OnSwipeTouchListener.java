@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
 public class OnSwipeTouchListener implements View.OnTouchListener {
 
   private GestureDetector gestureDetector;
@@ -14,6 +15,27 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
 
   public boolean onTouch(final View view, final MotionEvent motionEvent) {
     return gestureDetector.onTouchEvent(motionEvent);
+  }
+
+  public void onSwipeRight() {
+  }
+
+  public void onSwipeLeft() {
+  }
+
+  private void onSwipeUp() {
+  }
+
+  private void onSwipeDown() {
+  }
+
+  private void onClick() {
+  }
+
+  private void onDoubleClick() {
+  }
+
+  private void onLongClick() {
   }
 
   private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -56,8 +78,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
               onSwipeLeft();
             }
           }
-        }
-        else {
+        } else {
           if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
             if (diffY > 0) {
               onSwipeDown();
@@ -66,32 +87,10 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
             }
           }
         }
-      }
-      catch (Exception exception) {
+      } catch (Exception exception) {
         exception.printStackTrace();
       }
       return false;
     }
-  }
-
-  public void onSwipeRight() {
-  }
-
-  public void onSwipeLeft() {
-  }
-
-  private void onSwipeUp() {
-  }
-
-  private void onSwipeDown() {
-  }
-
-  private void onClick() {
-  }
-
-  private void onDoubleClick() {
-  }
-
-  private void onLongClick() {
   }
 }

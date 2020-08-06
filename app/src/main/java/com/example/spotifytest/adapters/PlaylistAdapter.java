@@ -23,7 +23,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
   private List<SongFull> songList;
   private Context context;
 
-  public PlaylistAdapter(List<SongFull> songs, Context context){
+  public PlaylistAdapter(List<SongFull> songs, Context context) {
     this.songList = songs;
     this.context = context;
   }
@@ -37,8 +37,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-      SongFull song = songList.get(position);
-      holder.bind(song);
+    SongFull song = songList.get(position);
+    holder.bind(song);
   }
 
   @Override
@@ -59,11 +59,11 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
       albumImage = itemView.findViewById(R.id.albumArt);
     }
 
-    public void bind(SongFull song){
+    public void bind(SongFull song) {
       songName.setText(song.getName());
       artistName.setText(song.getArtists().get(0).getName());
-      if(song.getAlbum().getImages().get(0).getUrl()!=null) {
-        Log.i(Tag,song.getAlbum().getImages().get(0).getUrl());
+      if (song.getAlbum().getImages().get(0).getUrl() != null) {
+        Log.i(Tag, song.getAlbum().getImages().get(0).getUrl());
         Glide.with(context).load(song.getAlbum().getImages().get(0).getUrl()).into(albumImage);
       }
     }

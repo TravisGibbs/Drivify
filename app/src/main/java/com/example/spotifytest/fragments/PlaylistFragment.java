@@ -113,11 +113,11 @@ public class PlaylistFragment extends Fragment {
     sharedPreferences = view.getContext().getSharedPreferences("SPOTIFY", 0);
     int maxLevel = sharedPreferences.getInt("maxVolume", audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC));
     int minLevel = sharedPreferences.getInt("minVolume", audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel-minLevel) / 2, 0);
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, minLevel + (maxLevel - minLevel) / 2, 0);
     relativeLayout = view.findViewById(R.id.playlistLayout);
     if (ActivityCompat.checkSelfPermission(view.getContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+            Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions((Activity) view.getContext(),
               new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
               100);
@@ -147,8 +147,8 @@ public class PlaylistFragment extends Fragment {
             new LocationListener() {
               @Override
               public void onLocationChanged(Location location) {
-                if (location==null){
-                  ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
+                if (location == null) {
+                  ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("00 km/h");
                 } else if (driving) {
                   speed = (int) ((location.getSpeed() * 3600) / 1000);
                   speedData += " " + speed;
@@ -181,7 +181,7 @@ public class PlaylistFragment extends Fragment {
                             "volume decreased!",
                             Snackbar.LENGTH_SHORT).show();
                   }
-                  errorText.setText("current speed= " + speed+" km/h");
+                  errorText.setText("current speed= " + speed + " km/h");
                 }
               }
 
@@ -295,7 +295,7 @@ public class PlaylistFragment extends Fragment {
     }, 0, 2, TimeUnit.SECONDS);
   }
 
-  private void updateProgressbar () {
+  private void updateProgressbar() {
     songProgress += 2000; // every 2 seconds this thread is triggered so 2000 ms are added to progress
     progressBar.setProgress(songProgress);
   }
@@ -343,6 +343,7 @@ public class PlaylistFragment extends Fragment {
                           }
                         });
               }
+
               @Override
               public void onFailure(Throwable throwable) {
                 Log.e("MainActivity", throwable.getMessage(), throwable);

@@ -19,11 +19,6 @@ import okhttp3.Headers;
 
 public class MapService {
 
-  public interface mapServiceCallback {
-    void onDataGotRoute();
-    void onDataGotDistance();
-  }
-
   private static final String API_KEY = "AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
   private static final String Tag = "MapService";
   private PolylineOptions polylineOptions;
@@ -32,7 +27,7 @@ public class MapService {
   private LatLng focusPointLatLng;
   private String timeString;
 
-  public void getDistance (String originId, String destinationId, mapServiceCallback callback){
+  public void getDistance(String originId, String destinationId, mapServiceCallback callback) {
     String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:"
             + originId + "&destinations=place_id:"
             + destinationId + "&key=AIzaSyDmCIZvAzyQ5iO3s4Qw2GMJxu_vDjOXWCk";
@@ -59,7 +54,7 @@ public class MapService {
     });
   }
 
-  public void getRoute (String originId, String destinationId, mapServiceCallback callback) {
+  public void getRoute(String originId, String destinationId, mapServiceCallback callback) {
     StringBuilder url = new StringBuilder();
     url.append("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:");
     url.append(originId);
@@ -80,12 +75,12 @@ public class MapService {
           String polyline = jsonObject.getString("points");
           List<LatLng> latLngs = PolyUtil.decode(polyline);
           polylineOptions = new PolylineOptions()
-                          .clickable(true)
-                          .color(Color.parseColor("#6CBCDB"))
-                          .addAll(latLngs);
+                  .clickable(true)
+                  .color(Color.parseColor("#6CBCDB"))
+                  .addAll(latLngs);
           originLatLng = latLngs.get(0);
-          focusPointLatLng = latLngs.get(latLngs.size()/2);
-          destinationLatLng = latLngs.get(latLngs.size()-1);
+          focusPointLatLng = latLngs.get(latLngs.size() / 2);
+          destinationLatLng = latLngs.get(latLngs.size() - 1);
           callback.onDataGotRoute();
         } catch (JSONException e) {
           e.printStackTrace();
@@ -94,7 +89,7 @@ public class MapService {
 
       @Override
       public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-        Log.e(Tag,"search for directions failed", throwable);
+        Log.e(Tag, "search for directions failed", throwable);
       }
     });
   }
@@ -121,7 +116,7 @@ public class MapService {
 
   public int getMinutes(String temp) {
     int minutes = 0;
-    if (temp.contains("d")){
+    if (temp.contains("d")) {
       minutes += 1440;
       temp = temp.substring(6);
     }
@@ -130,11 +125,11 @@ public class MapService {
         if (temp.charAt(i) == 'h') {
           minutes += Integer.parseInt(temp.substring(0, i - 1)) * 60;
         }
-        if (temp.charAt(i) == 'r' && temp.charAt(i+1)!= 's'){
-          temp = temp.substring(i+2);
+        if (temp.charAt(i) == 'r' && temp.charAt(i + 1) != 's') {
+          temp = temp.substring(i + 2);
           break;
         }
-        if (temp.charAt(i) == 'r' && temp.charAt(i+1) == 's') {
+        if (temp.charAt(i) == 'r' && temp.charAt(i + 1) == 's') {
           try {
             temp = temp.substring(i + 3);
           } catch (Exception e) {
@@ -145,9 +140,9 @@ public class MapService {
       }
     }
     if (temp.contains("m")) {
-      for (int i =0; i < temp.length(); i++) {
+      for (int i = 0; i < temp.length(); i++) {
         if (temp.charAt(i) == 'm') {
-          minutes += Integer.parseInt(temp.substring(0,i-1));
+          minutes += Integer.parseInt(temp.substring(0, i - 1));
           break;
         }
       }
@@ -155,7 +150,7 @@ public class MapService {
     return minutes;
   }
 
-  public int getZoom(int timeTo){
+  public int getZoom(int timeTo) {
     int minutes = timeTo / 60000;
     if (minutes < 5) {
       return 12;
@@ -163,14 +158,20 @@ public class MapService {
       return 11;
     } else if (15 < minutes && minutes <= 30) {
       return 9;
-    } else if (minutes < 60){
+    } else if (minutes < 60) {
       return 8;
     } else if (minutes < 120) {
-      return  7;
+      return 7;
     } else if (minutes < 240) {
-      return  6;
+      return 6;
     } else {
-      return  3;
+      return 3;
     }
+  }
+
+  public interface mapServiceCallback {
+    void onDataGotRoute();
+
+    void onDataGotDistance();
   }
 }

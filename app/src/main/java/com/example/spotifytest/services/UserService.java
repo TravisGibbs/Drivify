@@ -14,47 +14,46 @@ import java.util.Map;
 
 public class UserService {
 
-    public interface VolleyCallBack {
-        void onSuccess();
-    }
+  private static final String ENDPOINT = "https://api.spotify.com/v1/me";
+  private SharedPreferences msharedPreferences;
+  private RequestQueue mqueue;
+  private _User spotifyUser;
+  public UserService(RequestQueue queue, SharedPreferences sharedPreferences) {
+    mqueue = queue;
+    msharedPreferences = sharedPreferences;
+  }
 
-    private static final String ENDPOINT = "https://api.spotify.com/v1/me";
-    private SharedPreferences msharedPreferences;
-    private RequestQueue mqueue;
-    private _User spotifyUser;
+  public _User getSpotifyUser() {
+    return spotifyUser;
+  }
 
-    public UserService(RequestQueue queue, SharedPreferences sharedPreferences) {
-        mqueue = queue;
-        msharedPreferences = sharedPreferences;
-    }
+  public void get(final VolleyCallBack callBack) {
+    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(ENDPOINT, null, response -> {
+      spotifyUser = new _User();
+      try {
+        spotifyUser.setUsername(response.getString("display_name"));
+        spotifyUser.setKeySpotifyid(response.getString("id"));
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+      callBack.onSuccess();
+    }, error -> get(() -> {
 
-    public _User getSpotifyUser() {
-        return spotifyUser;
-    }
+    })) {
+      @Override
+      public Map<String, String> getHeaders() throws AuthFailureError {
+        Map<String, String> headers = new HashMap<>();
+        String token = msharedPreferences.getString("token", "");
+        String auth = "Bearer " + token;
+        headers.put("Authorization", auth);
+        return headers;
+      }
+    };
+    mqueue.add(jsonObjectRequest);
+  }
 
-    public void get(final VolleyCallBack callBack) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(ENDPOINT, null, response -> {
-            spotifyUser = new _User();
-            try {
-                spotifyUser.setUsername(response.getString("display_name"));
-                spotifyUser.setKeySpotifyid(response.getString("id"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            callBack.onSuccess();
-        }, error -> get(() -> {
-
-        })) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                String token = msharedPreferences.getString("token", "");
-                String auth = "Bearer " + token;
-                headers.put("Authorization", auth);
-                return headers;
-            }
-        };
-        mqueue.add(jsonObjectRequest);
-    }
+  public interface VolleyCallBack {
+    void onSuccess();
+  }
 
 }
