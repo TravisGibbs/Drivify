@@ -27,18 +27,25 @@ The app will use google maps and spotify to try to deliver a playlist and music 
 
 **Required Must-have Stories**
 
-[x] User Register/Log in to driving app
-[x] User can log into spotify
-[x] User can enter current location and destination to get route time
-[x] User can specify a genre or songSimplified that songSimplifieds selected can be based off using spotify seed
-[x] User recieves a link to a playlist that is genre specific and matches route time well
-[x] Fufills all FBU requirments
+* [x] User Register/Log in to driving app
+**
+* [x] User can log into spotify
+**
+* [x] User can enter current location and destination to get route time
+**
+* [x] User can specify a genre or songSimplified that songSimplifieds selected can be based off using spotify seed
+**
+* [x] User recieves a link to a playlist that is genre specific and matches route time well
+**
+*[x] Fufills all FBU requirments
 
 **Optional Nice-to-have Stories**
 
-[x] User can view previous drives via google maps sdk
-[x] User can choose whether the playlist is gaining, waining, or peaking in intensity
-[x] User's speed is tracked and used in an algorithm to determine volume
+* [x] User can view previous drives via google maps sdk
+**
+* [x] User can choose whether the playlist is gaining, waining, or peaking in intensity
+**
+* [x] User's speed is tracked and used in an algorithm to determine volume
 
 ### 3. Demo
 - **Algorithm Testing**
