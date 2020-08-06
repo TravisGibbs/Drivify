@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.spotifytest.models.SearchObject;
 import com.example.spotifytest.R;
+import com.example.spotifytest.models.SearchObject;
 
 import java.util.List;
 

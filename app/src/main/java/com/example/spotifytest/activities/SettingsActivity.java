@@ -1,22 +1,16 @@
 package com.example.spotifytest.activities;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.spotifytest.R;
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.slider.RangeSlider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 

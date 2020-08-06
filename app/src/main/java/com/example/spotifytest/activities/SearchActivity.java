@@ -1,9 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,17 +12,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.spotifytest.R;
 import com.example.spotifytest.adapters.SearchAdapter;
 import com.example.spotifytest.models.Artist;
 import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.SearchObject;
 import com.example.spotifytest.models.SongFull;
-import com.example.spotifytest.R;
 import com.example.spotifytest.services.UserService;
 import com.google.gson.Gson;
 

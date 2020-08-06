@@ -22,7 +22,6 @@ import com.parse.SaveCallback;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -11,9 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.spotifytest.R;
 import com.example.spotifytest.activities.DetailActivity;
 import com.example.spotifytest.models.Playlist;
-import com.example.spotifytest.R;
 
 import org.parceler.Parcels;
 
@@ -70,7 +70,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public void bind(Playlist playlist) {
       title.setText(playlist.getTitle());
       String timeText = String.valueOf(Integer.parseInt(playlist.getKeyTimeTo())/60000);
-      time.setText(String.valueOf(timeText + " minutes"));
+      time.setText(timeText + " minutes");
       goToButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {

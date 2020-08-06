@@ -1,7 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,10 +11,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.spotifytest.R;
 import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.Playlist;
 import com.example.spotifytest.models.SongsViewModel;
-import com.example.spotifytest.R;
 import com.example.spotifytest.services.MapService;
 import com.example.spotifytest.services.NavigatorService;
 import com.example.spotifytest.services.PlaylistService;

@@ -1,8 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -21,8 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.spotifytest.models._User;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
 import com.example.spotifytest.R;
+import com.example.spotifytest.models._User;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.LogInCallback;
 import com.parse.ParseException;

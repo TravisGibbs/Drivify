@@ -1,11 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,12 +8,18 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.spotifytest.R;
 import com.example.spotifytest.fragments.GenerateFragment;
-import com.example.spotifytest.fragments.ProfileFragment;
 import com.example.spotifytest.fragments.PlaylistFragment;
+import com.example.spotifytest.fragments.ProfileFragment;
 import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models.SongFull;
-import com.example.spotifytest.R;
 import com.example.spotifytest.services.PlaylistService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

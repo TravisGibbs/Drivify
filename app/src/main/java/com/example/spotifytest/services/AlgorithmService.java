@@ -1,7 +1,5 @@
 package com.example.spotifytest.services;
 
-import android.util.Log;
-
 import com.example.spotifytest.models.DataPoint;
 
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ https://stackoverflow.com/questions/22583391/peak-signal-detection-in-realtime-t
   /* Calc stats is called each time a data point is added to calculate a rolling average and
    a rolling standard deviation. The varible signal count allows for the influence to
    be properly proportioned by the influence factor.*/
-  private void calcStats () {
+  private void calcStats() {
     double sum = 0;
     int signalCount = 0;
     for (int i = 0; i < values.size(); i++) {

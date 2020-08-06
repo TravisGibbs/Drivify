@@ -13,18 +13,6 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,13 +25,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.spotifytest.activities.AlgorithmTestActivity;
-import com.example.spotifytest.adapters.PlaylistAdapter;
-import com.example.spotifytest.activities.MainActivity;
-import com.example.spotifytest.models.Const;
-import com.example.spotifytest.models.SongFull;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
+import com.example.spotifytest.activities.AlgorithmTestActivity;
+import com.example.spotifytest.activities.MainActivity;
+import com.example.spotifytest.adapters.PlaylistAdapter;
+import com.example.spotifytest.models.Const;
+import com.example.spotifytest.models.SongFull;
 import com.example.spotifytest.models.SongsViewModel;
 import com.example.spotifytest.services.AlgorithmService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -57,10 +56,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -154,8 +150,8 @@ public class PlaylistFragment extends Fragment {
                 if (location==null){
                   ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("00 km/h");
                 } else if (driving) {
-                  speed = (int) ((location.getSpeed()*3600)/1000);
-                  speedData += " " + String.valueOf(speed);
+                  speed = (int) ((location.getSpeed() * 3600) / 1000);
+                  speedData += " " + speed;
                   Log.i(Tag, String.valueOf(speed));
                   int currentLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                   int offset = currentLevel - maxLevel / 2;

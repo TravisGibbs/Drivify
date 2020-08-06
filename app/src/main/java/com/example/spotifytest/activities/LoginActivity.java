@@ -1,7 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,8 +12,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.spotifytest.models._User;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.spotifytest.R;
+import com.example.spotifytest.models._User;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -38,8 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         _User user = new _User();
-        if(user.getCurrentUser()!=null){
-            Log.i(Tag,"logged in");
+        if (ParseUser.getCurrentUser() != null) {
+            Log.i(Tag, "logged in");
             goToMainActivity();
         }
 

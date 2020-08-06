@@ -4,13 +4,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +15,24 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.spotifytest.activities.MainActivity;
-import com.example.spotifytest.models.Const;
-import com.example.spotifytest.models.objectID;
-import com.example.spotifytest.services.NavigatorService;
-import com.example.spotifytest.services.MapService;
-import com.example.spotifytest.models.SongFull;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.spotifytest.OnSwipeTouchListener;
 import com.example.spotifytest.R;
+import com.example.spotifytest.activities.MainActivity;
 import com.example.spotifytest.activities.SearchActivity;
+import com.example.spotifytest.models.Const;
+import com.example.spotifytest.models.SongFull;
+import com.example.spotifytest.models.SongsViewModel;
+import com.example.spotifytest.models.objectID;
+import com.example.spotifytest.services.MapService;
+import com.example.spotifytest.services.NavigatorService;
 import com.example.spotifytest.services.PlaylistService;
 import com.example.spotifytest.services.SongService;
-import com.example.spotifytest.models.SongsViewModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

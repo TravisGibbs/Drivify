@@ -1,9 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,9 +11,13 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.spotifytest.R;
 import com.example.spotifytest.adapters.ListAdapter;
 import com.example.spotifytest.models.Playlist;
-import com.example.spotifytest.R;
 import com.example.spotifytest.services.NavigatorService;
 import com.parse.FindCallback;
 import com.parse.ParseException;

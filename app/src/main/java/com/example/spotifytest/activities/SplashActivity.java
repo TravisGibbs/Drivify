@@ -1,7 +1,5 @@
 package com.example.spotifytest.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,11 +10,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.example.spotifytest.R;
 import com.example.spotifytest.models.Const;
 import com.example.spotifytest.models._User;
-import com.example.spotifytest.R;
 import com.example.spotifytest.services.UserService;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
