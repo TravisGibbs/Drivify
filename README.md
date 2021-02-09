@@ -4,6 +4,8 @@ Android app to create custom Spotify playlist based on user preference, duration
 ### Description
 The app will use google maps and spotify to try to deliver a playlist and music experience that is dynamic to the drive.
 
+See demonstration folder for demo! 
+
 
 * [x] User Register/Log in to driving app
 * [x] User can log into spotify
