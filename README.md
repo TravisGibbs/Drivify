@@ -18,8 +18,16 @@ The app will use google maps and spotify to try to deliver a playlist and music 
 ### Demo
 - **Algorithm Testing**
 Using data sets from https://github.com/Intelligent-Vehicle-Perception/Intelligent-Vehicle-Perception-Based-on-Inertial-Sensing-and-Artificial-Intelligence
+
+
+
+
 - Test1:
 <img src='https://github.com/TravisGibbs/Drivify/blob/master/demonstration/Test1.png?raw=true' title='Test1' width='536' height='895' alt='test1' />
+
+
+
+
 - Test2:
 <img src='https://github.com/TravisGibbs/Drivify/blob/master/demonstration/Test2.png?raw=true' title='Test2' width='536' height='895' alt='test1' />
 
